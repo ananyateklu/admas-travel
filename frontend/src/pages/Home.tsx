@@ -4,7 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 // Import images
 import lalibelaImage from '../assets/lalibela-two.jpg';
 import danakelImage from '../assets/danakel.jpg';
-import mountainsImage from '../assets/mountains.jpeg';
+import simienmountainsImage from '../assets/simien-mountains-fox.jpeg';
+import axumImage from '../assets/axum.jpeg';
+import gonderImage from '../assets/gonder.jpg';
+import baleMountainsImage from '../assets/bale-mountains.jpeg';
 import omoValleyImage from '../assets/omo-valley-guy.jpeg';
 import ethiopianAirlinesImage from '../assets/ethiopian-airlines-two.jpg';
 import emiratesAirlinesImage from '../assets/emirates-airlines.jpg';
@@ -31,6 +34,8 @@ import europeImage from '../assets/destination/europe.jpg';
 import hawaiiImage from '../assets/destination/hawaii.jpg';
 import israelImage from '../assets/destination/israel.jpg';
 import africaSafarisImage from '../assets/destination/africa-safaris.jpg';
+import usaImage from '../assets/destination/usa.jpg';
+import australiaImage from '../assets/destination/australia.jpg';
 
 const featuredDestinations = [
     {
@@ -50,7 +55,7 @@ const featuredDestinations = [
     {
         name: "Simien Mountains",
         description: "Home to endemic wildlife and breathtaking vistas",
-        image: mountainsImage,
+        image: simienmountainsImage,
         link: "/trips/simien",
         country: "Ethiopia"
     },
@@ -64,21 +69,21 @@ const featuredDestinations = [
     {
         name: "Axum",
         description: "Ancient capital with mysterious obelisks and rich history",
-        image: mountainsImage, // You'll need to add the actual image
+        image: axumImage, // You'll need to add the actual image
         link: "/trips/axum",
         country: "Ethiopia"
     },
     {
         name: "Gondar",
         description: "Medieval castles and churches in the 'Camelot of Africa'",
-        image: mountainsImage, // You'll need to add the actual image
+        image: gonderImage, // You'll need to add the actual image
         link: "/trips/gondar",
         country: "Ethiopia"
     },
     {
         name: "Bale Mountains",
         description: "Alpine peaks and rare wildlife in Ethiopia's largest national park",
-        image: mountainsImage, // You'll need to add the actual image
+        image: baleMountainsImage, // You'll need to add the actual image
         link: "/trips/bale",
         country: "Ethiopia"
     },
@@ -273,30 +278,44 @@ const vacationRegions = [
         description: 'Sacred sites and rich history'
     },
     {
-        id: 'africa',
-        name: 'Africa / Safaris',
+        id: 'usa',
+        name: 'USA',
+        places: '06 Places',
+        image: usaImage,
+        description: 'Diverse landscapes and vibrant cities'
+    },
+    {
+        id: 'ethiopia',
+        name: 'Ethiopia',
         places: '07 Places',
         image: africaSafarisImage,
-        description: 'Wildlife encounters and natural wonders'
+        description: 'Ancient culture and stunning landscapes'
+    },
+    {
+        id: 'australia',
+        name: 'Australia',
+        places: '08 Places',
+        image: australiaImage,
+        description: 'Outback adventures and coastal wonders'
     }
 ];
 
 const ethiopianRegions = {
     north: [
         { name: "Lalibela", count: 4, image: lalibelaImage },
-        { name: "Axum", count: 3, image: mountainsImage },
-        { name: "Gondar", count: 5, image: mountainsImage }
+        { name: "Axum", count: 3, image: axumImage },
+        { name: "Gondar", count: 5, image: gonderImage }
     ],
     south: [
         { name: "Omo Valley", count: 6, image: omoValleyImage },
-        { name: "Bale Mountains", count: 4, image: mountainsImage }
+        { name: "Bale Mountains", count: 4, image: baleMountainsImage }
     ],
     east: [
         { name: "Danakil Depression", count: 3, image: danakelImage }
     ],
     central: [
         { name: "Lake Tana", count: 5, image: abayRiverImage },
-        { name: "Simien Mountains", count: 7, image: mountainsImage }
+        { name: "Simien Mountains", count: 7, image: simienmountainsImage }
     ]
 };
 
@@ -506,19 +525,19 @@ export default function Home() {
 
             {/* Vacation Destinations */}
             <section className="py-24 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12">
+                <div className="max-w-[1920px] mx-auto px-24">
+                    <div className="text-center mb-16">
                         <h2 className="text-3xl font-serif mb-4">Vacation Destinations</h2>
                         <p className="text-gray-600">Need some inspiration to plan your next trip? Plan the ultimate vacation at our top popular destination spots around the world.</p>
                     </div>
 
                     {/* Region Selection */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-12">
                         {vacationRegions.map((region) => (
                             <button
                                 key={region.id}
                                 onClick={() => setSelectedRegion(region.id)}
-                                className={`relative group overflow-hidden rounded-xl aspect-[3/4] ${selectedRegion === region.id
+                                className={`relative group overflow-hidden rounded-xl aspect-[3/4] w-full ${selectedRegion === region.id
                                     ? 'ring-2 ring-gold'
                                     : ''
                                     }`}
@@ -539,10 +558,10 @@ export default function Home() {
 
                                 {/* Content */}
                                 <div className="relative h-full flex flex-col justify-end p-4">
-                                    <h3 className="font-serif text-lg text-white mb-1">{region.name}</h3>
-                                    <p className="text-white/80 text-xs mb-2 line-clamp-2">{region.description}</p>
+                                    <h3 className="font-serif text-base text-white mb-1">{region.name}</h3>
+                                    <p className="text-white/80 text-sm mb-2 line-clamp-2">{region.description}</p>
                                     <div className="flex items-center">
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white/20 text-white">
+                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/20 text-white">
                                             {region.places}
                                         </span>
                                     </div>
@@ -551,43 +570,45 @@ export default function Home() {
                         ))}
                     </div>
 
-                    {/* Ethiopian Regions (shown when Africa is selected) */}
-                    {selectedRegion === 'africa' && (
-                        <>
-                            <div className="flex justify-center gap-4 mb-12">
+                    {/* Ethiopian Regions (shown when Ethiopia is selected) */}
+                    {selectedRegion === 'ethiopia' && (
+                        <div className="mt-12">
+                            <div className="flex flex-wrap justify-center gap-4 mb-12">
                                 {Object.entries(ethiopianRegions).map(([region, destinations]) => (
                                     <button
                                         key={region}
                                         onClick={() => setSelectedEthiopianRegion(region)}
-                                        className={`px-6 py-3 rounded-full transition-all ${selectedEthiopianRegion === region
-                                            ? 'bg-gold text-white'
+                                        className={`px-6 py-2.5 rounded-full text-sm transition-all ${selectedEthiopianRegion === region
+                                            ? 'bg-[#D4AF37] text-white'
                                             : 'bg-white hover:bg-gray-50'
                                             }`}
                                     >
                                         {region.charAt(0).toUpperCase() + region.slice(1)} Ethiopia
-                                        <span className="ml-2 text-sm opacity-80">({destinations.length})</span>
+                                        <span className="ml-2 opacity-80">({destinations.length})</span>
                                     </button>
                                 ))}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {ethiopianRegions[selectedEthiopianRegion as keyof typeof ethiopianRegions].map((destination) => (
-                                    <div key={destination.name} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                                    <div key={destination.name} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                                         <div className="aspect-[16/9] overflow-hidden">
                                             <img
                                                 src={destination.image}
                                                 alt={destination.name}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                                             />
                                         </div>
                                         <div className="p-6">
-                                            <h3 className="text-xl font-serif mb-2">{destination.name}</h3>
-                                            <p className="text-sm text-gray-600">{destination.count} Experiences Available</p>
+                                            <h3 className="text-2xl font-serif mb-3">{destination.name}</h3>
+                                            <p className="text-gray-600">
+                                                <span className="font-medium">{destination.count}</span> Experiences Available
+                                            </p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             </section>

@@ -6,21 +6,14 @@ import admasLogo from '../assets/admast.png';
 
 export default function Layout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Implement search functionality
-        console.log('Search:', searchQuery);
-    };
 
     return (
         <div className="min-h-screen bg-white text-dark flex flex-col">
             {/* Header Container */}
-            <div className="absolute top-2 left-0 right-0 z-50">
+            <div className="fixed top-4 left-0 right-0 z-50">
                 <div className="mx-4">
                     {/* Header */}
-                    <header className="mx-auto bg-white rounded-[2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                    <header className="mx-auto bg-white/70 backdrop-blur-lg rounded-[2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                         <nav className="h-24 pl-6 pr-3 flex items-center">
                             <div className="flex items-center justify-between gap-8 w-full">
                                 {/* Left section */}
@@ -47,17 +40,14 @@ export default function Layout() {
                                     </div>
                                 </div>
 
-                                {/* Right section - Search and Get Started */}
+                                {/* Right section - Phone number and Get Started */}
                                 <div className="flex items-center gap-6">
-                                    <form onSubmit={handleSearch} className="flex items-center">
-                                        <input
-                                            type="text"
-                                            placeholder="Search"
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-[200px] px-4 py-2 rounded-[1.2rem] bg-[#F5F5F1] text-base font-light focus:outline-none"
-                                        />
-                                    </form>
+                                    <a href="tel:+16127437243" className="flex items-center gap-2 text-base font-light">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                        </svg>
+                                        +1 (612) 743-7243
+                                    </a>
                                     <Link
                                         to="/get-started"
                                         className="px-8 py-6 bg-[#1A1A1A] text-white rounded-[1.2rem] text-base font-light hover:bg-black transition-colors"
@@ -89,15 +79,16 @@ export default function Layout() {
                                 <Link to="/pricing" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Pricing</Link>
                                 <Link to="/contact" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Contact</Link>
                             </div>
-                            <form onSubmit={handleSearch} className="mt-8">
-                                <input
-                                    type="text"
-                                    placeholder="Search destinations..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-lg bg-[#F5F5F1] text-sm font-light focus:outline-none"
-                                />
-                            </form>
+                            <a
+                                href="tel:+1234567890"
+                                className="flex items-center justify-center gap-2 text-lg font-light mt-8"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                +1 (612) 743-7243
+                            </a>
                             <Link
                                 to="/get-started"
                                 className="w-full px-4 py-3 bg-[#1A1A1A] text-white rounded-lg text-center text-sm font-light hover:bg-black transition-colors"
