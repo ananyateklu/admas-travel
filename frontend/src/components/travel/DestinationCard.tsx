@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface DestinationCardProps {
     title: string;
     description: string;
@@ -72,8 +70,8 @@ export function DestinationCard({
                 <div className='mb-4'>
                     <h4 className='font-semibold mb-2'>Highlights</h4>
                     <ul className='list-disc list-inside text-gray-600'>
-                        {highlights.map((highlight, index) => (
-                            <li key={index}>{highlight}</li>
+                        {highlights.map((highlight) => (
+                            <li key={highlight}>{highlight}</li>
                         ))}
                     </ul>
                 </div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 const featuredDestinations = [
@@ -30,16 +29,19 @@ const featuredDestinations = [
 
 const activities = [
     {
+        id: 'historical-tours',
         title: "Historical Tours",
         description: "Explore ancient churches and historical sites",
         image: "/src/assets/lalibela-two.jpg"
     },
     {
+        id: 'wildlife-safari',
         title: "Wildlife Safari",
         description: "Meet the unique Gelada baboons and Ethiopian wolves",
         image: "/src/assets/mountain-monkey.jpg"
     },
     {
+        id: 'cultural-experiences',
         title: "Cultural Experiences",
         description: "Immerse in Ethiopia's rich cultural traditions",
         image: "/src/assets/omo-monkey-two.jpg"
@@ -66,7 +68,7 @@ export default function Home() {
                         alt="Ethiopian Airlines"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/10"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent"></div>
                 </div>
 
                 {/* Content */}
@@ -100,19 +102,19 @@ export default function Home() {
                         <div className="max-w-7xl mx-auto px-8 w-full">
                             <div className="grid grid-cols-2 gap-16 items-center">
                                 {/* Left side - Main Title */}
-                                <div>
+                                <div className="bg-black/20 backdrop-blur-sm p-8 rounded-3xl">
                                     <p className="text-yellow-400 text-sm tracking-wider mb-4">WELCOME TO THE LAND OF ORIGINS</p>
-                                    <h1 className="font-serif text-7xl text-white leading-tight mb-8">
-                                        Discover<br />Ethiopia
+                                    <h1 className="font-serif text-6xl text-white leading-tight mb-8">
+                                        Discover Ethiopia
                                     </h1>
                                 </div>
 
                                 {/* Right side - Description */}
-                                <div className="text-white/90">
-                                    <p className="text-lg font-light mb-8 max-w-xl">
+                                <div className="bg-black/20 backdrop-blur-sm p-8 rounded-3xl">
+                                    <p className="text-lg font-light mb-8 max-w-xl text-white">
                                         Experience the cradle of humanity, where ancient traditions meet breathtaking landscapes. From rock-hewn churches to volcanic wonders, embark on an unforgettable journey through Ethiopia.
                                     </p>
-                                    <button className="px-8 py-3 bg-black text-white rounded-full hover:bg-gray-900 transition-colors text-sm">
+                                    <button className="px-8 py-3 bg-white text-black rounded-full hover:bg-gray-100 transition-colors text-sm">
                                         Start Your Journey
                                     </button>
                                 </div>
@@ -173,8 +175,8 @@ export default function Home() {
             <section className="py-24">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-4 gap-6">
-                        {featuredDestinations.map((destination, index) => (
-                            <Link to={destination.link} key={index} className="group">
+                        {featuredDestinations.map((destination) => (
+                            <Link to={destination.link} key={destination.link} className="group">
                                 <div className="rounded-3xl overflow-hidden mb-4">
                                     <img
                                         src={destination.image}
@@ -204,8 +206,8 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
-                        {activities.map((activity, i) => (
-                            <div key={i} className="rounded-3xl overflow-hidden aspect-square relative">
+                        {activities.map((activity) => (
+                            <div key={activity.id} className="rounded-3xl overflow-hidden aspect-square relative">
                                 <img src={activity.image} alt={activity.title} className="w-full h-full object-cover" />
                                 <div className="absolute inset-0 bg-black/40 p-6 flex flex-col justify-end">
                                     <h3 className="text-xl font-serif mb-2 text-white">{activity.title}</h3>

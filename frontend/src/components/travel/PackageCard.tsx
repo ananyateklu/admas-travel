@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface PackageCardProps {
     title: string;
     description: string;
@@ -78,10 +76,10 @@ export function PackageCard({
                     <div>
                         <h3 className='text-xl font-semibold'>{title}</h3>
                         <div className='flex gap-2 mt-1'>
-                            {destinations.map((dest, index) => (
-                                <span key={index} className='text-gray-600 text-sm'>
+                            {destinations.map((dest) => (
+                                <span key={`${dest.city}-${dest.country}`} className='text-gray-600 text-sm'>
                                     {dest.city}, {dest.country}
-                                    {index < destinations.length - 1 ? ' → ' : ''}
+                                    {dest !== destinations[destinations.length - 1] ? ' → ' : ''}
                                 </span>
                             ))}
                         </div>
@@ -117,8 +115,8 @@ export function PackageCard({
                 <div className='mb-4'>
                     <h4 className='font-semibold mb-2'>What's Included</h4>
                     <ul className='list-disc list-inside text-gray-600'>
-                        {included.map((item, index) => (
-                            <li key={index}>{item}</li>
+                        {included.map((item) => (
+                            <li key={item}>{item}</li>
                         ))}
                     </ul>
                 </div>
