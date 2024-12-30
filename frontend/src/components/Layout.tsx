@@ -17,17 +17,17 @@ export default function Layout() {
         <div className="min-h-screen bg-white text-dark flex flex-col">
             {/* Header Container */}
             <div className="absolute top-2 left-0 right-0 z-50">
-                <div className="mx-6">
+                <div className="mx-4">
                     {/* Header */}
                     <header className="mx-auto bg-white rounded-[2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-                        <nav className="pl-6 pr-2 py-2">
-                            <div className="flex items-center justify-between gap-8">
+                        <nav className="h-16 pl-6 pr-3 flex items-center">
+                            <div className="flex items-center justify-between gap-8 w-full">
                                 {/* Left section */}
                                 <button
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    className="flex items-center gap-1.5 text-sm font-light"
+                                    className="flex items-center gap-2 text-base font-light"
                                 >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
                                     Menu
@@ -35,9 +35,9 @@ export default function Layout() {
 
                                 {/* Center section - navigation only */}
                                 <div className="flex-1 flex items-center justify-center gap-12">
-                                    <Link to="/about-us" className="text-sm font-light hover:text-gold transition-colors">About</Link>
-                                    <Link to="/pricing" className="text-sm font-light hover:text-gold transition-colors">Pricing</Link>
-                                    <Link to="/contact" className="text-sm font-light hover:text-gold transition-colors">Contact</Link>
+                                    <Link to="/about-us" className="text-base font-light hover:text-gold transition-colors">About</Link>
+                                    <Link to="/pricing" className="text-base font-light hover:text-gold transition-colors">Pricing</Link>
+                                    <Link to="/contact" className="text-base font-light hover:text-gold transition-colors">Contact</Link>
                                 </div>
 
                                 {/* Right section - Search and Get Started */}
@@ -48,12 +48,12 @@ export default function Layout() {
                                             placeholder="Search"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-[180px] px-4 py-1.5 rounded-[1.2rem] bg-[#F5F5F1] text-sm font-light focus:outline-none"
+                                            className="w-[200px] px-4 py-2 rounded-[1.2rem] bg-[#F5F5F1] text-base font-light focus:outline-none"
                                         />
                                     </form>
                                     <Link
                                         to="/get-started"
-                                        className="px-8 py-3.5 bg-[#1A1A1A] text-white rounded-[2rem] text-sm font-light hover:bg-black transition-colors"
+                                        className="px-6 py-3 bg-[#1A1A1A] text-white rounded-[2rem] text-base font-light hover:bg-black transition-colors"
                                     >
                                         Get Started
                                     </Link>
