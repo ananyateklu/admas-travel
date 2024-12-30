@@ -283,7 +283,7 @@ export default function Home() {
             </section>
 
             {/* Highlights Section */}
-            <section className="py-24 bg-gray-900 rounded-t-[3rem]">
+            <section className="py-24 bg-gray-900 mx-4 rounded-[3rem]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <h2 className="font-serif text-4xl mb-4 text-white">Experience Ethiopia with Us</h2>
