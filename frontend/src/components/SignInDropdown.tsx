@@ -20,19 +20,19 @@ export function SignInDropdown({ isOpen, onClose }: SignInDropdownProps) {
     if (!isOpen) return null;
 
     return (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-6 px-4">
+        <div className="absolute right-0 mt-2 w-80 bg-white/70 backdrop-blur-lg rounded-[1.2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)] py-6 px-4">
             <div className="text-center mb-6">
                 <h3 className="text-xl font-serif text-gray-900 mb-2">
-                    Welcome Back
+                    Welcome to Admas Travel
                 </h3>
                 <p className="text-sm text-gray-600">
-                    Sign in to access your travel plans and bookings
+                    Sign in to access exclusive travel deals and personalized recommendations
                 </p>
             </div>
 
             <button
                 onClick={handleGoogleSignIn}
-                className="w-full flex justify-center items-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold mb-4"
+                className="w-full flex justify-center items-center gap-3 px-4 py-3 border border-gray-200/20 rounded-[1.2rem] shadow-sm bg-white/50 hover:bg-white/80 text-gray-700 transition-all duration-200"
             >
                 <svg className="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24">
                     <path
@@ -43,12 +43,12 @@ export function SignInDropdown({ isOpen, onClose }: SignInDropdownProps) {
                 Continue with Google
             </button>
 
-            <div className="text-center">
+            <div className="mt-6 text-center">
                 <p className="text-xs text-gray-500">
                     By continuing, you agree to our{' '}
-                    <a href="/terms" className="text-gold hover:text-gold/90">Terms of Service</a>
+                    <a href="/terms" className="text-gold hover:text-gold/90 underline">Terms of Service</a>
                     {' '}and{' '}
-                    <a href="/privacy" className="text-gold hover:text-gold/90">Privacy Policy</a>
+                    <a href="/privacy" className="text-gold hover:text-gold/90 underline">Privacy Policy</a>
                 </p>
             </div>
         </div>

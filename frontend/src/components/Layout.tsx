@@ -111,56 +111,58 @@ export default function Layout() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                                 </svg>
                                             </button>
-                                            {isProfileMenuOpen && (
-                                                <div className="absolute right-0 mt-2 w-64 bg-white/70 backdrop-blur-lg rounded-[1.2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)] py-2">
-                                                    <div className="px-4 py-3 border-b border-gray-100/20">
-                                                        <div className="text-sm font-medium text-gray-900">
-                                                            {user.displayName}
+                                            <div className="absolute top-[calc(100%+1.5rem)] right-0 z-50">
+                                                {isProfileMenuOpen && (
+                                                    <div className="w-64 bg-white/70 backdrop-blur-lg rounded-[1.2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)] py-2 mr-4">
+                                                        <div className="px-4 py-3 border-b border-gray-100/20">
+                                                            <div className="text-sm font-medium text-gray-900">
+                                                                {user.displayName}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 truncate">
+                                                                {user.email}
+                                                            </div>
                                                         </div>
-                                                        <div className="text-xs text-gray-500 truncate">
-                                                            {user.email}
-                                                        </div>
+                                                        <Link
+                                                            to="/account"
+                                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
+                                                            onClick={() => setIsProfileMenuOpen(false)}
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                                </svg>
+                                                                Your Profile
+                                                            </div>
+                                                        </Link>
+                                                        <Link
+                                                            to="/bookings"
+                                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
+                                                            onClick={() => setIsProfileMenuOpen(false)}
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
+                                                                </svg>
+                                                                Your Bookings
+                                                            </div>
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => {
+                                                                setIsProfileMenuOpen(false);
+                                                                handleSignOut();
+                                                            }}
+                                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                                                </svg>
+                                                                Sign Out
+                                                            </div>
+                                                        </button>
                                                     </div>
-                                                    <Link
-                                                        to="/account"
-                                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                                                        onClick={() => setIsProfileMenuOpen(false)}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                            </svg>
-                                                            Your Profile
-                                                        </div>
-                                                    </Link>
-                                                    <Link
-                                                        to="/bookings"
-                                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                                                        onClick={() => setIsProfileMenuOpen(false)}
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
-                                                            </svg>
-                                                            Your Bookings
-                                                        </div>
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => {
-                                                            setIsProfileMenuOpen(false);
-                                                            handleSignOut();
-                                                        }}
-                                                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                                            </svg>
-                                                            Sign Out
-                                                        </div>
-                                                    </button>
-                                                </div>
-                                            )}
+                                                )}
+                                            </div>
                                         </div>
                                     ) : (
                                         <div className="relative signin-dropdown">
@@ -170,10 +172,12 @@ export default function Layout() {
                                             >
                                                 Sign In
                                             </button>
-                                            <SignInDropdown
-                                                isOpen={isSignInOpen}
-                                                onClose={() => setIsSignInOpen(false)}
-                                            />
+                                            <div className="absolute top-[calc(100%+0.5rem)] right-0 z-50">
+                                                <SignInDropdown
+                                                    isOpen={isSignInOpen}
+                                                    onClose={() => setIsSignInOpen(false)}
+                                                />
+                                            </div>
                                         </div>
                                     )}
                                 </div>
