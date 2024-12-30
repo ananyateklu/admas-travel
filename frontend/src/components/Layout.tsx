@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import Footer from './Footer';
+import { ConvaiChat } from './chat/ConvaiChat';
 
 export default function Layout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -109,6 +110,9 @@ export default function Layout() {
 
             {/* Footer */}
             <Footer />
+
+            {/* Convai Chat Widget */}
+            <ConvaiChat agentId="k57XOhpbsRdgDr1Gxn1H" position="bottom-right" />
         </div>
     );
 } 

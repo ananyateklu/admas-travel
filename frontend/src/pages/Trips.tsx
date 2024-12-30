@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Trips() {
     return (
         <div className="pt-32 min-h-screen">

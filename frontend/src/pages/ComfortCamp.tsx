@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function ComfortCamp() {
     return (
         <div className="pt-32 min-h-screen">
