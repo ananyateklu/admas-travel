@@ -15,11 +15,11 @@ export default function Layout() {
     return (
         <div className="min-h-screen bg-white text-dark flex flex-col">
             {/* Header Container */}
-            <div className="absolute top-4 left-0 right-0 z-50">
-                <div className="mx-8">
+            <div className="absolute top-2 left-0 right-0 z-50">
+                <div className="mx-6">
                     {/* Header */}
                     <header className="mx-auto bg-white rounded-[2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-                        <nav className="px-8 py-4">
+                        <nav className="pl-6 pr-2 py-2">
                             <div className="flex items-center justify-between gap-8">
                                 {/* Left section */}
                                 <button
@@ -32,15 +32,15 @@ export default function Layout() {
                                     Menu
                                 </button>
 
-                                {/* Center section */}
-                                <div className="flex items-center gap-12">
+                                {/* Center section - navigation only */}
+                                <div className="flex-1 flex items-center justify-center gap-12">
                                     <Link to="/about-us" className="text-sm font-light hover:text-gold transition-colors">About</Link>
                                     <Link to="/pricing" className="text-sm font-light hover:text-gold transition-colors">Pricing</Link>
                                     <Link to="/contact" className="text-sm font-light hover:text-gold transition-colors">Contact</Link>
                                 </div>
 
-                                {/* Right section */}
-                                <div className="flex items-center gap-4">
+                                {/* Right section - Search and Get Started */}
+                                <div className="flex items-center gap-6">
                                     <form onSubmit={handleSearch} className="flex items-center">
                                         <input
                                             type="text"
@@ -52,7 +52,7 @@ export default function Layout() {
                                     </form>
                                     <Link
                                         to="/get-started"
-                                        className="px-4 py-1.5 bg-[#1A1A1A] text-white rounded-[1.2rem] text-sm font-light hover:bg-black transition-colors"
+                                        className="px-8 py-3.5 bg-[#1A1A1A] text-white rounded-[2rem] text-sm font-light hover:bg-black transition-colors"
                                     >
                                         Get Started
                                     </Link>
