@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const featuredDestinations = [
     {
@@ -80,50 +80,105 @@ const highlights = [
 
 export default function Home() {
     const [currentAirlineIndex, setCurrentAirlineIndex] = useState(0);
+    const [previousAirlineIndex, setPreviousAirlineIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(false);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+    const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
+    const handleImageLoad = useCallback((imageSrc: string) => {
+        setLoadedImages(prev => new Set(prev).add(imageSrc));
+    }, []);
+
+    const startImageTransition = useCallback((nextIndex: number) => {
+        if (!isTransitioning && loadedImages.has(partnerAirlines[nextIndex].image)) {
+            setPreviousAirlineIndex(currentAirlineIndex);
+            setIsTransitioning(true);
+            setCurrentAirlineIndex(nextIndex);
+        }
+    }, [currentAirlineIndex, isTransitioning, loadedImages]);
+
+    // Preload images
+    useEffect(() => {
+        partnerAirlines.forEach(airline => {
+            const img = new Image();
+            img.onload = () => handleImageLoad(airline.image);
+            img.src = airline.image;
+        });
+    }, [handleImageLoad]);
+
+    // Handle auto-playing slideshow
     useEffect(() => {
         if (!isAutoPlaying) return;
 
         const timer = setInterval(() => {
-            setCurrentAirlineIndex((prev) =>
-                prev + 1 >= partnerAirlines.length ? 0 : prev + 1
-            );
-        }, 7000);
+            const nextIndex = (currentAirlineIndex + 1) % partnerAirlines.length;
+            startImageTransition(nextIndex);
+        }, 4000);
 
         return () => clearInterval(timer);
-    }, [isAutoPlaying]);
+    }, [isAutoPlaying, currentAirlineIndex, startImageTransition]);
+
+    // Handle transition reset
+    useEffect(() => {
+        if (isTransitioning) {
+            const timer = setTimeout(() => {
+                setIsTransitioning(false);
+            }, 700); // Match the duration in the CSS
+            return () => clearTimeout(timer);
+        }
+    }, [isTransitioning]);
+
+    const handleImageTransition = (nextIndex: number) => {
+        if (nextIndex === currentAirlineIndex || isTransitioning || !loadedImages.has(partnerAirlines[nextIndex].image)) return;
+
+        setPreviousAirlineIndex(currentAirlineIndex);
+        setIsTransitioning(true);
+        setCurrentAirlineIndex(nextIndex);
+    };
 
     const nextAirline = () => {
         setIsAutoPlaying(false);
-        setCurrentAirlineIndex((prev) =>
-            prev + 1 >= partnerAirlines.length ? 0 : prev + 1
-        );
+        const nextIndex = (currentAirlineIndex + 1) % partnerAirlines.length;
+        handleImageTransition(nextIndex);
     };
 
     const prevAirline = () => {
         setIsAutoPlaying(false);
-        setCurrentAirlineIndex((prev) =>
-            prev - 1 < 0 ? partnerAirlines.length - 1 : prev - 1
-        );
+        const nextIndex = currentAirlineIndex - 1 < 0 ? partnerAirlines.length - 1 : currentAirlineIndex - 1;
+        handleImageTransition(nextIndex);
     };
 
     const goToAirline = (index: number) => {
+        if (index === currentAirlineIndex) return;
         setIsAutoPlaying(false);
-        setCurrentAirlineIndex(index);
+        handleImageTransition(index);
     };
 
     return (
         <div className="min-h-screen bg-white">
             {/* Partner Airlines */}
             <section className="h-[100vh] relative overflow-hidden">
-                {/* Current Airline Image */}
+                {/* Current and Previous Airline Images */}
                 <div className="absolute inset-0">
-                    <img
-                        src={partnerAirlines[currentAirlineIndex].image}
-                        alt={partnerAirlines[currentAirlineIndex].name}
-                        className="w-full h-full object-cover transition-opacity duration-500"
-                    />
+                    {/* Base layer - Previous Image */}
+                    <div className="absolute inset-0">
+                        <img
+                            key={`prev-${previousAirlineIndex}`}
+                            src={partnerAirlines[previousAirlineIndex].image}
+                            alt={partnerAirlines[previousAirlineIndex].name}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                    {/* Overlay layer - Current Image */}
+                    <div className="absolute inset-0">
+                        <img
+                            key={`current-${currentAirlineIndex}`}
+                            src={partnerAirlines[currentAirlineIndex].image}
+                            alt={partnerAirlines[currentAirlineIndex].name}
+                            className={`w-full h-full object-cover transition-opacity duration-700 ease-in-out ${!isTransitioning ? 'opacity-100' : 'opacity-0'
+                                }`}
+                        />
+                    </div>
                 </div>
 
                 {/* Navigation Arrows */}
