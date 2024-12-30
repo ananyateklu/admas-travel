@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import Footer from './Footer';
 import { ConvaiChat } from './chat/ConvaiChat';
@@ -35,7 +35,7 @@ export default function Layout() {
                                 <div className="flex-1 flex items-center justify-center">
                                     <div className="flex items-center gap-16 ml-32">
                                         <Link to="/about-us" className="text-base font-light hover:text-gold transition-colors">About</Link>
-                                        <Link to="/pricing" className="text-base font-light hover:text-gold transition-colors">Pricing</Link>
+                                        <Link to="/book" className="text-base font-light hover:text-gold transition-colors">Book</Link>
                                         <Link to="/contact" className="text-base font-light hover:text-gold transition-colors">Contact</Link>
                                     </div>
                                 </div>
@@ -71,12 +71,8 @@ export default function Layout() {
                             </Link>
                             <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                                 <Link to="/trips" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Trips</Link>
-                                <Link to="/comfort-camp" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Comfort Camp</Link>
                                 <Link to="/about-us" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>About Us</Link>
-                                <Link to="/cce-projects" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>CCE Projects</Link>
-                                <Link to="/faq" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>FAQ</Link>
-                                <Link to="/blog" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Blog</Link>
-                                <Link to="/pricing" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Pricing</Link>
+                                <Link to="/book" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Book</Link>
                                 <Link to="/contact" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Contact</Link>
                             </div>
                             <a
