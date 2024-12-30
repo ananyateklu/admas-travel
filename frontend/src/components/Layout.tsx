@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
+import Footer from './Footer';
 
 export default function Layout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,7 +13,7 @@ export default function Layout() {
     };
 
     return (
-        <div className="min-h-screen bg-white text-dark">
+        <div className="min-h-screen bg-white text-dark flex flex-col">
             {/* Header Container */}
             <div className="absolute top-4 left-0 right-0 z-50">
                 <div className="mx-8">
@@ -102,9 +103,12 @@ export default function Layout() {
             )}
 
             {/* Main Content */}
-            <main className="min-h-screen">
+            <main className="flex-1">
                 <Outlet />
             </main>
+
+            {/* Footer */}
+            <Footer />
         </div>
     );
 } 
