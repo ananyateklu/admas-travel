@@ -22,6 +22,15 @@ import airCanadaAirlinesImage from '../assets/air-canada-airlines.jpg';
 import singaporeAirlinesImage from '../assets/singapore-airlines.jpg';
 import spiritAirlinesImage from '../assets/spirit-airlines.jpg';
 import unitedAirlinesImage from '../assets/united-airlines.jpg';
+import americanAirlinesImage from '../assets/american-airlines.jpg';
+import klmAirlinesImage from '../assets/klm-airlines.jpg';
+import lufthansaAirlinesImage from '../assets/lufthansa-airlines.jpg';
+import caribbeanImage from '../assets/destination/caribbean.jpg';
+import mexicoImage from '../assets/destination/mexico.jpg';
+import europeImage from '../assets/destination/europe.jpg';
+import hawaiiImage from '../assets/destination/hawaii.jpg';
+import israelImage from '../assets/destination/israel.jpg';
+import africaSafarisImage from '../assets/destination/africa-safaris.jpg';
 
 const featuredDestinations = [
     {
@@ -91,6 +100,30 @@ const partnerAirlines = [
         isMainPartner: true,
         features: ["Modern fleet of Boeing 787s and Airbus A350s", "Extensive African network", "Award-winning skylight loyalty program"],
         hub: "Addis Ababa Bole International Airport"
+    },
+    {
+        id: 'lufthansa',
+        name: "Lufthansa",
+        description: "Germany's flagship carrier and one of Europe's leading airlines, known for its premium service, extensive network, and technical excellence in aviation.",
+        image: lufthansaAirlinesImage,
+        features: ["5-star airline rating", "Miles & More loyalty program", "Extensive European and global network"],
+        hub: "Frankfurt Airport"
+    },
+    {
+        id: 'american',
+        name: "American Airlines",
+        description: "One of the world's largest airlines, offering an extensive global network with a strong presence in the Americas, Europe, and Asia. Known for its modern fleet and AAdvantage loyalty program.",
+        image: americanAirlinesImage,
+        features: ["World's largest airline fleet", "AAdvantage loyalty program", "Comprehensive domestic and international network"],
+        hub: "Dallas/Fort Worth International Airport"
+    },
+    {
+        id: 'klm',
+        name: "KLM Royal Dutch Airlines",
+        description: "The world's oldest operating airline, KLM offers premium service connecting Europe with global destinations through its modern fleet and Dutch hospitality.",
+        image: klmAirlinesImage,
+        features: ["Extensive European network", "Flying Blue loyalty program", "Sustainable aviation pioneer"],
+        hub: "Amsterdam Airport Schiphol"
     },
     {
         id: 'delta',
@@ -204,14 +237,48 @@ const highlights = [
 ];
 
 const vacationRegions = [
-    { id: 'caribbean', name: 'The Caribbean', places: '01 Places' },
-    { id: 'mexico', name: 'Mexico', places: '02 Places' },
-    { id: 'europe', name: 'Europe', places: '03 Places' },
-    { id: 'hawaii', name: 'Hawaii', places: '04 Places' },
-    { id: 'israel', name: 'Israel', places: '05 Places' },
-    { id: 'usa', name: 'USA', places: '06 Places' },
-    { id: 'africa', name: 'Africa / Safaris', places: '07 Places' },
-    { id: 'australia', name: 'Australia', places: '08 Places' }
+    {
+        id: 'caribbean',
+        name: 'The Caribbean',
+        places: '01 Places',
+        image: caribbeanImage,
+        description: 'Pristine beaches and crystal-clear waters await'
+    },
+    {
+        id: 'mexico',
+        name: 'Mexico',
+        places: '02 Places',
+        image: mexicoImage,
+        description: 'Ancient ruins and vibrant culture'
+    },
+    {
+        id: 'europe',
+        name: 'Europe',
+        places: '03 Places',
+        image: europeImage,
+        description: 'Historic cities and timeless charm'
+    },
+    {
+        id: 'hawaii',
+        name: 'Hawaii',
+        places: '04 Places',
+        image: hawaiiImage,
+        description: 'Paradise islands and tropical adventures'
+    },
+    {
+        id: 'israel',
+        name: 'Israel',
+        places: '05 Places',
+        image: israelImage,
+        description: 'Sacred sites and rich history'
+    },
+    {
+        id: 'africa',
+        name: 'Africa / Safaris',
+        places: '07 Places',
+        image: africaSafarisImage,
+        description: 'Wildlife encounters and natural wonders'
+    }
 ];
 
 const ethiopianRegions = {
@@ -446,18 +513,40 @@ export default function Home() {
                     </div>
 
                     {/* Region Selection */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-12">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         {vacationRegions.map((region) => (
                             <button
                                 key={region.id}
                                 onClick={() => setSelectedRegion(region.id)}
-                                className={`p-4 rounded-xl transition-all ${selectedRegion === region.id
-                                    ? 'bg-gold text-white'
-                                    : 'bg-white hover:bg-gray-50'
+                                className={`relative group overflow-hidden rounded-xl aspect-[3/4] ${selectedRegion === region.id
+                                    ? 'ring-2 ring-gold'
+                                    : ''
                                     }`}
                             >
-                                <h3 className="font-serif text-lg mb-2">{region.name}</h3>
-                                <p className="text-sm opacity-80">{region.places}</p>
+                                {/* Background Image */}
+                                <div className="absolute inset-0">
+                                    <img
+                                        src={region.image}
+                                        alt={region.name}
+                                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                    />
+                                    {/* Gradient Overlay */}
+                                    <div className={`absolute inset-0 transition-opacity duration-300 ${selectedRegion === region.id
+                                        ? 'bg-black/60'
+                                        : 'bg-gradient-to-t from-black/80 via-black/40 to-black/30 group-hover:bg-black/50'
+                                        }`}></div>
+                                </div>
+
+                                {/* Content */}
+                                <div className="relative h-full flex flex-col justify-end p-4">
+                                    <h3 className="font-serif text-lg text-white mb-1">{region.name}</h3>
+                                    <p className="text-white/80 text-xs mb-2 line-clamp-2">{region.description}</p>
+                                    <div className="flex items-center">
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white/20 text-white">
+                                            {region.places}
+                                        </span>
+                                    </div>
+                                </div>
                             </button>
                         ))}
                     </div>

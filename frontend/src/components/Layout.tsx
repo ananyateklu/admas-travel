@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import Footer from './Footer';
 import { ConvaiChat } from './chat/ConvaiChat';
+import admasLogo from '../assets/admast.png';
 
 export default function Layout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,24 +21,30 @@ export default function Layout() {
                 <div className="mx-4">
                     {/* Header */}
                     <header className="mx-auto bg-white rounded-[2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-                        <nav className="h-16 pl-6 pr-3 flex items-center">
+                        <nav className="h-24 pl-6 pr-3 flex items-center">
                             <div className="flex items-center justify-between gap-8 w-full">
                                 {/* Left section */}
-                                <button
-                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    className="flex items-center gap-2 text-base font-light"
-                                >
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-                                    </svg>
-                                    Menu
-                                </button>
+                                <div className="flex items-center gap-8">
+                                    <button
+                                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                        className="flex items-center gap-2 text-base font-light"
+                                    >
+                                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+                                        </svg>
+                                    </button>
+                                    <Link to="/">
+                                        <img src={admasLogo} alt="Admas Travel" className="h-20 w-auto" />
+                                    </Link>
+                                </div>
 
                                 {/* Center section - navigation only */}
-                                <div className="flex-1 flex items-center justify-center gap-12">
-                                    <Link to="/about-us" className="text-base font-light hover:text-gold transition-colors">About</Link>
-                                    <Link to="/pricing" className="text-base font-light hover:text-gold transition-colors">Pricing</Link>
-                                    <Link to="/contact" className="text-base font-light hover:text-gold transition-colors">Contact</Link>
+                                <div className="flex-1 flex items-center justify-center">
+                                    <div className="flex items-center gap-16 ml-32">
+                                        <Link to="/about-us" className="text-base font-light hover:text-gold transition-colors">About</Link>
+                                        <Link to="/pricing" className="text-base font-light hover:text-gold transition-colors">Pricing</Link>
+                                        <Link to="/contact" className="text-base font-light hover:text-gold transition-colors">Contact</Link>
+                                    </div>
                                 </div>
 
                                 {/* Right section - Search and Get Started */}
@@ -53,7 +60,7 @@ export default function Layout() {
                                     </form>
                                     <Link
                                         to="/get-started"
-                                        className="px-6 py-3 bg-[#1A1A1A] text-white rounded-[2rem] text-base font-light hover:bg-black transition-colors"
+                                        className="px-8 py-6 bg-[#1A1A1A] text-white rounded-[1.2rem] text-base font-light hover:bg-black transition-colors"
                                     >
                                         Get Started
                                     </Link>
