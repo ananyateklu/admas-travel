@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import lalibela from '../assets/lalibela.jpeg';
 
 interface TravelPreference {
     travelStyle: string;
@@ -191,7 +192,7 @@ export default function GetStarted() {
             <div className="relative h-[50vh] bg-gray-900">
                 <div className="absolute inset-0">
                     <img
-                        src="/src/assets/mountains.jpeg"
+                        src={lalibela}
                         alt="Travel Planning"
                         className="w-full h-full object-cover object-center"
                     />

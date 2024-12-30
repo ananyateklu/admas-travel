@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import airplaineWindow from '../assets/airplaine-window.jpg';
 
 interface PassengerInfo {
     type: 'adult' | 'child';
@@ -146,8 +147,8 @@ export default function Book() {
             <div className="relative h-[70vh] bg-gray-900">
                 <div className="absolute inset-0">
                     <img
-                        src="/src/assets/book.jpg"
-                        alt="Globe with Toy Airplane"
+                        src={airplaineWindow}
+                        alt="View from Airplane Window"
                         className="w-full h-full object-cover object-center"
                     />
                     <div className="absolute inset-0 bg-black/40" />
