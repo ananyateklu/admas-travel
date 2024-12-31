@@ -12,7 +12,7 @@ interface BookingData {
     returnDate?: string;
     status: string;
     totalPassengers: number;
-    createdAt: {
+    createdAt: string | {
         toDate: () => Date;
     };
     from: string;
@@ -64,7 +64,6 @@ export default function Bookings() {
 
         console.log('Setting up real-time listener for user:', user.uid);
 
-        // Set up real-time listener
         const bookingsRef = collection(db, `users/${user.uid}/bookings`);
         const q = query(bookingsRef, orderBy('createdAt', 'desc'));
 
@@ -73,10 +72,14 @@ export default function Bookings() {
                 const bookingsData = snapshot.docs.map(doc => {
                     const data = doc.data();
                     console.log('Received booking update:', doc.id, data.status);
+                    const createdAtDate = typeof data.createdAt === 'string'
+                        ? new Date(data.createdAt)
+                        : data.createdAt?.toDate?.() || new Date();
+
                     return {
                         ...data,
                         bookingId: doc.id,
-                        createdAt: data.createdAt?.toDate() || new Date(),
+                        createdAt: createdAtDate,
                         departureDate: data.departureDate || '',
                         returnDate: data.returnDate || '',
                         passengers: data.passengers || [],
