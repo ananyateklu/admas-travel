@@ -7,9 +7,7 @@ export interface BookingData {
     returnDate?: string;
     status: string;
     totalPassengers: number;
-    createdAt: {
-        toDate: () => Date;
-    };
+    createdAt: string | { toDate: () => Date };
     from: string;
     to: string;
     tripType: string;

@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../lib/firebase/useAuth';
 import { db } from '../lib/firebase';
 import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import airplaineWindow from '../assets/airplaine-window.jpg';
+import { TravelPreference } from '../hooks/useTravelPreferences';
 
 interface PassengerInfo {
     type: 'adult' | 'child';
@@ -42,30 +43,74 @@ interface UserProfile {
 
 export function Book() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useAuth();
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [formData, setFormData] = useState<BookingFormData>({
-        tripType: 'roundtrip',
-        from: '',
-        to: '',
-        departureDate: '',
-        returnDate: '',
-        adults: 1,
-        children: 0,
-        class: 'economy',
-        passengers: [{
-            type: 'adult',
-            fullName: '',
-            dateOfBirth: '',
-            passportNumber: '',
-            passportExpiry: '',
-            nationality: ''
-        }],
-        contactName: '',
-        contactEmail: '',
-        contactPhone: '',
-        specialRequests: ''
+    const preferences = location.state?.preferences as TravelPreference | undefined;
+
+    const getDurationDays = (duration?: string) => {
+        switch (duration) {
+            case 'short': return 7;
+            case 'medium': return 14;
+            case 'long': return 21;
+            default: return 7;
+        }
+    };
+
+    const getDestinationAirport = (destination?: string) => {
+        switch (destination) {
+            case 'ethiopia': return 'Addis Ababa (ADD)';
+            case 'africa': return 'Nairobi (NBO)';
+            default: return '';
+        }
+    };
+
+    const getTravelClass = (travelStyle?: string) => {
+        switch (travelStyle) {
+            case 'luxury': return 'first';
+            case 'comfort': return 'business';
+            default: return 'economy';
+        }
+    };
+
+    const [formData, setFormData] = useState<BookingFormData>(() => {
+        // Calculate suggested dates based on preferences
+        const today = new Date();
+        const suggestedDeparture = new Date(today);
+        suggestedDeparture.setDate(today.getDate() + 14); // Default to 2 weeks ahead
+
+        const suggestedReturn = new Date(suggestedDeparture);
+        suggestedReturn.setDate(suggestedDeparture.getDate() + getDurationDays(preferences?.duration));
+
+        // Format dates to YYYY-MM-DD
+        const formatDate = (date: Date) => date.toISOString().split('T')[0];
+
+        return {
+            tripType: 'roundtrip',
+            from: 'Minneapolis (MSP)',
+            to: getDestinationAirport(preferences?.destination),
+            departureDate: formatDate(suggestedDeparture),
+            returnDate: formatDate(suggestedReturn),
+            adults: 1,
+            children: 0,
+            class: getTravelClass(preferences?.travelStyle),
+            passengers: [{
+                type: 'adult',
+                fullName: '',
+                dateOfBirth: '',
+                passportNumber: '',
+                passportExpiry: '',
+                nationality: ''
+            }],
+            contactName: '',
+            contactEmail: '',
+            contactPhone: '',
+            specialRequests: preferences ? `Travel Style: ${preferences.travelStyle}
+Interests: ${preferences.interests.join(', ')}
+Budget Range: ${preferences.budget}
+Duration: ${preferences.duration}` : ''
+        };
     });
     const passengersRef = useRef(formData.passengers);
 
@@ -168,14 +213,16 @@ export function Book() {
                 phone: formData.contactPhone,
                 nationality: formData.passengers[0].nationality,
                 passportNumber: formData.passengers[0].passportNumber,
-                passportExpiry: formData.passengers[0].passportExpiry
+                passportExpiry: formData.passengers[0].passportExpiry,
+                preferences: preferences || null // Store travel preferences with the user profile
             }, { merge: true });
 
-            // Create booking document
+            // Create booking document with preferences
             const bookingRef = await addDoc(collection(db, 'bookings'), {
                 userId: user.uid,
                 userEmail: user.email,
                 ...formData,
+                preferences: preferences || null, // Include preferences in booking
                 status: 'pending',
                 createdAt: new Date().toISOString()
             });
@@ -185,6 +232,7 @@ export function Book() {
                 userId: user.uid,
                 userEmail: user.email,
                 ...formData,
+                preferences: preferences || null, // Include preferences in user's booking
                 status: 'pending',
                 createdAt: new Date().toISOString()
             });

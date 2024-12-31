@@ -1,14 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import lalibela from '../assets/lalibela.jpeg';
-
-interface TravelPreference {
-    travelStyle: string;
-    destination: string;
-    budget: string;
-    duration: string;
-    interests: string[];
-}
+import { useTravelPreferences, TravelPreference } from '../hooks/useTravelPreferences';
 
 interface QuizQuestion {
     id: string;
@@ -130,34 +123,23 @@ const resources = [
 
 export default function GetStarted() {
     const [currentStep, setCurrentStep] = useState(0);
-    const [preferences, setPreferences] = useState<TravelPreference>({
-        travelStyle: '',
-        destination: '',
-        budget: '',
-        duration: '',
-        interests: []
-    });
+    const navigate = useNavigate();
+    const { preferences, updatePreferences } = useTravelPreferences();
 
     const handleSingleAnswer = (questionId: string, value: string) => {
-        setPreferences(prev => ({
-            ...prev,
-            [questionId]: value
-        }));
+        updatePreferences({ [questionId]: value });
         if (currentStep < quizQuestions.length - 1) {
             setCurrentStep(prev => prev + 1);
         }
     };
 
     const handleMultipleAnswer = (questionId: string, value: string) => {
-        setPreferences(prev => {
-            if (questionId === 'interests') {
-                const newInterests = prev.interests.includes(value)
-                    ? prev.interests.filter(v => v !== value)
-                    : [...prev.interests, value];
-                return { ...prev, interests: newInterests };
-            }
-            return { ...prev, [questionId]: [value] };
-        });
+        if (questionId === 'interests') {
+            const newInterests = preferences.interests.includes(value)
+                ? preferences.interests.filter(v => v !== value)
+                : [...preferences.interests, value];
+            updatePreferences({ interests: newInterests });
+        }
     };
 
     const handleNext = () => {
@@ -170,6 +152,10 @@ export default function GetStarted() {
         if (currentStep > 0) {
             setCurrentStep(prev => prev - 1);
         }
+    };
+
+    const handleComplete = () => {
+        navigate('/book', { state: { preferences } });
     };
 
     const currentQuestion = quizQuestions[currentStep];
@@ -307,12 +293,12 @@ export default function GetStarted() {
 
                         {currentStep === quizQuestions.length - 1 && preferences.interests.length > 0 && (
                             <div className="mt-8 pt-8 border-t">
-                                <Link
-                                    to="/book"
+                                <button
+                                    onClick={handleComplete}
                                     className="block w-full px-6 py-3 bg-gold text-white rounded-lg text-center hover:bg-gold/90 transition-colors"
                                 >
                                     See Recommended Trips
-                                </Link>
+                                </button>
                             </div>
                         )}
                     </div>
