@@ -13,6 +13,14 @@ import { AdminFlights } from '../components/admin/AdminFlights';
 
 type AdminTab = 'bookings' | 'flights' | 'analytics' | 'settings';
 
+interface AdminTabConfig {
+    id: AdminTab;
+    label: string;
+    icon: JSX.Element;
+    notifications?: number;
+    highlight?: boolean;
+}
+
 export default function Admin() {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -260,90 +268,161 @@ export default function Admin() {
     return (
         <div className="min-h-screen">
             {/* Hero Section */}
-            <div className="relative h-[45vh] bg-gray-900">
+            <div className="relative bg-gradient-to-br from-gray-900 to-black overflow-hidden">
                 <div className="absolute inset-0">
                     <img
                         src={mountainTwo}
                         alt="Mountain Landscape"
-                        className="w-full h-full object-cover object-center"
+                        className="w-full h-full object-cover object-center transform scale-105 motion-safe:animate-subtle-zoom"
                     />
-                    <div className="absolute inset-0 bg-black/50" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70 backdrop-blur-[2px]" />
+
+                    {/* Animated particles */}
+                    <div className="absolute inset-0 opacity-30">
+                        <div className="absolute w-2 h-2 bg-white rounded-full top-1/4 left-1/4 animate-float" style={{ animationDelay: '0s' }} />
+                        <div className="absolute w-2 h-2 bg-white rounded-full top-1/3 left-2/3 animate-float" style={{ animationDelay: '0.5s' }} />
+                        <div className="absolute w-2 h-2 bg-white rounded-full top-2/3 left-1/3 animate-float" style={{ animationDelay: '1s' }} />
+                        <div className="absolute w-2 h-2 bg-white rounded-full top-1/2 left-3/4 animate-float" style={{ animationDelay: '1.5s' }} />
+                    </div>
                 </div>
-                <div className="relative h-full flex items-center justify-center text-center pt-[112px]">
-                    <div className="max-w-4xl mx-auto px-4">
-                        <h1 className="text-4xl md:text-5xl font-serif text-white mb-4">Admin Dashboard</h1>
-                        <p className="text-xl text-white/90">Manage and monitor all travel operations</p>
+                <div className="relative flex flex-col justify-center text-center pt-[220px]">
+                    <div className="w-full max-w-[2000px] mx-auto px-4">
+                        <h1 className="text-4xl md:text-6xl font-serif text-white mb-12 tracking-tight motion-safe:animate-fade-in-up">
+                            Admin Dashboard
+                        </h1>
+                        <p className="text-xl text-white/90 motion-safe:animate-fade-in-up animation-delay-200 mb-24">
+                            Manage and monitor all travel operations
+                        </p>
+
+                        {/* Quick stats */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-12 mb-32 motion-safe:animate-fade-in-up animation-delay-300">
+                            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors">
+                                <div className="text-2xl font-bold text-white">247</div>
+                                <div className="text-sm text-white/70">Active Bookings</div>
+                            </div>
+                            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors">
+                                <div className="text-2xl font-bold text-white">89</div>
+                                <div className="text-sm text-white/70">Today's Flights</div>
+                            </div>
+                            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors">
+                                <div className="text-2xl font-bold text-white">95%</div>
+                                <div className="text-sm text-white/70">Satisfaction</div>
+                            </div>
+                            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors">
+                                <div className="text-2xl font-bold text-white">$52K</div>
+                                <div className="text-sm text-white/70">Revenue Today</div>
+                            </div>
+                        </div>
+
+                        {/* Navigation Tabs */}
+                        <div className="w-[80%] max-w-[2000px] mx-auto mb-12">
+                            <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg shadow-black/5 motion-safe:animate-fade-in-up animation-delay-100">
+                                <nav className="flex flex-col sm:flex-row" aria-label="Admin sections">
+                                    <div className="flex overflow-x-auto sm:w-full scrollbar-hide">
+                                        <div className="flex-1 flex p-3 gap-3 justify-center">
+                                            {([
+                                                {
+                                                    id: 'bookings',
+                                                    label: 'Bookings',
+                                                    icon: (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
+                                                        </svg>
+                                                    ),
+                                                    notifications: 3
+                                                },
+                                                {
+                                                    id: 'flights',
+                                                    label: 'Flights',
+                                                    icon: (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                                        </svg>
+                                                    ),
+                                                    notifications: 0
+                                                },
+                                                {
+                                                    id: 'analytics',
+                                                    label: 'Analytics',
+                                                    icon: (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                        </svg>
+                                                    ),
+                                                    highlight: true
+                                                },
+                                                {
+                                                    id: 'settings',
+                                                    label: 'Settings',
+                                                    icon: (
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        </svg>
+                                                    )
+                                                }
+                                            ] as AdminTabConfig[]).map((tab) => (
+                                                <button
+                                                    key={tab.id}
+                                                    onClick={() => setActiveTab(tab.id)}
+                                                    className={`group relative flex-1 sm:flex-initial min-w-[140px] px-6 py-4 text-sm font-medium rounded-xl flex items-center justify-center gap-3 transition-all duration-500
+                                                        ${activeTab === tab.id
+                                                            ? 'bg-gradient-to-r from-gold via-gold/90 to-gold text-white shadow-lg shadow-gold/20 scale-[1.02] hover:shadow-xl hover:shadow-gold/25'
+                                                            : 'text-gray-500 hover:text-gray-700 hover:bg-black/5'
+                                                        }`}
+                                                    aria-current={activeTab === tab.id ? 'page' : undefined}
+                                                >
+                                                    {/* Background glow effect */}
+                                                    {activeTab === tab.id && (
+                                                        <div className="absolute inset-0 rounded-xl bg-gold/20 blur-xl transition-opacity duration-500" />
+                                                    )}
+
+                                                    {/* Icon with hover animation */}
+                                                    <span className={`relative transition-all duration-500 ${activeTab === tab.id ? 'scale-110' : 'group-hover:scale-110'}`}>
+                                                        {tab.icon}
+                                                    </span>
+
+                                                    {/* Label with underline effect */}
+                                                    <span className="relative">
+                                                        {tab.label}
+                                                        <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-current transform origin-left transition-transform duration-300 ${activeTab === tab.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                                                    </span>
+
+                                                    {/* Notification badge with pulse effect */}
+                                                    {tab.notifications && tab.notifications > 0 && (
+                                                        <span className="absolute -top-1 -right-1">
+                                                            <span className="relative flex h-5 w-5">
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs font-bold items-center justify-center">
+                                                                    {tab.notifications}
+                                                                </span>
+                                                            </span>
+                                                        </span>
+                                                    )}
+
+                                                    {/* Highlight indicator */}
+                                                    {tab.highlight && (
+                                                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-gray-50">
-                <div className="max-w-[90%] mx-auto px-6 -mt-20 pb-8 relative z-10">
+            {/* Main Content */}
+            <div className="bg-gray-50/80 backdrop-blur-xl pt-24">
+                <div className="max-w-[95%] mx-auto px-6 pb-12 relative">
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4 mb-6">
+                        <div className="bg-red-50/95 backdrop-blur-xl border border-red-200 text-red-600 rounded-xl p-4 mb-6 shadow-lg animate-fade-in">
                             {error}
                         </div>
                     )}
-
-                    {/* Main Navigation Tabs */}
-                    <div className="bg-white rounded-xl shadow-md mb-6">
-                        <nav className="flex space-x-1 p-1" aria-label="Admin sections">
-                            <button
-                                onClick={() => setActiveTab('bookings')}
-                                className={`flex-1 px-4 py-4 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200
-                                    ${activeTab === 'bookings'
-                                        ? 'bg-gradient-to-r from-gold/90 to-gold text-white shadow-md'
-                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                                    }`}
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
-                                </svg>
-                                Bookings
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('flights')}
-                                className={`flex-1 px-4 py-4 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200
-                                    ${activeTab === 'flights'
-                                        ? 'bg-gradient-to-r from-gold/90 to-gold text-white shadow-md'
-                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                                    }`}
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                </svg>
-                                Flights
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('analytics')}
-                                className={`flex-1 px-4 py-4 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200
-                                    ${activeTab === 'analytics'
-                                        ? 'bg-gradient-to-r from-gold/90 to-gold text-white shadow-md'
-                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                                    }`}
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                                Analytics
-                            </button>
-                            <button
-                                onClick={() => setActiveTab('settings')}
-                                className={`flex-1 px-4 py-4 text-sm font-medium rounded-lg flex items-center justify-center gap-2 transition-all duration-200
-                                    ${activeTab === 'settings'
-                                        ? 'bg-gradient-to-r from-gold/90 to-gold text-white shadow-md'
-                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                                    }`}
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                Settings
-                            </button>
-                        </nav>
-                    </div>
-
                     {renderTabContent()}
                 </div>
             </div>

@@ -129,126 +129,195 @@ export function FlightSearchForm({ onSearch, isLoading, error }: FlightSearchFor
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <AirportSearchInput
-                            label="From"
-                            id="from"
-                            value={fromAirport?.name ?? ''}
-                            onChange={setFromAirport}
-                            required
-                        />
-                        <AirportSearchInput
-                            label="To"
-                            id="to"
-                            value={toAirport?.name ?? ''}
-                            onChange={setToAirport}
-                            required
-                        />
-                        <div>
-                            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-                                Departure Date
+                    {/* Main search row */}
+                    <div className="grid grid-cols-12 gap-4 mb-6">
+                        <div className="col-span-5">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                From
                             </label>
+                            <label className="block text-xs text-gray-400 mb-0.5">Departure Airport</label>
+                            <AirportSearchInput
+                                label=""
+                                id="from"
+                                value={fromAirport?.name ?? ''}
+                                onChange={setFromAirport}
+                                required
+                                type="departure"
+                            />
+                        </div>
+                        <div className="col-span-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                To
+                            </label>
+                            <label className="block text-xs text-gray-400 mb-0.5">Arrival Airport</label>
+                            <AirportSearchInput
+                                label=""
+                                id="to"
+                                value={toAirport?.name ?? ''}
+                                onChange={setToAirport}
+                                required
+                                type="arrival"
+                            />
+                        </div>
+                        <div className="col-span-2">
+                            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+                                Departure
+                            </label>
+                            <label className="block text-xs text-gray-400 mb-0.5">Travel Date</label>
                             <input
                                 type="date"
                                 id="date"
                                 value={departureDate}
                                 onChange={(e) => setDepartureDate(e.target.value)}
                                 min={getMinDate()}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                                className="w-full px-2 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200"
                                 required
                             />
                         </div>
-                        <div className="flex items-end">
+                        <div className="col-span-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                &nbsp;
+                            </label>
+                            <label className="block text-xs text-gray-400 mb-0.5">&nbsp;</label>
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full px-6 py-2 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50"
+                                className={`w-full px-2 py-2.5 rounded-xl text-white font-medium text-sm border
+                                    transition-all duration-200 overflow-hidden
+                                    ${isLoading
+                                        ? 'bg-gray-400 cursor-not-allowed border-gray-400'
+                                        : 'bg-gradient-to-r from-gold/90 to-gold hover:shadow-lg hover:shadow-gold/20 hover:-translate-y-0.5 active:translate-y-0 border-gold'
+                                    }`}
                             >
-                                {isLoading ? 'Searching...' : 'Search Flights'}
+                                <div className="relative flex items-center justify-center gap-2">
+                                    {isLoading ? (
+                                        <>
+                                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                    fill="none"
+                                                />
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                />
+                                            </svg>
+                                            <span>Searching...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                                                />
+                                            </svg>
+                                            <span>Search</span>
+                                        </>
+                                    )}
+                                </div>
                             </button>
                         </div>
                     </div>
 
-                    {/* Advanced Options */}
-                    {showAdvancedOptions && (
-                        <div className="mt-6 pt-6 border-t border-gray-100">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {/* Cabin Class */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Cabin Class
-                                    </label>
-                                    <select
-                                        value={cabinClass}
-                                        onChange={(e) => setCabinClass(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                                    >
-                                        <option value="ECONOMY">Economy</option>
-                                        <option value="PREMIUM_ECONOMY">Premium Economy</option>
-                                        <option value="BUSINESS">Business</option>
-                                        <option value="FIRST">First</option>
-                                    </select>
-                                </div>
-
-                                {/* Passengers */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Passengers
-                                    </label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        <div>
-                                            <label className="block text-xs text-gray-500 mb-1">Adults</label>
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                value={passengers.adults}
-                                                onChange={(e) => handlePassengerChange('adults', parseInt(e.target.value))}
-                                                className="w-full px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-gray-500 mb-1">Children</label>
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                value={passengers.children}
-                                                onChange={(e) => handlePassengerChange('children', parseInt(e.target.value))}
-                                                className="w-full px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs text-gray-500 mb-1">Infants</label>
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                value={passengers.infants}
-                                                onChange={(e) => handlePassengerChange('infants', parseInt(e.target.value))}
-                                                className="w-full px-3 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Additional Options */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Additional Options
-                                    </label>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center gap-2">
-                                            <input
-                                                type="checkbox"
-                                                checked={directFlightsOnly}
-                                                onChange={(e) => setDirectFlightsOnly(e.target.checked)}
-                                                className="rounded border-gray-300 text-gold focus:ring-gold"
-                                            />
-                                            <span className="text-sm text-gray-600">Direct flights only</span>
-                                        </label>
-                                    </div>
-                                </div>
+                    {/* Secondary row for cabin class and passengers */}
+                    <div className="grid grid-cols-12 gap-4">
+                        {/* Cabin Class */}
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Cabin Class
+                            </label>
+                            <label className="block text-xs text-gray-400 mb-0.5">Travel Class</label>
+                            <select
+                                value={cabinClass}
+                                onChange={(e) => setCabinClass(e.target.value)}
+                                className="w-full px-2 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200"
+                            >
+                                <option value="ECONOMY">Economy</option>
+                                <option value="PREMIUM_ECONOMY">Premium Economy</option>
+                                <option value="BUSINESS">Business</option>
+                                <option value="FIRST">First</option>
+                            </select>
+                            <div className="mt-0.5 text-xs text-gray-400">
+                                <span>Select your preferred cabin class</span>
                             </div>
                         </div>
-                    )}
+
+                        {/* Passengers */}
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Passengers
+                            </label>
+                            <div className="grid grid-cols-3 gap-0.5">
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-0.5">Adults</label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={passengers.adults}
+                                        onChange={(e) => handlePassengerChange('adults', parseInt(e.target.value))}
+                                        className="w-full px-2 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-0.5">Children</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={passengers.children}
+                                        onChange={(e) => handlePassengerChange('children', parseInt(e.target.value))}
+                                        className="w-full px-2 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-gray-400 mb-0.5">Infants</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={passengers.infants}
+                                        onChange={(e) => handlePassengerChange('infants', parseInt(e.target.value))}
+                                        className="w-full px-2 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gold/20 focus:border-gold transition-all duration-200"
+                                    />
+                                </div>
+                            </div>
+                            <div className="mt-0.5 text-xs text-gray-400">
+                                <span>Children (2-11 years)</span>
+                                <span className="mx-2">•</span>
+                                <span>Infants (0-2 years)</span>
+                            </div>
+                        </div>
+
+                        {/* Additional Options */}
+                        <div className="col-span-5">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Additional Options
+                            </label>
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={directFlightsOnly}
+                                        onChange={(e) => setDirectFlightsOnly(e.target.checked)}
+                                        className="rounded border-gray-300 text-gold focus:ring-gold"
+                                    />
+                                    <span className="text-sm text-gray-600">Direct flights only</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Error Message */}
                     {error && (
@@ -268,6 +337,18 @@ export function FlightSearchForm({ onSearch, isLoading, error }: FlightSearchFor
                         onClick={() => {
                             const today = new Date();
                             setDepartureDate(today.toISOString().split('T')[0]);
+                            if (fromAirport && toAirport) {
+                                onSearch({
+                                    fromId: fromAirport.id,
+                                    toId: toAirport.id,
+                                    departDate: today.toISOString().split('T')[0],
+                                    page: 1,
+                                    pageSize: 25,
+                                    cabinClass,
+                                    directFlightsOnly,
+                                    passengers
+                                });
+                            }
                         }}
                         className="text-gold hover:text-gold/90"
                     >
@@ -278,7 +359,20 @@ export function FlightSearchForm({ onSearch, isLoading, error }: FlightSearchFor
                         onClick={() => {
                             const tomorrow = new Date();
                             tomorrow.setDate(tomorrow.getDate() + 1);
-                            setDepartureDate(tomorrow.toISOString().split('T')[0]);
+                            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                            setDepartureDate(tomorrowStr);
+                            if (fromAirport && toAirport) {
+                                onSearch({
+                                    fromId: fromAirport.id,
+                                    toId: toAirport.id,
+                                    departDate: tomorrowStr,
+                                    page: 1,
+                                    pageSize: 25,
+                                    cabinClass,
+                                    directFlightsOnly,
+                                    passengers
+                                });
+                            }
                         }}
                         className="text-gold hover:text-gold/90"
                     >
@@ -289,7 +383,20 @@ export function FlightSearchForm({ onSearch, isLoading, error }: FlightSearchFor
                         onClick={() => {
                             const nextWeek = new Date();
                             nextWeek.setDate(nextWeek.getDate() + 7);
-                            setDepartureDate(nextWeek.toISOString().split('T')[0]);
+                            const nextWeekStr = nextWeek.toISOString().split('T')[0];
+                            setDepartureDate(nextWeekStr);
+                            if (fromAirport && toAirport) {
+                                onSearch({
+                                    fromId: fromAirport.id,
+                                    toId: toAirport.id,
+                                    departDate: nextWeekStr,
+                                    page: 1,
+                                    pageSize: 25,
+                                    cabinClass,
+                                    directFlightsOnly,
+                                    passengers
+                                });
+                            }
                         }}
                         className="text-gold hover:text-gold/90"
                     >
