@@ -8,6 +8,7 @@ import BookingConfirmation from './pages/BookingConfirmation';
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import GetStarted from './pages/GetStarted';
+import Account from './pages/Account';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="about-us" element={<AboutUs />} />
           <Route path="contact" element={<Contact />} />
           <Route path="get-started" element={<GetStarted />} />
+          <Route path="account" element={<Account />} />
         </Route>
       </Routes>
     </Router>

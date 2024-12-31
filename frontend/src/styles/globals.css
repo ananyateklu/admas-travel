@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  @keyframes flight {
+    0% {
+      transform: translateX(0%) translateY(-50%) rotate(15deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%) translateY(-50%) rotate(15deg);
+      opacity: 0;
+    }
+  }
+
+  .animate-flight {
+    animation: flight 3s ease-in-out infinite;
+  }
+}
+
+/* ... existing styles ... */

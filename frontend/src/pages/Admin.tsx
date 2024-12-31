@@ -16,22 +16,34 @@ type AdminTab = 'bookings' | 'flights' | 'analytics' | 'settings';
 export default function Admin() {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<AdminTab>('bookings');
+    const [activeTab, setActiveTab] = useState<AdminTab>(() => {
+        const savedTab = localStorage.getItem('adminActiveTab');
+        return (savedTab as AdminTab) || 'bookings';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('adminActiveTab', activeTab);
+    }, [activeTab]);
+
     const [bookings, setBookings] = useState<BookingData[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isBookingsLoading, setIsBookingsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [updateLoading, setUpdateLoading] = useState<string | null>(null);
 
+    // Check admin access
     useEffect(() => {
         if (!user || !ADMIN_EMAILS.includes(user.email || '')) {
             navigate('/');
-            return;
         }
+    }, [user, navigate]);
 
+    // Handle bookings data fetching
+    useEffect(() => {
         if (activeTab === 'bookings') {
+            setIsBookingsLoading(true);
             console.log('Admin - Setting up real-time listener');
             const bookingsRef = collection(db, 'bookings');
             const q = query(bookingsRef, orderBy('createdAt', 'desc'));
@@ -49,12 +61,12 @@ export default function Admin() {
                     }) as BookingData[];
 
                     setBookings(bookingsData);
-                    setIsLoading(false);
+                    setIsBookingsLoading(false);
                 },
                 (error) => {
                     console.error('Admin - Error fetching bookings:', error);
                     setError('Failed to load bookings');
-                    setIsLoading(false);
+                    setIsBookingsLoading(false);
                 }
             );
 
@@ -63,7 +75,7 @@ export default function Admin() {
                 unsubscribe();
             };
         }
-    }, [user, navigate, activeTab]);
+    }, [activeTab]);
 
     const handleStatusChange = async (bookingId: string, newStatus: string, userId: string) => {
         console.log('Admin - Updating status:', { bookingId, newStatus, userId });
@@ -130,13 +142,120 @@ export default function Admin() {
         return matchesStatus && matchesSearch;
     });
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-[calc(100vh-96px)] mt-[112px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gold border-t-transparent"></div>
-            </div>
-        );
-    }
+    // Main render content based on tab
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'bookings':
+                if (isBookingsLoading) {
+                    return (
+                        <div className="flex items-center justify-center min-h-[200px]">
+                            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gold border-t-transparent"></div>
+                        </div>
+                    );
+                }
+                return (
+                    <>
+                        <SearchFilters
+                            searchTerm={searchTerm}
+                            onSearchChange={setSearchTerm}
+                            statusFilter={statusFilter}
+                            onStatusFilterChange={setStatusFilter}
+                        />
+                        <div className="space-y-4">
+                            {filteredBookings.map(booking => (
+                                <BookingCard
+                                    key={booking.bookingId}
+                                    booking={booking}
+                                    isExpanded={expandedBookingId === booking.bookingId}
+                                    onToggleExpand={() => setExpandedBookingId(
+                                        expandedBookingId === booking.bookingId ? null : booking.bookingId
+                                    )}
+                                    onStatusChange={handleStatusChange}
+                                    updateLoading={updateLoading}
+                                />
+                            ))}
+
+                            {filteredBookings.length === 0 && (
+                                <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+                                    <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
+                                    <p className="text-gray-600">
+                                        {statusFilter === 'all'
+                                            ? 'There are no bookings to display.'
+                                            : `There are no ${statusFilter} bookings to display.`}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                );
+            case 'flights':
+                return <AdminFlights />;
+            case 'analytics':
+                return <AdminAnalytics bookings={bookings} />;
+            case 'settings':
+                return (
+                    <div className="bg-white rounded-xl shadow-sm p-8">
+                        <div className="max-w-2xl mx-auto">
+                            <h3 className="text-xl font-medium text-gray-900 mb-6">Admin Settings</h3>
+
+                            <div className="space-y-6">
+                                {/* Notification Settings */}
+                                <div className="border-b border-gray-200 pb-6">
+                                    <h4 className="text-lg font-medium text-gray-900 mb-4">Notification Preferences</h4>
+                                    <div className="space-y-4">
+                                        <label className="flex items-center justify-between">
+                                            <span className="text-gray-700">Email notifications for new bookings</span>
+                                            <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
+                                        </label>
+                                        <label className="flex items-center justify-between">
+                                            <span className="text-gray-700">SMS alerts for booking cancellations</span>
+                                            <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
+                                        </label>
+                                        <label className="flex items-center justify-between">
+                                            <span className="text-gray-700">Daily booking summary</span>
+                                            <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* API Integration Settings - Placeholder */}
+                                <div className="border-b border-gray-200 pb-6">
+                                    <h4 className="text-lg font-medium text-gray-900 mb-4">API Integration</h4>
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <p className="text-sm text-gray-600">
+                                            API integration settings will be available soon. This will allow you to
+                                            configure flight APIs and other third-party services.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Admin Access Control - Placeholder */}
+                                <div>
+                                    <h4 className="text-lg font-medium text-gray-900 mb-4">Access Control</h4>
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <p className="text-sm text-gray-600">
+                                            Admin access control settings will be available soon. This will allow you to
+                                            manage admin permissions and roles.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 flex justify-end">
+                                <button className="px-4 py-2 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="min-h-screen">
@@ -225,125 +344,7 @@ export default function Admin() {
                         </nav>
                     </div>
 
-                    {/* Tab Content */}
-                    {activeTab === 'bookings' && (
-                        <>
-                            <SearchFilters
-                                searchTerm={searchTerm}
-                                onSearchChange={setSearchTerm}
-                                statusFilter={statusFilter}
-                                onStatusFilterChange={setStatusFilter}
-                            />
-
-                            <div className="space-y-4">
-                                {filteredBookings.map(booking => (
-                                    <BookingCard
-                                        key={booking.bookingId}
-                                        booking={booking}
-                                        isExpanded={expandedBookingId === booking.bookingId}
-                                        onToggleExpand={() => setExpandedBookingId(
-                                            expandedBookingId === booking.bookingId ? null : booking.bookingId
-                                        )}
-                                        onStatusChange={handleStatusChange}
-                                        updateLoading={updateLoading}
-                                    />
-                                ))}
-
-                                {filteredBookings.length === 0 && (
-                                    <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-                                        <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                                        <p className="text-gray-600">
-                                            {statusFilter === 'all'
-                                                ? 'There are no bookings to display.'
-                                                : `There are no ${statusFilter} bookings to display.`}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </>
-                    )}
-
-                    {activeTab === 'flights' && (
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h2 className="text-2xl font-serif text-gray-900">Flight Management</h2>
-                                    <p className="text-gray-600">Search, manage, and monitor flight schedules and pricing</p>
-                                </div>
-                                <button className="px-4 py-2 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors flex items-center gap-2">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                    Add Flight
-                                </button>
-                            </div>
-                            <AdminFlights />
-                        </div>
-                    )}
-
-                    {activeTab === 'analytics' && (
-                        <AdminAnalytics bookings={bookings} />
-                    )}
-
-                    {activeTab === 'settings' && (
-                        <div className="bg-white rounded-xl shadow-sm p-8">
-                            <div className="max-w-2xl mx-auto">
-                                <h3 className="text-xl font-medium text-gray-900 mb-6">Admin Settings</h3>
-
-                                <div className="space-y-6">
-                                    {/* Notification Settings */}
-                                    <div className="border-b border-gray-200 pb-6">
-                                        <h4 className="text-lg font-medium text-gray-900 mb-4">Notification Preferences</h4>
-                                        <div className="space-y-4">
-                                            <label className="flex items-center justify-between">
-                                                <span className="text-gray-700">Email notifications for new bookings</span>
-                                                <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
-                                            </label>
-                                            <label className="flex items-center justify-between">
-                                                <span className="text-gray-700">SMS alerts for booking cancellations</span>
-                                                <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
-                                            </label>
-                                            <label className="flex items-center justify-between">
-                                                <span className="text-gray-700">Daily booking summary</span>
-                                                <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* API Integration Settings - Placeholder */}
-                                    <div className="border-b border-gray-200 pb-6">
-                                        <h4 className="text-lg font-medium text-gray-900 mb-4">API Integration</h4>
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <p className="text-sm text-gray-600">
-                                                API integration settings will be available soon. This will allow you to
-                                                configure flight APIs and other third-party services.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Admin Access Control - Placeholder */}
-                                    <div>
-                                        <h4 className="text-lg font-medium text-gray-900 mb-4">Access Control</h4>
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <p className="text-sm text-gray-600">
-                                                Admin access control settings will be available soon. This will allow you to
-                                                manage admin permissions and roles.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-8 flex justify-end">
-                                    <button className="px-4 py-2 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors">
-                                        Save Changes
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    {renderTabContent()}
                 </div>
             </div>
         </div>

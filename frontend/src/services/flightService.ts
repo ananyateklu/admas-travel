@@ -66,6 +66,12 @@ async function axiosWithRetry<T>(url: string, params?: Record<string, string>, r
     throw new Error('Max retries reached');
 }
 
+export const config = {
+    api: {
+        responseLimit: '8mb', // Increase response size limit
+    },
+};
+
 export interface Airport {
     id: string;
     name: string;
@@ -117,6 +123,28 @@ export interface Flight {
         legs: Array<{
             departureTime: string;
             arrivalTime: string;
+            departureAirport: {
+                type: string;
+                code: string;
+                name: string;
+                city: string;
+                cityName: string;
+                country: string;
+                countryName: string;
+                province?: string;
+                provinceCode?: string;
+            };
+            arrivalAirport: {
+                type: string;
+                code: string;
+                name: string;
+                city: string;
+                cityName: string;
+                country: string;
+                countryName: string;
+                province?: string;
+                provinceCode?: string;
+            };
             cabinClass: string;
             flightInfo: {
                 flightNumber: number;
@@ -140,11 +168,18 @@ export interface Flight {
             units: number;
             nanos: number;
         };
+        baseFare: {
+            currencyCode: string;
+            units: number;
+            nanos: number;
+        };
     };
-    brandedFareInfo: {
+    brandedFareInfo?: {
         fareName: string;
         cabinClass: string;
     };
+    isAtolProtected: boolean;
+    isVirtualInterlining: boolean;
 }
 
 interface FlightSearchResponse {
@@ -154,17 +189,21 @@ interface FlightSearchResponse {
         [key: string]: string | undefined;
     }>;
     data: {
-        flightOffers: Array<Flight>;
-        searchId: string;
-        aggregation: {
+        flightOffers?: Array<Flight>;
+        searchId?: string;
+        aggregation?: {
             totalCount: number;
             filteredTotalCount: number;
         };
-        baggagePolicies: Array<{
+        baggagePolicies?: Array<{
             code: string;
             name: string;
             url: string;
         }>;
+        error?: {
+            code: string;
+            requestId: string;
+        };
     };
 }
 
@@ -178,6 +217,17 @@ interface AirportSearchResponse {
     }>;
     status: boolean;
     message: string;
+}
+
+interface FlightSearchOptions {
+    fromId: string;
+    toId: string;
+    departDate: string;
+    page?: number;
+    pageSize?: number;
+    adults?: string;
+    children?: string;
+    cabinClass?: string;
 }
 
 export const flightService = {
@@ -214,47 +264,58 @@ export const flightService = {
         }
     },
 
-    searchFlights: async (
-        fromId: string,
-        toId: string,
-        departDate: string,
-        adults: string = '1',
-        children: string = '0',
-        cabinClass: string = 'ECONOMY'
-    ): Promise<Flight[]> => {
+    searchFlights: async (options: FlightSearchOptions): Promise<{ flights: Flight[], totalCount: number }> => {
         try {
+            const {
+                fromId,
+                toId,
+                departDate,
+                page = 1,
+                pageSize = 25,
+                adults = '1',
+                children = '0',
+                cabinClass = 'ECONOMY'
+            } = options;
+
             const formattedDate = new Date(departDate).toISOString().split('T')[0];
 
             const params = {
                 fromId: `${fromId}.AIRPORT`,
                 toId: `${toId}.AIRPORT`,
                 departDate: formattedDate,
-                pageNo: '1',
+                pageNo: page.toString(),
                 adults,
                 children,
                 sort: 'BEST',
                 cabinClass,
-                currency_code: 'USD'
+                currency_code: 'USD',
+                pageSize: pageSize.toString(),
+                limit: pageSize.toString(),
+                offset: ((page - 1) * pageSize).toString(),
+                maxResults: pageSize.toString()
             };
 
             const response = await axiosWithRetry<FlightSearchResponse>(
                 'https://booking-com15.p.rapidapi.com/api/v1/flights/searchFlights',
-                params
+                params,
+                5, // Increase retries
+                2000 // Increase backoff time for larger responses
             );
 
             console.log('Full API Response:', response);
             console.log('Data level:', response.data);
-            console.log('Flight offers:', response.data?.flightOffers);
 
-            if (!response.status) {
-                const errorMessage = response.message?.[0]?.departDate ?? 'Failed to search flights';
-                throw new Error(errorMessage);
+            // Check if there's an error in the response data
+            if (response.data?.error?.code === 'SEARCH_SEARCHFLIGHTS_NO_FLIGHTS_FOUND') {
+                return { flights: [], totalCount: 0 };
             }
 
+            // Check for flight offers
             const flights = response.data?.flightOffers || [];
+            const totalCount = response.data?.aggregation?.totalCount ?? 0;
             console.log('Parsed flights:', flights);
 
-            return flights;
+            return { flights, totalCount };
         } catch (error) {
             console.error('Error searching flights:', error);
             throw error;
