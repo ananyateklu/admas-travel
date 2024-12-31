@@ -4,6 +4,7 @@ import Footer from './Footer';
 import admasLogo from '../assets/admast.png';
 import { useAuth } from '../lib/firebase/useAuth';
 import { SignInDropdown } from './SignInDropdown';
+import { ConvaiChat } from './chat/ConvaiChat';
 
 export default function Layout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -248,6 +249,9 @@ export default function Layout() {
 
             {/* Footer */}
             <Footer />
+
+            {/* Chat Widget */}
+            <ConvaiChat agentId="k57XOhpbsRdgDr1Gxn1H" />
         </div>
     );
 } 

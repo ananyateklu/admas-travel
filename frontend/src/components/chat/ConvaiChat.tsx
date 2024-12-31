@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useAuth } from '../../lib/firebase/useAuth';
 
 // Declare global window property
@@ -19,6 +19,14 @@ function ConvaiChatComponent({ agentId, position = 'bottom-right' }: ConvaiChatP
 
     // Function to clean up chat elements
     const cleanupChat = React.useCallback(() => {
+        // Remove the script tag
+        const scriptElement = document.querySelector('script[src*="convai-widget"]');
+        if (scriptElement) {
+            document.body.removeChild(scriptElement);
+            window.convaiScriptLoaded = false;
+        }
+
+        // Remove the chat element
         const existingChat = document.querySelector('elevenlabs-convai');
         if (existingChat) {
             document.body.removeChild(existingChat);
@@ -27,15 +35,14 @@ function ConvaiChatComponent({ agentId, position = 'bottom-right' }: ConvaiChatP
     }, []);
 
     // Watch for user changes and cleanup when user logs out
-    React.useEffect(() => {
+    useEffect(() => {
         if (!user) {
             cleanupChat();
+            return;
         }
-    }, [user, cleanupChat]);
 
-    React.useEffect(() => {
         // Only proceed if user is logged in and not already initialized
-        if (!user || initialized.current) return;
+        if (initialized.current) return;
 
         const createChatElement = () => {
             const chatElement = document.createElement('elevenlabs-convai');

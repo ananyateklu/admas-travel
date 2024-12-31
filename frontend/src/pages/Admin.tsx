@@ -285,32 +285,34 @@ export default function Admin() {
                         <div className="absolute w-2 h-2 bg-white rounded-full top-1/2 left-3/4 animate-float" style={{ animationDelay: '1.5s' }} />
                     </div>
                 </div>
-                <div className="relative flex flex-col justify-center text-center pt-[220px]">
+                <div className="relative flex flex-col justify-center text-center pt-[260px]">
                     <div className="w-full max-w-[2000px] mx-auto px-4">
-                        <h1 className="text-4xl md:text-6xl font-serif text-white mb-12 tracking-tight motion-safe:animate-fade-in-up">
+                        <h1 className="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight motion-safe:animate-fade-in-up">
                             Admin Dashboard
                         </h1>
-                        <p className="text-xl text-white/90 motion-safe:animate-fade-in-up animation-delay-200 mb-24">
+                        <p className="text-xl text-white/90 motion-safe:animate-fade-in-up animation-delay-200 mb-16">
                             Manage and monitor all travel operations
                         </p>
 
                         {/* Quick stats */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-12 mb-32 motion-safe:animate-fade-in-up animation-delay-300">
-                            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors">
-                                <div className="text-2xl font-bold text-white">247</div>
-                                <div className="text-sm text-white/70">Active Bookings</div>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors">
-                                <div className="text-2xl font-bold text-white">89</div>
-                                <div className="text-sm text-white/70">Today's Flights</div>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors">
-                                <div className="text-2xl font-bold text-white">95%</div>
-                                <div className="text-sm text-white/70">Satisfaction</div>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors">
-                                <div className="text-2xl font-bold text-white">$52K</div>
-                                <div className="text-sm text-white/70">Revenue Today</div>
+                        <div className="w-[80%] max-w-[2000px] mx-auto">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-16 mt-8 mb-12 motion-safe:animate-fade-in-up animation-delay-300">
+                                <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
+                                    <div className="text-2xl font-bold text-gray-800">247</div>
+                                    <div className="text-sm text-gray-600">Active Bookings</div>
+                                </div>
+                                <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
+                                    <div className="text-2xl font-bold text-gray-800">89</div>
+                                    <div className="text-sm text-gray-600">Today's Flights</div>
+                                </div>
+                                <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
+                                    <div className="text-2xl font-bold text-gray-800">95%</div>
+                                    <div className="text-sm text-gray-600">Satisfaction</div>
+                                </div>
+                                <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
+                                    <div className="text-2xl font-bold text-gray-800">$52K</div>
+                                    <div className="text-sm text-gray-600">Revenue Today</div>
+                                </div>
                             </div>
                         </div>
 
