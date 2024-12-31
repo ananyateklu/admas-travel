@@ -172,6 +172,14 @@ export default function Book() {
                 status: 'pending',
                 totalPassengers: formData.adults + formData.children,
                 bookingReference: booking.bookingReference,
+                from: formData.from,
+                to: formData.to,
+                tripType: formData.tripType,
+                class: formData.class,
+                contactName: formData.contactName,
+                contactEmail: formData.contactEmail,
+                contactPhone: formData.contactPhone,
+                passengers: formData.passengers
             });
 
             // Navigate to success page
