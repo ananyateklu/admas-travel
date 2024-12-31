@@ -460,6 +460,16 @@ export function Book() {
                                             />
                                         </div>
                                         <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                                            <input
+                                                type="date"
+                                                value={passenger.dateOfBirth}
+                                                onChange={(e) => handlePassengerChange(index, 'dateOfBirth', e.target.value)}
+                                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Nationality</label>
                                             <input
                                                 type="text"
