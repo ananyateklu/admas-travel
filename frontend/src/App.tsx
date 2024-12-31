@@ -5,7 +5,7 @@ import { Book } from './pages/Book';
 import Admin from './pages/Admin';
 import { Bookings } from './pages/Bookings';
 import BookingConfirmation from './pages/BookingConfirmation';
-import About from './pages/About';
+import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import GetStarted from './pages/GetStarted';
 
@@ -19,7 +19,7 @@ function App() {
           <Route path="admin" element={<Admin />} />
           <Route path="bookings" element={<Bookings />} />
           <Route path="booking-confirmation/:bookingId" element={<BookingConfirmation />} />
-          <Route path="about-us" element={<About />} />
+          <Route path="about-us" element={<AboutUs />} />
           <Route path="contact" element={<Contact />} />
           <Route path="get-started" element={<GetStarted />} />
         </Route>
