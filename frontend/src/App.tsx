@@ -3,7 +3,7 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Trips from './pages/Trips';
 import AboutUs from './pages/AboutUs';
-import Book from './pages/Book';
+import { Book } from './pages/Book';
 import Contact from './pages/Contact';
 import GetStarted from './pages/GetStarted';
 import Account from './pages/Account';

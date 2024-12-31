@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import Footer from './Footer';
 import admasLogo from '../assets/admast.png';
-import { useAuth } from '../lib/firebase/AuthContext';
+import { useAuth } from '../lib/firebase/useAuth';
 import { SignInDropdown } from './SignInDropdown';
 
 export default function Layout() {

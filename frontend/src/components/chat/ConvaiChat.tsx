@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useAuth } from '../../lib/firebase/AuthContext';
+import { useAuth } from '../../lib/firebase/useAuth';
 
 // Declare global window property
 declare global {

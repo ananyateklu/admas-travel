@@ -1,4 +1,4 @@
-import { useAuth } from '../lib/firebase/AuthContext';
+import { useAuth } from '../lib/firebase/useAuth';
 
 interface SignInDropdownProps {
     isOpen: boolean;

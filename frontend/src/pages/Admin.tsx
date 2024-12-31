@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../lib/firebase/AuthContext';
+import { useAuth } from '../lib/firebase/useAuth';
 import { collection, query, orderBy, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -35,6 +35,15 @@ interface BookingData {
 
 const ADMIN_EMAILS = ['ananya.meseret@gmail.com'];
 const BOOKING_STATUSES = ['pending', 'confirmed', 'cancelled', 'completed'];
+
+const getStatusStyle = (status: string) => {
+    switch (status) {
+        case 'confirmed': return 'bg-green-100 border-green-300';
+        case 'cancelled': return 'bg-red-100 border-red-300';
+        case 'completed': return 'bg-blue-100 border-blue-300';
+        default: return 'bg-yellow-100 border-yellow-300';
+    }
+};
 
 export default function Admin() {
     const { user } = useAuth();
@@ -195,11 +204,7 @@ export default function Admin() {
                                             value={booking.status}
                                             onChange={(e) => handleStatusChange(booking.bookingId, e.target.value, booking.userId)}
                                             disabled={updateLoading === booking.bookingId}
-                                            className={`px-3 py-2 rounded border ${booking.status === 'confirmed' ? 'bg-green-100 border-green-300' :
-                                                booking.status === 'cancelled' ? 'bg-red-100 border-red-300' :
-                                                    booking.status === 'completed' ? 'bg-blue-100 border-blue-300' :
-                                                        'bg-yellow-100 border-yellow-300'
-                                                }`}
+                                            className={`px-3 py-2 rounded border ${getStatusStyle(booking.status)}`}
                                         >
                                             {BOOKING_STATUSES.map(status => (
                                                 <option key={status} value={status}>
@@ -244,8 +249,8 @@ export default function Admin() {
                                     <div className="mt-4">
                                         <h4 className="font-semibold mb-2">Passengers ({booking.totalPassengers})</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {booking.passengers.map((passenger, index) => (
-                                                <div key={index} className="border rounded p-3">
+                                            {booking.passengers.map((passenger) => (
+                                                <div key={`${passenger.passportNumber}-${passenger.fullName}`} className="border rounded p-3">
                                                     <p className="font-medium">{passenger.fullName}</p>
                                                     <p className="text-sm text-gray-600">Type: {passenger.type}</p>
                                                     <p className="text-sm text-gray-600">Nationality: {passenger.nationality}</p>

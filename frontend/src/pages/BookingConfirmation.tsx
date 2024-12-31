@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { useAuth } from '../lib/firebase/AuthContext';
+import { useAuth } from '../lib/firebase/useAuth';
 
 interface BookingData {
     userId: string;

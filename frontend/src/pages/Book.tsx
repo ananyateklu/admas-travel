@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../lib/firebase/AuthContext';
-import { addDoc, collection, serverTimestamp, setDoc, doc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/firebase/useAuth';
+import { db } from '../lib/firebase';
+import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { toast } from 'react-hot-toast';
 import airplaineWindow from '../assets/airplaine-window.jpg';
 
 interface PassengerInfo {
@@ -12,15 +13,6 @@ interface PassengerInfo {
     passportNumber: string;
     passportExpiry: string;
     nationality: string;
-}
-
-interface UserProfile {
-    displayName: string | null;
-    email: string | null;
-    phone: string;
-    nationality: string;
-    passportNumber: string;
-    passportExpiry: string;
 }
 
 interface BookingFormData {
@@ -39,11 +31,20 @@ interface BookingFormData {
     specialRequests?: string;
 }
 
-export default function Book() {
-    const { user } = useAuth();
+interface UserProfile {
+    displayName: string;
+    email: string;
+    phone: string;
+    nationality: string;
+    passportNumber: string;
+    passportExpiry: string;
+}
+
+export function Book() {
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState<BookingFormData>({
         tripType: 'roundtrip',
         from: '',
@@ -55,56 +56,69 @@ export default function Book() {
         class: 'economy',
         passengers: [{
             type: 'adult',
-            fullName: user?.displayName ?? '',
+            fullName: '',
             dateOfBirth: '',
             passportNumber: '',
             passportExpiry: '',
             nationality: ''
         }],
-        contactName: user?.displayName ?? '',
-        contactEmail: user?.email ?? '',
+        contactName: '',
+        contactEmail: '',
         contactPhone: '',
         specialRequests: ''
     });
+    const passengersRef = useRef(formData.passengers);
 
-    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    useEffect(() => {
+        passengersRef.current = formData.passengers;
+    }, [formData.passengers]);
 
     // Fetch user profile data when component mounts
     useEffect(() => {
         const fetchUserProfile = async () => {
             if (user) {
-                // Here you would typically fetch the user's profile from your backend
-                // For now, we'll use mock data
-                const mockProfile: UserProfile = {
-                    displayName: user.displayName,
-                    email: user.email,
-                    phone: '',
-                    nationality: '',
-                    passportNumber: '',
-                    passportExpiry: '',
-                };
-                setUserProfile(mockProfile);
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        const profileData = userDoc.data() as UserProfile;
+                        setUserProfile(profileData);
+
+                        // Initialize form with user profile data
+                        setFormData(prev => ({
+                            ...prev,
+                            contactName: profileData.displayName ?? user.displayName ?? '',
+                            contactEmail: profileData.email ?? user.email ?? '',
+                            contactPhone: profileData.phone ?? '',
+                            passengers: [{
+                                ...prev.passengers[0],
+                                fullName: profileData.displayName ?? user.displayName ?? '',
+                                nationality: profileData.nationality ?? '',
+                                passportNumber: profileData.passportNumber ?? '',
+                                passportExpiry: profileData.passportExpiry ?? '',
+                                type: 'adult'
+                            }]
+                        }));
+                    } else {
+                        // Initialize with basic user data if no profile exists
+                        setFormData(prev => ({
+                            ...prev,
+                            contactName: user.displayName ?? '',
+                            contactEmail: user.email ?? '',
+                            passengers: [{
+                                ...prev.passengers[0],
+                                fullName: user.displayName ?? '',
+                                type: 'adult'
+                            }]
+                        }));
+                    }
+                } catch (error) {
+                    console.error('Error fetching user profile:', error);
+                }
             }
         };
+
         fetchUserProfile();
     }, [user]);
-
-    // Update form data when user data changes
-    useEffect(() => {
-        if (user) {
-            setFormData(prev => ({
-                ...prev,
-                contactName: user.displayName ?? prev.contactName,
-                contactEmail: user.email ?? prev.contactEmail,
-                passengers: prev.passengers.map((passenger, index) =>
-                    index === 0 ? { ...passenger, fullName: user.displayName ?? passenger.fullName } : passenger
-                )
-            }));
-        }
-    }, [user]);
-
-    const passengersRef = useRef(formData.passengers);
-    passengersRef.current = formData.passengers;
 
     useEffect(() => {
         // Create new array of passengers
@@ -139,40 +153,47 @@ export default function Book() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!user) {
-            setError('Please sign in to make a booking');
+            toast.error('Please sign in to make a booking');
             return;
         }
 
         try {
             setIsSubmitting(true);
-            setError(null);
 
-            // Create the booking object
-            const booking = {
-                ...formData,
+            // Save user profile data
+            await setDoc(doc(db, 'users', user.uid), {
+                displayName: formData.contactName,
+                email: formData.contactEmail,
+                phone: formData.contactPhone,
+                nationality: formData.passengers[0].nationality,
+                passportNumber: formData.passengers[0].passportNumber,
+                passportExpiry: formData.passengers[0].passportExpiry
+            }, { merge: true });
+
+            // Create booking document
+            const bookingRef = await addDoc(collection(db, 'bookings'), {
                 userId: user.uid,
+                userEmail: user.email,
+                ...formData,
                 status: 'pending',
-                createdAt: serverTimestamp(),
-                totalPassengers: formData.adults + formData.children,
-                bookingReference: `BK${Date.now().toString(36).toUpperCase()}`,
-            };
-
-            // Save to Firestore
-            const bookingRef = await addDoc(collection(db, 'bookings'), booking);
-
-            // Also save in the user's bookings subcollection with the same ID
-            await setDoc(doc(db, `users/${user.uid}/bookings`, bookingRef.id), {
-                ...booking,
-                bookingId: bookingRef.id
+                createdAt: new Date().toISOString()
             });
 
-            // Navigate to success page
-            navigate(`/booking-confirmation/${bookingRef.id}`);
-        } catch (err) {
-            console.error('Error saving booking:', err);
-            setError('Failed to save booking. Please try again.');
+            // Add booking to user's bookings subcollection
+            await setDoc(doc(db, 'users', user.uid, 'bookings', bookingRef.id), {
+                userId: user.uid,
+                userEmail: user.email,
+                ...formData,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            });
+
+            toast.success('Booking submitted successfully!');
+            navigate('/bookings');
+        } catch (error) {
+            console.error('Error submitting booking:', error);
+            toast.error('Failed to submit booking. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -240,6 +261,26 @@ export default function Book() {
         }
     };
 
+    const handleAutoFillPassenger = (index: number) => {
+        if (user && userProfile) {
+            setFormData(prev => {
+                const newPassengers = [...prev.passengers];
+                newPassengers[index] = {
+                    ...newPassengers[index],
+                    fullName: userProfile.displayName || '',
+                    nationality: userProfile.nationality || '',
+                    passportNumber: userProfile.passportNumber || '',
+                    passportExpiry: userProfile.passportExpiry || '',
+                    type: 'adult'
+                };
+                return {
+                    ...prev,
+                    passengers: newPassengers
+                };
+            });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
@@ -264,12 +305,6 @@ export default function Book() {
             <section className="py-16">
                 <div className="max-w-4xl mx-auto px-4">
                     <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8">
-                        {error && (
-                            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg">
-                                {error}
-                            </div>
-                        )}
-
                         {/* Trip Type */}
                         <div className="mb-8">
                             <h3 className="text-lg font-semibold mb-4">Trip Type</h3>
@@ -405,14 +440,14 @@ export default function Book() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <div className="flex justify-between items-center mb-2">
-                                                <label className="block text-sm font-medium text-gray-700">Full Name (as in passport)</label>
-                                                {user && (
+                                                <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                                                {index === 0 && user && (
                                                     <button
                                                         type="button"
-                                                        onClick={() => handlePassengerChange(index, 'fullName', userProfile?.displayName ?? '')}
+                                                        onClick={() => handleAutoFillPassenger(index)}
                                                         className="text-sm text-gold hover:text-gold/80 transition-colors"
                                                     >
-                                                        Use My Name
+                                                        Use My Information
                                                     </button>
                                                 )}
                                             </div>
@@ -425,28 +460,17 @@ export default function Book() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Nationality</label>
                                             <input
-                                                type="date"
-                                                value={passenger.dateOfBirth}
-                                                onChange={(e) => handlePassengerChange(index, 'dateOfBirth', e.target.value)}
+                                                type="text"
+                                                value={passenger.nationality}
+                                                onChange={(e) => handlePassengerChange(index, 'nationality', e.target.value)}
                                                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
                                                 required
                                             />
                                         </div>
                                         <div>
-                                            <div className="flex justify-between items-center mb-2">
-                                                <label className="block text-sm font-medium text-gray-700">Passport Number</label>
-                                                {user && userProfile?.passportNumber && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handlePassengerChange(index, 'passportNumber', userProfile.passportNumber)}
-                                                        className="text-sm text-gold hover:text-gold/80 transition-colors"
-                                                    >
-                                                        Use My Passport
-                                                    </button>
-                                                )}
-                                            </div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Passport Number</label>
                                             <input
                                                 type="text"
                                                 value={passenger.passportNumber}
@@ -456,43 +480,11 @@ export default function Book() {
                                             />
                                         </div>
                                         <div>
-                                            <div className="flex justify-between items-center mb-2">
-                                                <label className="block text-sm font-medium text-gray-700">Passport Expiry Date</label>
-                                                {user && userProfile?.passportExpiry && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handlePassengerChange(index, 'passportExpiry', userProfile.passportExpiry)}
-                                                        className="text-sm text-gold hover:text-gold/80 transition-colors"
-                                                    >
-                                                        Use My Expiry
-                                                    </button>
-                                                )}
-                                            </div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Passport Expiry Date</label>
                                             <input
                                                 type="date"
                                                 value={passenger.passportExpiry}
                                                 onChange={(e) => handlePassengerChange(index, 'passportExpiry', e.target.value)}
-                                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                                                required
-                                            />
-                                        </div>
-                                        <div>
-                                            <div className="flex justify-between items-center mb-2">
-                                                <label className="block text-sm font-medium text-gray-700">Nationality</label>
-                                                {user && userProfile?.nationality && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handlePassengerChange(index, 'nationality', userProfile.nationality)}
-                                                        className="text-sm text-gold hover:text-gold/80 transition-colors"
-                                                    >
-                                                        Use My Nationality
-                                                    </button>
-                                                )}
-                                            </div>
-                                            <input
-                                                type="text"
-                                                value={passenger.nationality}
-                                                onChange={(e) => handlePassengerChange(index, 'nationality', e.target.value)}
                                                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
                                                 required
                                             />

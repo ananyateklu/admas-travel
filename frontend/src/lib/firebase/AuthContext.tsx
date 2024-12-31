@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState, useMemo } from 'react';
 import {
     GoogleAuthProvider,
     User,
@@ -65,17 +65,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const contextValue = useMemo(
+        () => ({ user, loading, signInWithGoogle, signOut }),
+        [user, loading]
+    );
+
     return (
-        <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
+        <AuthContext.Provider value={contextValue}>
             {!loading && children}
         </AuthContext.Provider>
     );
 }
 
-export function useAuth() {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-} 
+export { AuthContext }; 
