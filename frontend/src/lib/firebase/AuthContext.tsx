@@ -8,7 +8,7 @@ import {
     browserPopupRedirectResolver,
     AuthError
 } from 'firebase/auth';
-import { auth } from './config';
+import { auth } from './firebase';
 
 interface AuthContextType {
     user: User | null;

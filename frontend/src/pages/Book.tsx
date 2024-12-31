@@ -1,4 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../lib/firebase/AuthContext';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { useNavigate } from 'react-router-dom';
 import airplaineWindow from '../assets/airplaine-window.jpg';
 
 interface PassengerInfo {
@@ -8,6 +12,15 @@ interface PassengerInfo {
     passportNumber: string;
     passportExpiry: string;
     nationality: string;
+}
+
+interface UserProfile {
+    displayName: string | null;
+    email: string | null;
+    phone: string;
+    nationality: string;
+    passportNumber: string;
+    passportExpiry: string;
 }
 
 interface BookingFormData {
@@ -27,6 +40,10 @@ interface BookingFormData {
 }
 
 export default function Book() {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState<BookingFormData>({
         tripType: 'roundtrip',
         from: '',
@@ -38,17 +55,53 @@ export default function Book() {
         class: 'economy',
         passengers: [{
             type: 'adult',
-            fullName: '',
+            fullName: user?.displayName ?? '',
             dateOfBirth: '',
             passportNumber: '',
             passportExpiry: '',
             nationality: ''
         }],
-        contactName: '',
-        contactEmail: '',
+        contactName: user?.displayName ?? '',
+        contactEmail: user?.email ?? '',
         contactPhone: '',
         specialRequests: ''
     });
+
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+    // Fetch user profile data when component mounts
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            if (user) {
+                // Here you would typically fetch the user's profile from your backend
+                // For now, we'll use mock data
+                const mockProfile: UserProfile = {
+                    displayName: user.displayName,
+                    email: user.email,
+                    phone: '',
+                    nationality: '',
+                    passportNumber: '',
+                    passportExpiry: '',
+                };
+                setUserProfile(mockProfile);
+            }
+        };
+        fetchUserProfile();
+    }, [user]);
+
+    // Update form data when user data changes
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                contactName: user.displayName ?? prev.contactName,
+                contactEmail: user.email ?? prev.contactEmail,
+                passengers: prev.passengers.map((passenger, index) =>
+                    index === 0 ? { ...passenger, fullName: user.displayName ?? passenger.fullName } : passenger
+                )
+            }));
+        }
+    }, [user]);
 
     const passengersRef = useRef(formData.passengers);
     passengersRef.current = formData.passengers;
@@ -84,10 +137,51 @@ export default function Book() {
         setFormData(prev => ({ ...prev, passengers: newPassengers }));
     }, [formData.adults, formData.children]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission here
-        console.log('Form submitted:', formData);
+
+        if (!user) {
+            setError('Please sign in to make a booking');
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            setError(null);
+
+            // Create the booking object
+            const booking = {
+                ...formData,
+                userId: user.uid,
+                status: 'pending',
+                createdAt: serverTimestamp(),
+                totalPassengers: formData.adults + formData.children,
+                bookingReference: `BK${Date.now().toString(36).toUpperCase()}`,
+            };
+
+            // Save to Firestore
+            const bookingRef = await addDoc(collection(db, 'bookings'), booking);
+
+            // Also save a reference in the user's bookings subcollection
+            await addDoc(collection(db, `users/${user.uid}/bookings`), {
+                bookingId: bookingRef.id,
+                createdAt: serverTimestamp(),
+                destination: formData.to,
+                departureDate: formData.departureDate,
+                returnDate: formData.returnDate,
+                status: 'pending',
+                totalPassengers: formData.adults + formData.children,
+                bookingReference: booking.bookingReference,
+            });
+
+            // Navigate to success page
+            navigate(`/booking-confirmation/${bookingRef.id}`);
+        } catch (err) {
+            console.error('Error saving booking:', err);
+            setError('Failed to save booking. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -141,6 +235,17 @@ export default function Book() {
         };
     }, []);
 
+    const handleAutoFillContact = (field: 'name' | 'email' | 'phone') => {
+        if (user && userProfile) {
+            setFormData(prev => ({
+                ...prev,
+                contactName: field === 'name' ? (userProfile.displayName ?? '') : prev.contactName,
+                contactEmail: field === 'email' ? (userProfile.email ?? '') : prev.contactEmail,
+                contactPhone: field === 'phone' ? userProfile.phone : prev.contactPhone,
+            }));
+        }
+    };
+
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
@@ -165,6 +270,12 @@ export default function Book() {
             <section className="py-16">
                 <div className="max-w-4xl mx-auto px-4">
                     <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8">
+                        {error && (
+                            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg">
+                                {error}
+                            </div>
+                        )}
+
                         {/* Trip Type */}
                         <div className="mb-8">
                             <h3 className="text-lg font-semibold mb-4">Trip Type</h3>
@@ -299,7 +410,18 @@ export default function Book() {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name (as in passport)</label>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm font-medium text-gray-700">Full Name (as in passport)</label>
+                                                {user && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handlePassengerChange(index, 'fullName', userProfile?.displayName ?? '')}
+                                                        className="text-sm text-gold hover:text-gold/80 transition-colors"
+                                                    >
+                                                        Use My Name
+                                                    </button>
+                                                )}
+                                            </div>
                                             <input
                                                 type="text"
                                                 value={passenger.fullName}
@@ -319,7 +441,18 @@ export default function Book() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Passport Number</label>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm font-medium text-gray-700">Passport Number</label>
+                                                {user && userProfile?.passportNumber && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handlePassengerChange(index, 'passportNumber', userProfile.passportNumber)}
+                                                        className="text-sm text-gold hover:text-gold/80 transition-colors"
+                                                    >
+                                                        Use My Passport
+                                                    </button>
+                                                )}
+                                            </div>
                                             <input
                                                 type="text"
                                                 value={passenger.passportNumber}
@@ -329,7 +462,18 @@ export default function Book() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Passport Expiry Date</label>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm font-medium text-gray-700">Passport Expiry Date</label>
+                                                {user && userProfile?.passportExpiry && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handlePassengerChange(index, 'passportExpiry', userProfile.passportExpiry)}
+                                                        className="text-sm text-gold hover:text-gold/80 transition-colors"
+                                                    >
+                                                        Use My Expiry
+                                                    </button>
+                                                )}
+                                            </div>
                                             <input
                                                 type="date"
                                                 value={passenger.passportExpiry}
@@ -339,7 +483,18 @@ export default function Book() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Nationality</label>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm font-medium text-gray-700">Nationality</label>
+                                                {user && userProfile?.nationality && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handlePassengerChange(index, 'nationality', userProfile.nationality)}
+                                                        className="text-sm text-gold hover:text-gold/80 transition-colors"
+                                                    >
+                                                        Use My Nationality
+                                                    </button>
+                                                )}
+                                            </div>
                                             <input
                                                 type="text"
                                                 value={passenger.nationality}
@@ -358,7 +513,18 @@ export default function Book() {
                             <h3 className="text-lg font-semibold mb-4">Contact Information</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                                        {user && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAutoFillContact('name')}
+                                                className="text-sm text-gold hover:text-gold/80 transition-colors"
+                                            >
+                                                Use My Name
+                                            </button>
+                                        )}
+                                    </div>
                                     <input
                                         type="text"
                                         name="contactName"
@@ -369,7 +535,18 @@ export default function Book() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block text-sm font-medium text-gray-700">Email</label>
+                                        {user && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAutoFillContact('email')}
+                                                className="text-sm text-gold hover:text-gold/80 transition-colors"
+                                            >
+                                                Use My Email
+                                            </button>
+                                        )}
+                                    </div>
                                     <input
                                         type="email"
                                         name="contactEmail"
@@ -380,7 +557,18 @@ export default function Book() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="block text-sm font-medium text-gray-700">Phone</label>
+                                        {user && (
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAutoFillContact('phone')}
+                                                className="text-sm text-gold hover:text-gold/80 transition-colors"
+                                            >
+                                                Use My Phone
+                                            </button>
+                                        )}
+                                    </div>
                                     <input
                                         type="tel"
                                         name="contactPhone"
@@ -407,9 +595,10 @@ export default function Book() {
                         <div className="text-center">
                             <button
                                 type="submit"
-                                className="px-8 py-3 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors"
+                                disabled={isSubmitting}
+                                className="px-8 py-3 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Submit Booking Request
+                                {isSubmitting ? 'Submitting...' : 'Submit Booking Request'}
                             </button>
                         </div>
                     </form>
