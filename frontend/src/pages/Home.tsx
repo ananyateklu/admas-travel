@@ -417,8 +417,7 @@ export default function Home() {
                 {/* Title Overlay */}
                 <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/60 via-black/30 to-transparent pt-32 pb-16">
                     <div className="max-w-7xl mx-auto px-8">
-                        <p className="text-yellow-400 text-sm tracking-wider mb-4">ADMAS TRAVEL</p>
-                        <h2 className="font-serif text-4xl text-white">Travel the World with Leading Airlines</h2>
+                        <h2 className="text-yellow-400 font-serif text-4xl text-white">Travel the World with Leading Airlines</h2>
                         <p className="text-white/80 mt-4 max-w-2xl">Experience exceptional service and worldwide connectivity with our carefully selected airline partners</p>
                     </div>
                 </div>

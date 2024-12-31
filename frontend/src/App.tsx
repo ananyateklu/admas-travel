@@ -7,7 +7,7 @@ import { Book } from './pages/Book';
 import Contact from './pages/Contact';
 import GetStarted from './pages/GetStarted';
 import Account from './pages/Account';
-import Bookings from './pages/Bookings';
+import { Bookings } from './pages/Bookings';
 import BookingConfirmation from './pages/BookingConfirmation';
 import Admin from './pages/Admin';
 import { AuthProvider } from './lib/firebase/AuthContext';
