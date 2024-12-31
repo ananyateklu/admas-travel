@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../lib/firebase/AuthContext';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, setDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import airplaineWindow from '../assets/airplaine-window.jpg';
@@ -162,24 +162,10 @@ export default function Book() {
             // Save to Firestore
             const bookingRef = await addDoc(collection(db, 'bookings'), booking);
 
-            // Also save a reference in the user's bookings subcollection
-            await addDoc(collection(db, `users/${user.uid}/bookings`), {
-                bookingId: bookingRef.id,
-                createdAt: serverTimestamp(),
-                destination: formData.to,
-                departureDate: formData.departureDate,
-                returnDate: formData.returnDate,
-                status: 'pending',
-                totalPassengers: formData.adults + formData.children,
-                bookingReference: booking.bookingReference,
-                from: formData.from,
-                to: formData.to,
-                tripType: formData.tripType,
-                class: formData.class,
-                contactName: formData.contactName,
-                contactEmail: formData.contactEmail,
-                contactPhone: formData.contactPhone,
-                passengers: formData.passengers
+            // Also save in the user's bookings subcollection with the same ID
+            await setDoc(doc(db, `users/${user.uid}/bookings`, bookingRef.id), {
+                ...booking,
+                bookingId: bookingRef.id
             });
 
             // Navigate to success page

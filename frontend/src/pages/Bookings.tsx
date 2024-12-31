@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../lib/firebase/AuthContext';
-import { collection, query, getDocs, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Link } from 'react-router-dom';
 
@@ -33,11 +33,15 @@ interface BookingData {
 }
 
 const getStatusStyle = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
         case 'pending':
             return 'bg-yellow-100 text-yellow-800';
         case 'confirmed':
             return 'bg-green-100 text-green-800';
+        case 'cancelled':
+            return 'bg-red-100 text-red-800';
+        case 'completed':
+            return 'bg-blue-100 text-blue-800';
         default:
             return 'bg-gray-100 text-gray-800';
     }
@@ -52,41 +56,50 @@ export default function Bookings() {
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchBookings = async () => {
-            if (!user) {
-                setError('Please sign in to view your bookings');
-                setIsLoading(false);
-                return;
-            }
+        if (!user) {
+            setError('Please sign in to view your bookings');
+            setIsLoading(false);
+            return;
+        }
 
-            try {
-                const bookingsRef = collection(db, `users/${user.uid}/bookings`);
-                const q = query(bookingsRef, orderBy('createdAt', 'desc'));
-                const querySnapshot = await getDocs(q);
+        console.log('Setting up real-time listener for user:', user.uid);
 
-                const bookingsPromises = querySnapshot.docs.map(async doc => {
+        // Set up real-time listener
+        const bookingsRef = collection(db, `users/${user.uid}/bookings`);
+        const q = query(bookingsRef, orderBy('createdAt', 'desc'));
+
+        const unsubscribe = onSnapshot(q,
+            (snapshot) => {
+                const bookingsData = snapshot.docs.map(doc => {
                     const data = doc.data();
+                    console.log('Received booking update:', doc.id, data.status);
                     return {
                         ...data,
                         bookingId: doc.id,
                         createdAt: data.createdAt?.toDate() || new Date(),
                         departureDate: data.departureDate || '',
                         returnDate: data.returnDate || '',
-                        passengers: data.passengers || []
+                        passengers: data.passengers || [],
+                        status: data.status || 'pending'
                     } as BookingData;
                 });
 
-                const bookingsData = await Promise.all(bookingsPromises);
+                console.log('Updated bookings:', bookingsData);
                 setBookings(bookingsData);
-            } catch (err) {
+                setIsLoading(false);
+            },
+            (err) => {
                 console.error('Error fetching bookings:', err);
                 setError('Failed to load bookings. Please try again later.');
-            } finally {
                 setIsLoading(false);
             }
-        };
+        );
 
-        fetchBookings();
+        // Cleanup subscription on unmount
+        return () => {
+            console.log('Cleaning up listener');
+            unsubscribe();
+        };
     }, [user]);
 
     const handleDelete = async (bookingId: string) => {
@@ -100,6 +113,9 @@ export default function Bookings() {
 
             // Delete from user's bookings subcollection
             await deleteDoc(doc(db, `users/${user.uid}/bookings`, bookingId));
+
+            // Also delete from root bookings collection
+            await deleteDoc(doc(db, 'bookings', bookingId));
 
             // Update local state
             setBookings(prev => prev.filter(b => b.bookingId !== bookingId));
@@ -239,8 +255,11 @@ export default function Bookings() {
                                         <div>
                                             <div className="flex items-center gap-3 mb-2">
                                                 <h3 className="text-xl font-semibold text-gray-900">{booking.destination}</h3>
-                                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusStyle(booking.status)}`}>
-                                                    {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                                <span
+                                                    className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusStyle(booking.status)}`}
+                                                    title={`Current Status: ${booking.status}`}
+                                                >
+                                                    {booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'Pending'}
                                                 </span>
                                             </div>
                                             <p className="text-gray-600 mb-2">

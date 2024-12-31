@@ -9,6 +9,7 @@ import GetStarted from './pages/GetStarted';
 import Account from './pages/Account';
 import Bookings from './pages/Bookings';
 import BookingConfirmation from './pages/BookingConfirmation';
+import Admin from './pages/Admin';
 import { AuthProvider } from './lib/firebase/AuthContext';
 import { ConvaiChat } from './components/chat/ConvaiChat';
 import './App.css';
@@ -28,6 +29,7 @@ function App() {
             <Route path="account" element={<Account />} />
             <Route path="booking-confirmation/:bookingId" element={<BookingConfirmation />} />
             <Route path="bookings" element={<Bookings />} />
+            <Route path="admin" element={<Admin />} />
             <Route path="*" element={<div className="pt-32">404 - Page Not Found</div>} />
           </Route>
         </Routes>
