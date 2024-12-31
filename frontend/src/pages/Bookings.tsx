@@ -34,7 +34,7 @@ interface BookingData {
     }>;
 }
 
-type BookingStatus = 'upcoming' | 'pending' | 'recurring' | 'past' | 'cancelled';
+type BookingStatus = 'upcoming' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 type TabType = 'details' | 'passengers' | 'contact';
 
 interface StatusOption {
@@ -47,6 +47,17 @@ interface StatusOption {
         connector: string;
     };
 }
+
+// Add status mapping helper
+const mapStatusFromDb = (dbStatus: string): BookingStatus => {
+    // If the booking is cancelled, always show as cancelled
+    if (dbStatus === 'cancelled') {
+        return 'cancelled';
+    }
+
+    // Return the original status without date-based modifications
+    return dbStatus as BookingStatus;
+};
 
 const STATUS_OPTIONS: StatusOption[] = [
     {
@@ -78,31 +89,31 @@ const STATUS_OPTIONS: StatusOption[] = [
         }
     },
     {
-        value: 'recurring',
-        label: 'Recurring',
+        value: 'confirmed',
+        label: 'Confirmed',
         icon: (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-        ),
-        colors: {
-            active: 'border-purple-500 bg-purple-500 text-white',
-            completed: 'border-purple-500 bg-purple-50 text-purple-600',
-            connector: 'purple-500'
-        }
-    },
-    {
-        value: 'past',
-        label: 'Past',
-        icon: (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
         ),
         colors: {
             active: 'border-emerald-500 bg-emerald-500 text-white',
             completed: 'border-emerald-500 bg-emerald-50 text-emerald-600',
             connector: 'emerald-500'
+        }
+    },
+    {
+        value: 'completed',
+        label: 'Completed',
+        icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        ),
+        colors: {
+            active: 'border-purple-500 bg-purple-500 text-white',
+            completed: 'border-purple-500 bg-purple-50 text-purple-600',
+            connector: 'purple-500'
         }
     },
     {
@@ -170,6 +181,10 @@ const formatDate = (date: string | { toDate: () => Date } | Date) => {
     }
 };
 
+const getStatusText = (status: string) => {
+    return status.charAt(0).toUpperCase() + status.slice(1);
+};
+
 export function Bookings() {
     const { user } = useAuth();
     const [bookings, setBookings] = useState<BookingData[]>([]);
@@ -208,7 +223,7 @@ export function Bookings() {
                         departureDate: data.departureDate || '',
                         returnDate: data.returnDate || '',
                         passengers: data.passengers || [],
-                        status: data.status || 'pending'
+                        status: mapStatusFromDb(data.status || 'pending')
                     } as BookingData;
                 });
 
@@ -258,17 +273,43 @@ export function Bookings() {
     };
 
     // Filter bookings based on selected status
-    const filteredBookings = useMemo(() =>
-        bookings.filter((booking) => booking.status === selectedStatus),
-        [bookings, selectedStatus]
-    );
+    const filteredBookings = useMemo(() => {
+        const now = new Date();
+
+        return bookings.filter((booking) => {
+            const bookingDate = new Date(booking.departureDate);
+            const dbStatus = booking.status;
+
+            switch (selectedStatus) {
+                case 'upcoming':
+                    // Show future bookings that are confirmed or pending
+                    return bookingDate > now && (dbStatus === 'confirmed' || dbStatus === 'pending');
+                case 'completed':
+                    // Show bookings with status 'completed'
+                    return dbStatus === 'completed';
+                case 'confirmed':
+                    // Show bookings with status 'confirmed'
+                    return dbStatus === 'confirmed';
+                case 'pending':
+                    // Show pending bookings
+                    return dbStatus === 'pending';
+                case 'cancelled':
+                    // Show cancelled bookings
+                    return dbStatus === 'cancelled';
+                default:
+                    return true;
+            }
+        });
+    }, [bookings, selectedStatus]);
 
     const getStatusStyle = (status: string) => {
         switch (status) {
-            case 'confirmed': return 'bg-green-100 text-green-800';
-            case 'pending': return 'bg-yellow-100 text-yellow-800';
-            case 'cancelled': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-700';
+            case 'upcoming': return 'bg-blue-100 text-blue-800';
+            case 'confirmed': return 'bg-emerald-100 text-emerald-800';
+            case 'pending': return 'bg-amber-100 text-amber-800';
+            case 'completed': return 'bg-purple-100 text-purple-800';
+            case 'cancelled': return 'bg-rose-100 text-rose-800';
+            default: return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -378,7 +419,7 @@ export function Bookings() {
                                                         {booking.destination}
                                                     </h3>
                                                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusStyle(booking.status)}`}>
-                                                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                                        {getStatusText(booking.status)}
                                                     </span>
                                                     <div className="flex items-center gap-1 ml-2 bg-gold/10 text-gold/90 px-2 py-0.5 rounded-full text-xs font-medium">
                                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -457,7 +498,7 @@ export function Bookings() {
 
                                                         {/* Status Indicator */}
                                                         <div className={`relative flex items-center justify-center w-8 h-8 rounded-full border-2 
-                                                                ${getStatusButtonStyle(option, isActive, isPassed)} transition-all duration-300`}
+                                                            ${getStatusButtonStyle(option, isActive, isPassed)} transition-all duration-300`}
                                                         >
                                                             {option.icon}
 
@@ -793,7 +834,7 @@ export function Bookings() {
                                                                                 </div>
                                                                                 <div className="flex-shrink-0">
                                                                                     <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H7" />
                                                                                     </svg>
                                                                                 </div>
                                                                                 <div className="flex-1">
