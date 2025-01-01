@@ -60,6 +60,11 @@ export default function Account() {
                     setFormData(prev => ({
                         ...prev,
                         ...userData,
+                        preferences: {
+                            travelStyle: userData.preferences?.travelStyle ?? 'comfort',
+                            destinations: userData.preferences?.destinations ?? [],
+                            notifications: userData.preferences?.notifications ?? true
+                        },
                         displayName: user.displayName ?? prev.displayName,
                         email: user.email ?? prev.email
                     }));
