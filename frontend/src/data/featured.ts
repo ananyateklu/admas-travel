@@ -1,5 +1,5 @@
 import lalibelaImage from '../assets/lalibela-two.jpg';
-import danakelImage from '../assets/danakel.jpg';
+import danakilImage from '../assets/danakil.jpg';
 import simienmountainsImage from '../assets/simien-mountains-fox.jpeg';
 import omoValleyImage from '../assets/omo-valley-guy.jpeg';
 import axumImage from '../assets/axum.jpeg';
@@ -26,7 +26,7 @@ export const featuredDestinations: FeaturedDestination[] = [
     {
         name: "Danakil Depression",
         description: "Earth's lowest and hottest place, with otherworldly landscapes",
-        image: danakelImage,
+        image: danakilImage,
         link: "/trips/danakil",
         country: "Ethiopia"
     },

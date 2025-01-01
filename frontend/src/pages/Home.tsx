@@ -1,7 +1,7 @@
 // Components
 import { AirlinesSection } from '../components/home/AirlinesSection';
 import { VacationDestinations } from '../components/home/VacationDestinations';
-import { HeroSection } from '../components/home/HeroSection';
+import { HeroSection } from '../components/home/discover-section/HeroSection';
 import { FeaturedDestinations } from '../components/home/FeaturedDestinations';
 import { Highlights } from '../components/home/Highlights';
 import { NaturalWonders } from '../components/home/NaturalWonders';
@@ -23,7 +23,7 @@ export default function Home() {
                 regions={vacationRegions}
                 ethiopianRegions={ethiopianRegions}
             />
-            
+
             {/* Hero Section */}
             <HeroSection />
 

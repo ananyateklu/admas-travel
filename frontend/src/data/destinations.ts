@@ -11,7 +11,7 @@ import axumImage from '../assets/axum.jpeg';
 import gonderImage from '../assets/gonder.jpg';
 import omoValleyImage from '../assets/omo-valley-guy.jpeg';
 import baleMountainsImage from '../assets/bale-mountains.jpeg';
-import danakelImage from '../assets/danakel.jpg';
+import danakilImage from '../assets/danakil.jpg';
 import tanaLakeImage from '../assets/tana-lake.jpeg';
 import simienmountainsImage from '../assets/simien-mountains-fox.jpeg';
 
@@ -106,7 +106,7 @@ export const ethiopianRegions: EthiopianRegions = {
         { name: "Bale Mountains", count: 4, image: baleMountainsImage }
     ],
     east: [
-        { name: "Danakil Depression", count: 3, image: danakelImage }
+        { name: "Danakil Depression", count: 3, image: danakilImage }
     ],
     central: [
         { name: "Lake Tana", count: 5, image: tanaLakeImage },

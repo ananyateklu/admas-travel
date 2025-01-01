@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
-import danakelImage from '../../assets/danakel.jpg';
+import danakilImage from '../../assets/danakil.jpg';
 import abayRiverImage from '../../assets/abay-river.jpeg';
 
 export function NaturalWonders() {
@@ -83,7 +83,7 @@ export function NaturalWonders() {
                             transition={{ duration: 0.3 }}
                         >
                             <motion.img
-                                src={danakelImage}
+                                src={danakilImage}
                                 alt="Danakil Depression"
                                 className="rounded-2xl w-full aspect-[3/4] object-cover"
                                 whileHover={{ scale: 1.05 }}
