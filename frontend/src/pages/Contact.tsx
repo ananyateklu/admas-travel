@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import heroImage from '../assets/plane-boarding.jpg';
+import heroImage from '../assets/mountain-two.jpg';
 
 interface ContactFormData {
     name: string;
