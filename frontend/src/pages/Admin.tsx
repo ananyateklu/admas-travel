@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/firebase/useAuth';
 import { collection, query, orderBy, doc, updateDoc, onSnapshot } from 'firebase/firestore';
@@ -147,6 +147,11 @@ export default function Admin() {
 
         return matchesStatus && matchesSearch;
     });
+
+    // Calculate pending bookings count
+    const pendingBookingsCount = useMemo(() =>
+        bookings.filter(booking => booking.status === 'pending').length,
+        [bookings]);
 
     // Main render content based on tab
     const renderTabContent = () => {
@@ -353,7 +358,7 @@ export default function Admin() {
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
                                                         </svg>
                                                     ),
-                                                    notifications: 3
+                                                    notifications: pendingBookingsCount
                                                 },
                                                 {
                                                     id: 'flights',
@@ -362,8 +367,7 @@ export default function Admin() {
                                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                                         </svg>
-                                                    ),
-                                                    notifications: 0
+                                                    )
                                                 },
                                                 {
                                                     id: 'analytics',

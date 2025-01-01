@@ -4,7 +4,7 @@ import { useAuth } from '../lib/firebase/useAuth';
 import { db } from '../lib/firebase';
 import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
-import airplaineWindow from '../assets/airplaine-window.jpg';
+import bookPic from '../assets/book.jpg';
 import { TravelPreference } from '../hooks/useTravelPreferences';
 
 interface PassengerInfo {
@@ -335,7 +335,7 @@ Duration: ${preferences.duration}` : ''
             <div className="relative h-[70vh] bg-gray-900">
                 <div className="absolute inset-0">
                     <img
-                        src={airplaineWindow}
+                        src={bookPic}
                         alt="View from Airplane Window"
                         className="w-full h-full object-cover object-center"
                     />
