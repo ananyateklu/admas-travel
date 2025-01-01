@@ -145,12 +145,18 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                     variants={containerVariants}
                     className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8"
                 >
-                    <motion.h2
+                    <motion.div
                         variants={itemVariants}
-                        className="text-3xl font-serif mb-12 text-center"
+                        className="text-center mb-12"
                     >
-                        Featured Destinations
-                    </motion.h2>
+                        <span className="text-primary-400 text-sm font-medium tracking-wider uppercase mb-4 block">Explore With Us</span>
+                        <motion.h2
+                            variants={itemVariants}
+                            className="text-3xl font-serif"
+                        >
+                            Featured Destinations
+                        </motion.h2>
+                    </motion.div>
                     <div className="relative px-20">
                         {/* Previous Button */}
                         <motion.button
@@ -240,7 +246,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                                                 className="flex items-center justify-between gap-2 mt-3"
                                                                 layout
                                                             >
-                                                                <span className="text-sm font-medium text-yellow-400/90 group-hover:text-yellow-400">
+                                                                <span className="text-sm font-medium text-gold hover:text-gold-300 transition-colors">
                                                                     {destination.country}
                                                                 </span>
                                                                 <motion.button
@@ -248,7 +254,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                                                         e.stopPropagation();
                                                                         handleBooking(destination);
                                                                     }}
-                                                                    className="px-4 py-1.5 bg-yellow-400 text-black text-sm rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-yellow-300"
+                                                                    className="px-4 py-1.5 bg-primary text-white text-sm rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary-400"
                                                                     whileHover={{ scale: 1.05 }}
                                                                     whileTap={{ scale: 0.95 }}
                                                                 >

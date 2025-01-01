@@ -91,7 +91,7 @@ export function HeroSection() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
-                    className="text-yellow-400 text-xs font-medium tracking-[0.2em] mb-3"
+                    className="text-primary-400 text-xs font-medium tracking-[0.2em] mb-3"
                 >
                     DISCOVER ETHIOPIA
                 </motion.p>
@@ -103,6 +103,12 @@ export function HeroSection() {
                 >
                     Ancient Wonders<br />& Natural Beauty
                 </motion.h1>
+                <motion.div
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                    className="h-1 w-24 bg-gradient-to-r from-primary-400 to-gold mt-4 rounded-full"
+                />
             </div>
 
             <NavigationIndicator
@@ -125,6 +131,13 @@ export function HeroSection() {
                     </div>
                 </div>
             </motion.div>
+
+            <motion.div
+                className="absolute inset-0 bg-gradient-to-br from-black/80 via-primary-900/30 to-black/70"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
+            />
         </motion.section>
     );
 } 

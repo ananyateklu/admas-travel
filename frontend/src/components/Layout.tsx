@@ -27,7 +27,7 @@ const navLinks = [
     {
         path: '/book', label: 'Book', icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
         )
     },
@@ -156,20 +156,23 @@ export default function Layout() {
                                                     <motion.div
                                                         initial={{ opacity: 0, scale: 0.8 }}
                                                         animate={{
-                                                            opacity: hoveredLink === link.path || location.pathname === link.path ? 1 : 0,
+                                                            opacity: hoveredLink === link.path || location.pathname === link.path ? 1 : 0.7,
                                                             scale: hoveredLink === link.path || location.pathname === link.path ? 1 : 0.8
                                                         }}
                                                         transition={{ duration: 0.2 }}
-                                                        className="text-primary"
+                                                        className={`${hoveredLink === link.path || location.pathname === link.path ? 'text-primary-500' : 'text-primary-600/70'}`}
                                                     >
                                                         {link.icon}
                                                     </motion.div>
-                                                    <span className="text-base font-light hover:text-primary transition-colors">
+                                                    <span className={`text-base font-light transition-colors ${hoveredLink === link.path || location.pathname === link.path
+                                                        ? 'text-primary-500 font-medium'
+                                                        : 'text-dark-300'
+                                                        }`}>
                                                         {link.label}
                                                     </span>
                                                 </div>
                                                 <motion.span
-                                                    className="absolute -bottom-1 left-0 h-0.5 bg-primary-300 rounded-full"
+                                                    className="absolute -bottom-1 left-0 h-[2px] bg-primary-500/60 rounded-full"
                                                     initial={{ width: '0%' }}
                                                     animate={{
                                                         width: (hoveredLink === link.path || location.pathname === link.path) ? '100%' : '0%',

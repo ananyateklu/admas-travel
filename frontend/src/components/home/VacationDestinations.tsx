@@ -69,6 +69,7 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                     variants={itemVariants}
                     className="text-center mb-16"
                 >
+                    <span className="text-primary text-sm font-medium tracking-wider uppercase mb-2 block">Popular Destinations</span>
                     <h2 className="text-3xl font-serif mb-4">Vacation Destinations</h2>
                     <p className="text-gray-600">Need some inspiration to plan your next trip? Plan the ultimate vacation at our top popular destination spots around the world.</p>
                 </motion.div>
@@ -82,7 +83,7 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                             onClick={() => setSelectedRegion(region.id)}
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.97 }}
-                            className={`relative group overflow-hidden rounded-xl aspect-[3/4] w-full ${selectedRegion === region.id ? 'ring-2 ring-gold' : ''
+                            className={`relative group overflow-hidden rounded-xl aspect-[3/4] w-full ${selectedRegion === region.id ? 'ring-2 ring-primary' : ''
                                 }`}
                         >
                             {/* Background Image */}
@@ -122,7 +123,7 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                     className="flex items-center"
                                     whileHover={{ scale: 1.05 }}
                                 >
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/20 text-white">
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary-100">
                                         {region.places}
                                     </span>
                                 </motion.div>
@@ -149,8 +150,8 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         className={`px-6 py-2.5 rounded-full text-sm transition-all ${selectedEthiopianRegion === region
-                                            ? 'bg-[#D4AF37] text-white'
-                                            : 'bg-white hover:bg-gray-50'
+                                            ? 'bg-primary text-white'
+                                            : 'bg-white hover:bg-primary-50 hover:text-primary'
                                             }`}
                                     >
                                         {region.charAt(0).toUpperCase() + region.slice(1)} Ethiopia
@@ -169,10 +170,10 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                             exit={{ opacity: 0, y: -20 }}
                                             transition={{ duration: 0.5, delay: index * 0.1 }}
                                             whileHover={{ y: -5 }}
-                                            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all"
+                                            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all group"
                                         >
                                             <motion.div
-                                                className="aspect-[16/9] overflow-hidden"
+                                                className="aspect-[16/9] overflow-hidden relative"
                                                 whileHover={{ scale: 1.05 }}
                                                 transition={{ duration: 0.4 }}
                                             >
@@ -181,12 +182,21 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                                     alt={destination.name}
                                                     className="w-full h-full object-cover"
                                                 />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                             </motion.div>
                                             <div className="p-6">
-                                                <h3 className="text-2xl font-serif mb-3">{destination.name}</h3>
-                                                <p className="text-gray-600">
-                                                    <span className="font-medium">{destination.count}</span> Experiences Available
-                                                </p>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className="h-0.5 w-6 bg-gold rounded-full" />
+                                                    <span className="text-gold text-sm">{destination.count} Experiences</span>
+                                                </div>
+                                                <h3 className="text-2xl font-serif mb-3 group-hover:text-primary transition-colors">{destination.name}</h3>
+                                                <motion.button
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    className="mt-4 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm hover:bg-primary hover:text-white transition-all"
+                                                >
+                                                    View Details
+                                                </motion.button>
                                             </div>
                                         </motion.div>
                                     ))}

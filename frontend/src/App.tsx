@@ -9,11 +9,13 @@ import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import GetStarted from './pages/GetStarted';
 import Account from './pages/Account';
+import { ScrollToTop } from './components/ScrollToTop';
 import './styles/animations.css';
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />

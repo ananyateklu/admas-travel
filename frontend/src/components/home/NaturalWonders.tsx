@@ -70,9 +70,24 @@ export function NaturalWonders() {
                         >
                             <Link
                                 to="/natural-wonders"
-                                className="inline-block px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
+                                className="inline-block px-8 py-3 bg-primary text-white rounded-full hover:bg-primary-400 transition-colors group relative overflow-hidden"
                             >
-                                Explore More
+                                <span className="relative z-10 flex items-center gap-2">
+                                    Explore More
+                                    <motion.span
+                                        className="text-gold"
+                                        animate={{ x: [0, 4, 0] }}
+                                        transition={{ duration: 1.5, repeat: Infinity }}
+                                    >
+                                        →
+                                    </motion.span>
+                                </span>
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-primary-600 to-primary-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    initial={false}
+                                    animate={{ x: ['0%', '100%'] }}
+                                    transition={{ duration: 1.5, repeat: Infinity }}
+                                />
                             </Link>
                         </motion.div>
                     </motion.div>
