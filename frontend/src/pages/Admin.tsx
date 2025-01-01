@@ -48,42 +48,40 @@ export default function Admin() {
         }
     }, [user, navigate]);
 
-    // Handle bookings data fetching
+    // Handle bookings data fetching - now independent of activeTab
     useEffect(() => {
-        if (activeTab === 'bookings') {
-            setIsBookingsLoading(true);
-            console.log('Admin - Setting up real-time listener');
-            const bookingsRef = collection(db, 'bookings');
-            const q = query(bookingsRef, orderBy('createdAt', 'desc'));
+        setIsBookingsLoading(true);
+        console.log('Admin - Setting up real-time listener');
+        const bookingsRef = collection(db, 'bookings');
+        const q = query(bookingsRef, orderBy('createdAt', 'desc'));
 
-            const unsubscribe = onSnapshot(q,
-                (snapshot) => {
-                    console.log('Admin - Received snapshot update');
-                    const bookingsData = snapshot.docs.map(doc => {
-                        const data = doc.data();
-                        return {
-                            ...data,
-                            bookingId: doc.id,
-                            createdAt: data.createdAt
-                        };
-                    }) as BookingData[];
+        const unsubscribe = onSnapshot(q,
+            (snapshot) => {
+                console.log('Admin - Received snapshot update');
+                const bookingsData = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        ...data,
+                        bookingId: doc.id,
+                        createdAt: data.createdAt
+                    };
+                }) as BookingData[];
 
-                    setBookings(bookingsData);
-                    setIsBookingsLoading(false);
-                },
-                (error) => {
-                    console.error('Admin - Error fetching bookings:', error);
-                    setError('Failed to load bookings');
-                    setIsBookingsLoading(false);
-                }
-            );
+                setBookings(bookingsData);
+                setIsBookingsLoading(false);
+            },
+            (error) => {
+                console.error('Admin - Error fetching bookings:', error);
+                setError('Failed to load bookings');
+                setIsBookingsLoading(false);
+            }
+        );
 
-            return () => {
-                console.log('Admin - Cleaning up listener');
-                unsubscribe();
-            };
-        }
-    }, [activeTab]);
+        return () => {
+            console.log('Admin - Cleaning up listener');
+            unsubscribe();
+        };
+    }, []);
 
     const handleStatusChange = async (bookingId: string, newStatus: string, userId: string) => {
         console.log('Admin - Updating status:', { bookingId, newStatus, userId });
