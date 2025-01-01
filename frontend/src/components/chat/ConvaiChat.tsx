@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../../lib/firebase/useAuth';
 
 // Declare global window property
 declare global {
     interface Window {
         convaiScriptLoaded?: boolean;
+        convaiElementDefined?: boolean;
     }
 }
 
@@ -13,20 +14,72 @@ interface ConvaiChatProps {
     position?: 'bottom-right' | 'bottom-left';
 }
 
+const createChatElement = (
+    agentId: string,
+    position: string,
+    initializedRef: React.MutableRefObject<boolean>
+) => {
+    const existingChat = document.querySelector('elevenlabs-convai');
+    if (existingChat) return;
+
+    const chatElement = document.createElement('elevenlabs-convai');
+    chatElement.setAttribute('agent-id', agentId);
+    chatElement.setAttribute('position', position);
+    chatElement.style.position = 'fixed';
+    chatElement.style.bottom = '20px';
+    chatElement.style[position === 'bottom-right' ? 'right' : 'left'] = '20px';
+    chatElement.style.zIndex = '1000';
+
+    document.body.appendChild(chatElement);
+    initializedRef.current = true;
+};
+
+const loadScript = () => {
+    if (document.querySelector('script[src*="convai-widget"]')) {
+        return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://elevenlabs.io/convai-widget/index.js';
+        script.async = true;
+        script.type = 'text/javascript';
+        script.onload = () => {
+            window.convaiScriptLoaded = true;
+            resolve();
+        };
+        script.onerror = () => {
+            window.convaiScriptLoaded = false;
+            const error = new Error('Failed to load Convai chat widget script');
+            console.error(error);
+            reject(error);
+        };
+        document.body.appendChild(script);
+    });
+};
+
+const initializeChat = async (
+    agentId: string,
+    position: string,
+    initializedRef: React.MutableRefObject<boolean>
+) => {
+    try {
+        const isElementDefined = customElements.get('elevenlabs-convai');
+        if (!isElementDefined) {
+            await loadScript();
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        createChatElement(agentId, position, initializedRef);
+    } catch (error) {
+        console.error('Error initializing Convai chat widget:', error);
+    }
+};
+
 function ConvaiChatComponent({ agentId, position = 'bottom-right' }: ConvaiChatProps) {
     const { user } = useAuth();
     const initialized = useRef(false);
 
-    // Function to clean up chat elements
-    const cleanupChat = React.useCallback(() => {
-        // Remove the script tag
-        const scriptElement = document.querySelector('script[src*="convai-widget"]');
-        if (scriptElement) {
-            document.body.removeChild(scriptElement);
-            window.convaiScriptLoaded = false;
-        }
-
-        // Remove the chat element
+    const cleanupChat = useCallback(() => {
         const existingChat = document.querySelector('elevenlabs-convai');
         if (existingChat) {
             document.body.removeChild(existingChat);
@@ -34,62 +87,24 @@ function ConvaiChatComponent({ agentId, position = 'bottom-right' }: ConvaiChatP
         initialized.current = false;
     }, []);
 
-    // Watch for user changes and cleanup when user logs out
     useEffect(() => {
         if (!user) {
             cleanupChat();
             return;
         }
 
-        // Only proceed if user is logged in and not already initialized
         if (initialized.current) return;
 
-        const createChatElement = () => {
-            const chatElement = document.createElement('elevenlabs-convai');
-            chatElement.setAttribute('agent-id', agentId);
-            chatElement.setAttribute('position', position);
-
-            // Style the widget
-            chatElement.style.position = 'fixed';
-            chatElement.style.bottom = '20px';
-            chatElement.style[position === 'bottom-right' ? 'right' : 'left'] = '20px';
-            chatElement.style.zIndex = '1000';
-
-            document.body.appendChild(chatElement);
-            initialized.current = true;
-        };
-
-        // If script is already loaded, just create the element
-        if (window.convaiScriptLoaded) {
-            createChatElement();
+        const isElementDefined = customElements.get('elevenlabs-convai');
+        if (window.convaiScriptLoaded && isElementDefined) {
+            createChatElement(agentId, position, initialized);
             return;
         }
 
-        // Load the script if not already loaded
-        try {
-            window.convaiScriptLoaded = true;
-            const script = document.createElement('script');
-            script.src = 'https://elevenlabs.io/convai-widget/index.js';
-            script.async = true;
-            script.type = 'text/javascript';
-
-            script.onload = createChatElement;
-            script.onerror = () => {
-                window.convaiScriptLoaded = false;
-                console.error('Failed to load Convai chat widget script');
-            };
-
-            document.body.appendChild(script);
-        } catch (error) {
-            window.convaiScriptLoaded = false;
-            console.error('Error initializing Convai chat widget:', error);
-        }
-
-        // Cleanup on unmount
+        initializeChat(agentId, position, initialized);
         return cleanupChat;
     }, [agentId, position, user, cleanupChat]);
 
-    // Return null since we're manually managing the DOM element
     return null;
 }
 
