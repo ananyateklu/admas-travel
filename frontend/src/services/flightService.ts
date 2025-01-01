@@ -161,6 +161,31 @@ export interface Flight {
             }>;
         }>;
         totalTime: number;
+        travellerCheckedLuggage?: Array<{
+            travellerReference: string;
+            luggageAllowance: {
+                luggageType: 'CHECKED_IN' | 'HAND';
+                maxPiece: number;
+                maxWeightPerPiece?: number;
+                massUnit?: string;
+            };
+        }>;
+        travellerCabinLuggage?: Array<{
+            travellerReference: string;
+            luggageAllowance: {
+                luggageType: 'CHECKED_IN' | 'HAND';
+                maxPiece: number;
+                maxWeightPerPiece?: number;
+                massUnit?: string;
+                sizeRestrictions?: {
+                    maxLength: number;
+                    maxWidth: number;
+                    maxHeight: number;
+                    sizeUnit: string;
+                };
+            };
+            personalItem?: boolean;
+        }>;
     }>;
     priceBreakdown: {
         total: {
@@ -169,6 +194,11 @@ export interface Flight {
             nanos: number;
         };
         baseFare: {
+            currencyCode: string;
+            units: number;
+            nanos: number;
+        };
+        fee: {
             currencyCode: string;
             units: number;
             nanos: number;

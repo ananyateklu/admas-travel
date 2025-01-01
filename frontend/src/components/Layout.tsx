@@ -45,7 +45,7 @@ export default function Layout() {
             <div className="fixed top-4 left-0 right-0 z-50">
                 <div className="mx-4">
                     {/* Header */}
-                    <header className="mx-auto bg-white/70 backdrop-blur-lg rounded-[2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                    <header className="mx-auto bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-[0_4px_16px_rgba(0,0,0,0.16)] border-2 border-gray-200">
                         <nav className="h-24 pl-6 pr-3 flex items-center">
                             <div className="flex items-center justify-between gap-8 w-full">
                                 {/* Left section */}
@@ -114,7 +114,7 @@ export default function Layout() {
                                             </button>
                                             <div className="absolute top-[calc(100%+1.5rem)] right-0 z-50">
                                                 {isProfileMenuOpen && (
-                                                    <div className="w-64 bg-white/70 backdrop-blur-lg rounded-[1.2rem] shadow-[0_2px_8px_rgba(0,0,0,0.04)] py-2 mr-4">
+                                                    <div className="w-64 bg-white/90 backdrop-blur-xl rounded-[1.2rem] shadow-[0_4px_16px_rgba(0,0,0,0.16)] border-2 border-gray-200 py-2 mr-4">
                                                         <div className="px-4 py-3 border-b border-gray-100/20">
                                                             <div className="text-sm font-medium text-gray-900">
                                                                 {user.displayName}
@@ -183,7 +183,7 @@ export default function Layout() {
                                         <div className="relative signin-dropdown">
                                             <button
                                                 onClick={() => setIsSignInOpen(!isSignInOpen)}
-                                                className="px-8 py-6 bg-[#1A1A1A] text-white rounded-[1.2rem] text-base font-light hover:bg-black transition-colors"
+                                                className="px-8 py-6 bg-[#1A1A1A] text-white rounded-[1.2rem] shadow-[0_4px_16px_rgba(0,0,0,0.24)] text-base font-light hover:bg-black transition-all hover:shadow-[0_6px_20px_rgba(0,0,0,0.32)] hover:scale-[1.02]"
                                             >
                                                 Sign In
                                             </button>
@@ -204,9 +204,9 @@ export default function Layout() {
 
             {/* Mobile menu */}
             {isMenuOpen && (
-                <div className="fixed inset-0 z-50 bg-white">
+                <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-xl">
                     <div className="max-w-7xl mx-auto px-6 py-8 pt-20">
-                        <div className="flex flex-col space-y-8">
+                        <div className="flex flex-col space-y-8 bg-white/90 rounded-[2rem] shadow-[0_4px_16px_rgba(0,0,0,0.16)] border-2 border-gray-200 p-8">
                             <Link to="/" className="text-3xl font-serif" onClick={() => setIsMenuOpen(false)}>
                                 Admas Travel
                             </Link>
@@ -232,7 +232,7 @@ export default function Layout() {
                             </a>
                             <Link
                                 to="/get-started"
-                                className="w-full px-4 py-3 bg-[#1A1A1A] text-white rounded-lg text-center text-sm font-light hover:bg-black transition-colors"
+                                className="w-full px-4 py-3 bg-[#1A1A1A] text-white rounded-[1.2rem] shadow-[0_4px_16px_rgba(0,0,0,0.24)] text-center text-sm font-light hover:bg-black transition-all hover:shadow-[0_6px_20px_rgba(0,0,0,0.32)] hover:scale-[1.02]"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Get Started

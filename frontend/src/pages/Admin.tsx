@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/firebase/useAuth';
 import { collection, query, orderBy, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import mountainTwo from '../assets/mountain-two.jpg';
+import planeBoarding from '../assets/plane-boarding.jpg';
 import { BookingCard } from '../components/admin/BookingCard';
 import { SearchFilters } from '../components/admin/SearchFilters';
 import { ADMIN_EMAILS, BookingData } from '../components/admin/types';
@@ -271,8 +271,8 @@ export default function Admin() {
             <div className="relative bg-gradient-to-br from-gray-900 to-black overflow-hidden">
                 <div className="absolute inset-0">
                     <img
-                        src={mountainTwo}
-                        alt="Mountain Landscape"
+                        src={planeBoarding}
+                        alt="Plane Boarding"
                         className="w-full h-full object-cover object-center transform scale-105 motion-safe:animate-subtle-zoom"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70 backdrop-blur-[2px]" />
@@ -298,26 +298,50 @@ export default function Admin() {
                         <div className="w-[80%] max-w-[2000px] mx-auto">
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-16 mt-8 mb-12 motion-safe:animate-fade-in-up animation-delay-300">
                                 <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
-                                    <div className="text-2xl font-bold text-gray-800">247</div>
+                                    <div className="text-2xl font-bold text-gray-800">
+                                        {bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length}
+                                    </div>
                                     <div className="text-sm text-gray-600">Active Bookings</div>
                                 </div>
                                 <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
-                                    <div className="text-2xl font-bold text-gray-800">89</div>
+                                    <div className="text-2xl font-bold text-gray-800">
+                                        {bookings.filter(b => {
+                                            const today = new Date();
+                                            const bookingDate = new Date(b.departureDate);
+                                            return bookingDate.toDateString() === today.toDateString();
+                                        }).length}
+                                    </div>
                                     <div className="text-sm text-gray-600">Today's Flights</div>
                                 </div>
                                 <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
-                                    <div className="text-2xl font-bold text-gray-800">95%</div>
-                                    <div className="text-sm text-gray-600">Satisfaction</div>
+                                    <div className="text-2xl font-bold text-gray-800">
+                                        {(() => {
+                                            const completedBookings = bookings.filter(b => b.status === 'completed').length;
+                                            const totalBookings = bookings.length;
+                                            return totalBookings > 0
+                                                ? Math.round((completedBookings / totalBookings) * 100)
+                                                : 0;
+                                        })()}%
+                                    </div>
+                                    <div className="text-sm text-gray-600">Completion Rate</div>
                                 </div>
                                 <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
-                                    <div className="text-2xl font-bold text-gray-800">$52K</div>
-                                    <div className="text-sm text-gray-600">Revenue Today</div>
+                                    <div className="text-2xl font-bold text-gray-800">
+                                        {bookings.filter(b => {
+                                            const today = new Date();
+                                            const bookingDate = typeof b.createdAt === 'string'
+                                                ? new Date(b.createdAt)
+                                                : b.createdAt.toDate();
+                                            return bookingDate.toDateString() === today.toDateString();
+                                        }).length}
+                                    </div>
+                                    <div className="text-sm text-gray-600">Bookings Today</div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Navigation Tabs */}
-                        <div className="w-[80%] max-w-[2000px] mx-auto mb-12">
+                        <div className="w-[80%] max-w-[2000px] mx-auto mb-16">
                             <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg shadow-black/5 motion-safe:animate-fade-in-up animation-delay-100">
                                 <nav className="flex flex-col sm:flex-row" aria-label="Admin sections">
                                     <div className="flex overflow-x-auto sm:w-full scrollbar-hide">
@@ -418,7 +442,7 @@ export default function Admin() {
             </div>
 
             {/* Main Content */}
-            <div className="bg-gray-50/80 backdrop-blur-xl pt-24">
+            <div className="bg-gray-50/80 backdrop-blur-xl -mt-8 pt-12 relative">
                 <div className="max-w-[95%] mx-auto px-6 pb-12 relative">
                     {error && (
                         <div className="bg-red-50/95 backdrop-blur-xl border border-red-200 text-red-600 rounded-xl p-4 mb-6 shadow-lg animate-fade-in">

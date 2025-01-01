@@ -100,7 +100,7 @@ export function FlightSearchForm({ onSearch, isLoading, error }: FlightSearchFor
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-sm">
+        <div className="bg-white rounded-2xl shadow-[0_3px_12px_rgba(0,0,0,0.12)] border border-gray-300">
             {/* Main Search Form */}
             <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -108,7 +108,7 @@ export function FlightSearchForm({ onSearch, isLoading, error }: FlightSearchFor
                     <button
                         type="button"
                         onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-                        className="text-sm text-gold hover:text-gold/90 flex items-center gap-1"
+                        className="text-sm text-gold hover:text-gold/90 flex items-center gap-1 transition-colors"
                     >
                         {showAdvancedOptions ? (
                             <>
@@ -329,7 +329,7 @@ export function FlightSearchForm({ onSearch, isLoading, error }: FlightSearchFor
             </div>
 
             {/* Quick Links */}
-            <div className="px-6 py-3 bg-gray-50 border-t border-gray-100 rounded-b-xl">
+            <div className="px-6 py-3 bg-gray-50/90 border-t border-gray-300 rounded-b-2xl">
                 <div className="flex items-center gap-4 text-sm">
                     <span className="text-gray-500">Quick Links:</span>
                     <button
