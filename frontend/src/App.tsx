@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import { Book } from './pages/Book';
@@ -25,6 +25,7 @@ function App() {
           <Route path="contact" element={<Contact />} />
           <Route path="get-started" element={<GetStarted />} />
           <Route path="account" element={<Account />} />
+          <Route path="profile" element={<Navigate to="/account" replace />} />
         </Route>
       </Routes>
     </Router>

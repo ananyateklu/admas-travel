@@ -6,12 +6,45 @@ import { useAuth } from '../lib/firebase/useAuth';
 import { SignInDropdown } from './SignInDropdown';
 import { ConvaiChat } from './chat/ConvaiChat';
 import { motion, AnimatePresence } from 'framer-motion';
+import { NavMenu } from './navigation/NavMenu';
+import { UserDropdown } from './navigation/UserDropdown';
 
 const navLinks = [
-    { path: '/about-us', label: 'About' },
-    { path: '/book', label: 'Book' },
-    { path: '/contact', label: 'Contact' },
-    { path: '/get-started', label: 'Get Started' }
+    {
+        path: '/', label: 'Home', icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        )
+    },
+    {
+        path: '/about-us', label: 'About', icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        )
+    },
+    {
+        path: '/book', label: 'Book', icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        )
+    },
+    {
+        path: '/contact', label: 'Contact', icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+        )
+    },
+    {
+        path: '/get-started', label: 'Get Started', icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+        )
+    }
 ] as const;
 
 export default function Layout() {
@@ -22,6 +55,7 @@ export default function Layout() {
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const [hoveredLink, setHoveredLink] = useState<string | null>(null);
 
     const handleSignOut = async () => {
         try {
@@ -67,10 +101,15 @@ export default function Layout() {
                     <motion.header
                         initial={false}
                         animate={{
-                            backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
+                            backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.98)' : 'rgba(255, 255, 255, 0.9)',
                             backdropFilter: 'blur(10px)',
+                            y: isScrolled ? -8 : 0,
                         }}
-                        className="mx-auto rounded-[2rem] shadow-[0_4px_16px_rgba(0,0,0,0.16)] border-2 border-gray-200/50"
+                        transition={{
+                            duration: 0.3,
+                            ease: 'easeInOut'
+                        }}
+                        className="mx-auto rounded-[2rem] shadow-[0_4px_16px_rgba(0,0,0,0.08)] border border-gray-200/50 backdrop-blur-xl"
                     >
                         <nav className={`h-24 pl-6 pr-3 flex items-center transition-all duration-300`}>
                             <div className="flex items-center justify-between gap-8 w-full">
@@ -82,16 +121,22 @@ export default function Layout() {
                                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                                         className="flex items-center gap-2 text-base font-light hover:text-gold transition-colors"
                                     >
-                                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-                                        </svg>
+                                        <motion.div
+                                            animate={{ rotate: isMenuOpen ? 90 : 0 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+                                            </svg>
+                                        </motion.div>
                                     </motion.button>
                                     <Link to="/">
                                         <motion.img
                                             whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.98 }}
                                             src={admasLogo}
                                             alt="Admas Travel"
-                                            className={`transition-all duration-300 ${isScrolled ? 'h-16' : 'h-20'}`}
+                                            className={`transition-all duration-300 ${isScrolled ? 'h-16' : 'h-20'} filter hover:brightness-110`}
                                         />
                                     </Link>
                                 </div>
@@ -103,13 +148,33 @@ export default function Layout() {
                                             <Link
                                                 key={link.path}
                                                 to={link.path}
-                                                className="relative group"
+                                                className="relative group py-2"
+                                                onMouseEnter={() => setHoveredLink(link.path)}
+                                                onMouseLeave={() => setHoveredLink(null)}
                                             >
-                                                <span className="text-base font-light hover:text-gold transition-colors">
-                                                    {link.label}
-                                                </span>
-                                                <span className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-gold transition-all duration-300 group-hover:w-full
-                                                    ${location.pathname === link.path ? 'w-full' : 'w-0'}`}
+                                                <div className="flex items-center gap-2">
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.8 }}
+                                                        animate={{
+                                                            opacity: hoveredLink === link.path || location.pathname === link.path ? 1 : 0,
+                                                            scale: hoveredLink === link.path || location.pathname === link.path ? 1 : 0.8
+                                                        }}
+                                                        transition={{ duration: 0.2 }}
+                                                        className="text-primary"
+                                                    >
+                                                        {link.icon}
+                                                    </motion.div>
+                                                    <span className="text-base font-light hover:text-primary transition-colors">
+                                                        {link.label}
+                                                    </span>
+                                                </div>
+                                                <motion.span
+                                                    className="absolute -bottom-1 left-0 h-0.5 bg-primary-300 rounded-full"
+                                                    initial={{ width: '0%' }}
+                                                    animate={{
+                                                        width: (hoveredLink === link.path || location.pathname === link.path) ? '100%' : '0%',
+                                                    }}
+                                                    transition={{ duration: 0.3, ease: 'easeInOut' }}
                                                 />
                                             </Link>
                                         ))}
@@ -121,12 +186,16 @@ export default function Layout() {
                                     <motion.a
                                         href="tel:+16127437243"
                                         whileHover={{ scale: 1.05 }}
-                                        className="hidden md:flex items-center gap-2 text-base font-light hover:text-gold transition-colors"
+                                        whileTap={{ scale: 0.95 }}
+                                        className="hidden md:flex items-center gap-2 text-base font-light hover:text-gold transition-colors relative group"
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-5 h-5 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                         </svg>
-                                        +1 (612) 743-7243
+                                        <span className="relative">
+                                            +1 (612) 743-7243
+                                            <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gold transform scale-x-0 transition-transform group-hover:scale-x-100" />
+                                        </span>
                                     </motion.a>
                                     {user ? (
                                         <div className="relative profile-menu">
@@ -167,80 +236,12 @@ export default function Layout() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                                 </motion.svg>
                                             </motion.button>
-                                            <AnimatePresence>
-                                                {isProfileMenuOpen && (
-                                                    <motion.div
-                                                        initial={{ opacity: 0, y: -10 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        exit={{ opacity: 0, y: -10 }}
-                                                        transition={{ duration: 0.2 }}
-                                                        className="absolute top-[calc(100%+1.5rem)] right-0 z-50"
-                                                    >
-                                                        <div className="w-64 bg-white/90 backdrop-blur-xl rounded-[1.2rem] shadow-[0_4px_16px_rgba(0,0,0,0.16)] border-2 border-gray-200 py-2 mr-4">
-                                                            <div className="px-4 py-3 border-b border-gray-100/20">
-                                                                <div className="text-sm font-medium text-gray-900">
-                                                                    {user.displayName}
-                                                                </div>
-                                                                <div className="text-xs text-gray-500 truncate">
-                                                                    {user.email}
-                                                                </div>
-                                                            </div>
-                                                            <Link
-                                                                to="/account"
-                                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                                                                onClick={() => setIsProfileMenuOpen(false)}
-                                                            >
-                                                                <div className="flex items-center gap-3">
-                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                                    </svg>
-                                                                    Your Profile
-                                                                </div>
-                                                            </Link>
-                                                            <Link
-                                                                to="/bookings"
-                                                                className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                                                                onClick={() => setIsProfileMenuOpen(false)}
-                                                            >
-                                                                <div className="flex items-center gap-3">
-                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
-                                                                    </svg>
-                                                                    Your Bookings
-                                                                </div>
-                                                            </Link>
-                                                            {user?.email === 'ananya.meseret@gmail.com' && (
-                                                                <Link
-                                                                    to="/admin"
-                                                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                                                                    onClick={() => setIsProfileMenuOpen(false)}
-                                                                >
-                                                                    <div className="flex items-center gap-3">
-                                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                                                        </svg>
-                                                                        Admin Dashboard
-                                                                    </div>
-                                                                </Link>
-                                                            )}
-                                                            <button
-                                                                onClick={() => {
-                                                                    setIsProfileMenuOpen(false);
-                                                                    handleSignOut();
-                                                                }}
-                                                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-white/50 transition-colors"
-                                                            >
-                                                                <div className="flex items-center gap-3">
-                                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                                                    </svg>
-                                                                    Sign Out
-                                                                </div>
-                                                            </button>
-                                                        </div>
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+                                            <UserDropdown
+                                                isOpen={isProfileMenuOpen}
+                                                onClose={() => setIsProfileMenuOpen(false)}
+                                                user={user}
+                                                onSignOut={handleSignOut}
+                                            />
                                         </div>
                                     ) : (
                                         <div className="relative signin-dropdown">
@@ -278,59 +279,8 @@ export default function Layout() {
                 </div>
             </div>
 
-            {/* Mobile menu with animation */}
-            <AnimatePresence>
-                {isMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="fixed inset-0 z-50 bg-white/80 backdrop-blur-xl"
-                    >
-                        <motion.div
-                            initial={{ x: '-100%' }}
-                            animate={{ x: 0 }}
-                            exit={{ x: '-100%' }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="max-w-7xl mx-auto px-6 py-8 pt-20"
-                        >
-                            <div className="flex flex-col space-y-8 bg-white/90 rounded-[2rem] shadow-[0_4px_16px_rgba(0,0,0,0.16)] border-2 border-gray-200 p-8">
-                                <Link to="/" className="text-3xl font-serif" onClick={() => setIsMenuOpen(false)}>
-                                    Admas Travel
-                                </Link>
-                                <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                                    <Link to="/trips" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Trips</Link>
-                                    <Link to="/about-us" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>About Us</Link>
-                                    <Link to="/book" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Book</Link>
-                                    <Link to="/contact" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Contact</Link>
-                                    <Link to="/get-started" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
-                                    {!user && (
-                                        <Link to="/signin" className="text-lg font-light" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
-                                    )}
-                                </div>
-                                <a
-                                    href="tel:+16127437243"
-                                    className="flex items-center justify-center gap-2 text-lg font-light mt-8"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                    +1 (612) 743-7243
-                                </a>
-                                <Link
-                                    to="/get-started"
-                                    className="w-full px-4 py-3 bg-[#1A1A1A] text-white rounded-[1.2rem] shadow-[0_4px_16px_rgba(0,0,0,0.24)] text-center text-sm font-light hover:bg-black transition-all hover:shadow-[0_6px_20px_rgba(0,0,0,0.32)] hover:scale-[1.02]"
-                                    onClick={() => setIsMenuOpen(false)}
-                                >
-                                    Get Started
-                                </Link>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Navigation Menu */}
+            <NavMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} user={user} />
 
             {/* Main Content */}
             <main className="flex-1">
