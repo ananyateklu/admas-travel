@@ -49,7 +49,7 @@ const navLinks = [
 
 export default function Layout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
     const [isSignInOpen, setIsSignInOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const { user, signOut } = useAuth();
@@ -78,9 +78,8 @@ export default function Layout() {
     // Close dropdowns when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
-        if (!target.closest('.profile-menu') && !target.closest('.signin-dropdown')) {
-            setIsProfileMenuOpen(false);
-            setIsSignInOpen(false);
+        if (!target.closest('.account-menu') && !target.closest('.signin-dropdown')) {
+            setIsAccountMenuOpen(false);
         }
     };
 
@@ -184,7 +183,7 @@ export default function Layout() {
                                     </div>
                                 </div>
 
-                                {/* Right section - Phone number and Sign In/Profile */}
+                                {/* Right section - Phone number and Sign In/Account */}
                                 <div className="flex items-center gap-6">
                                     <motion.a
                                         href="tel:+16127437243"
@@ -201,11 +200,11 @@ export default function Layout() {
                                         </span>
                                     </motion.a>
                                     {user ? (
-                                        <div className="relative profile-menu">
+                                        <div className="relative account-menu">
                                             <motion.button
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
-                                                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                                                onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
                                                 className="flex items-center gap-3 px-4 py-2 rounded-[1.2rem] hover:bg-gray-50 transition-colors"
                                             >
                                                 <div className="flex items-center gap-3">
@@ -230,7 +229,7 @@ export default function Layout() {
                                                     </div>
                                                 </div>
                                                 <motion.svg
-                                                    animate={{ rotate: isProfileMenuOpen ? 180 : 0 }}
+                                                    animate={{ rotate: isAccountMenuOpen ? 180 : 0 }}
                                                     className="w-5 h-5 text-gray-400"
                                                     fill="none"
                                                     stroke="currentColor"
@@ -240,8 +239,8 @@ export default function Layout() {
                                                 </motion.svg>
                                             </motion.button>
                                             <UserDropdown
-                                                isOpen={isProfileMenuOpen}
-                                                onClose={() => setIsProfileMenuOpen(false)}
+                                                isOpen={isAccountMenuOpen}
+                                                onClose={() => setIsAccountMenuOpen(false)}
                                                 user={user}
                                                 onSignOut={handleSignOut}
                                             />

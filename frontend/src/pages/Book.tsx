@@ -32,7 +32,7 @@ interface BookingFormData {
     specialRequests?: string;
 }
 
-interface UserProfile {
+interface AccountData {
     displayName: string;
     email: string;
     phone: string;
@@ -45,7 +45,7 @@ export function Book() {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
-    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [accountData, setAccountData] = useState<AccountData | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const preferences = location.state?.preferences as TravelPreference | undefined;
 
@@ -125,8 +125,8 @@ Duration: ${preferences.duration}` : ''
                 try {
                     const userDoc = await getDoc(doc(db, 'users', user.uid));
                     if (userDoc.exists()) {
-                        const profileData = userDoc.data() as UserProfile;
-                        setUserProfile(profileData);
+                        const profileData = userDoc.data() as AccountData;
+                        setAccountData(profileData);
 
                         // Initialize form with user profile data
                         setFormData(prev => ({
@@ -299,26 +299,26 @@ Duration: ${preferences.duration}` : ''
     }, []);
 
     const handleAutoFillContact = (field: 'name' | 'email' | 'phone') => {
-        if (user && userProfile) {
+        if (user && accountData) {
             setFormData(prev => ({
                 ...prev,
-                contactName: field === 'name' ? (userProfile.displayName ?? '') : prev.contactName,
-                contactEmail: field === 'email' ? (userProfile.email ?? '') : prev.contactEmail,
-                contactPhone: field === 'phone' ? userProfile.phone : prev.contactPhone,
+                contactName: field === 'name' ? (accountData.displayName ?? '') : prev.contactName,
+                contactEmail: field === 'email' ? (accountData.email ?? '') : prev.contactEmail,
+                contactPhone: field === 'phone' ? accountData.phone : prev.contactPhone,
             }));
         }
     };
 
     const handleAutoFillPassenger = (index: number) => {
-        if (user && userProfile) {
+        if (user && accountData) {
             setFormData(prev => {
                 const newPassengers = [...prev.passengers];
                 newPassengers[index] = {
                     ...newPassengers[index],
-                    fullName: userProfile.displayName || '',
-                    nationality: userProfile.nationality || '',
-                    passportNumber: userProfile.passportNumber || '',
-                    passportExpiry: userProfile.passportExpiry || '',
+                    fullName: accountData.displayName || '',
+                    nationality: accountData.nationality || '',
+                    passportNumber: accountData.passportNumber || '',
+                    passportExpiry: accountData.passportExpiry || '',
                     type: 'adult'
                 };
                 return {

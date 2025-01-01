@@ -10,7 +10,7 @@ interface Preferences {
     notifications: boolean;
 }
 
-interface ProfileFormData {
+interface AccountFormData {
     displayName: string;
     email: string;
     phone: string;
@@ -29,7 +29,7 @@ export default function Account() {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    const [formData, setFormData] = useState<ProfileFormData>({
+    const [formData, setFormData] = useState<AccountFormData>({
         displayName: user?.displayName ?? '',
         email: user?.email ?? '',
         phone: '',
@@ -56,7 +56,7 @@ export default function Account() {
             try {
                 const userDoc = await getDoc(doc(db, 'users', user.uid));
                 if (userDoc.exists()) {
-                    const userData = userDoc.data() as Omit<ProfileFormData, 'displayName' | 'email'>;
+                    const userData = userDoc.data() as Omit<AccountFormData, 'displayName' | 'email'>;
                     setFormData(prev => ({
                         ...prev,
                         ...userData,
