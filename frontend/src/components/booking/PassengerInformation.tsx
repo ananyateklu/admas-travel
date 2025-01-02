@@ -14,14 +14,20 @@ interface PassengerInformationProps {
     onPassengerChange: (index: number, field: keyof PassengerInfo, value: string) => void;
     onAutoFill?: (index: number) => void;
     showAutoFill?: boolean;
+    errors?: Record<string, string>;
 }
 
 export function PassengerInformation({
     passengers,
     onPassengerChange,
     onAutoFill,
-    showAutoFill = false
+    showAutoFill = false,
+    errors = {}
 }: PassengerInformationProps) {
+    const getError = (index: number, field: string) => {
+        return errors[`passenger${index}${field}`];
+    };
+
     const renderPassengerForm = (passenger: PassengerInfo, index: number) => (
         <motion.div
             key={`${passenger.type}-${index}`}
@@ -55,56 +61,80 @@ export function PassengerInformation({
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Full Name
                     </label>
-                    <input
-                        type="text"
-                        value={passenger.fullName}
-                        onChange={(e) => onPassengerChange(index, 'fullName', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                        required
-                        placeholder="As shown on passport"
-                    />
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={passenger.fullName}
+                            onChange={(e) => onPassengerChange(index, 'fullName', e.target.value)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${getError(index, 'Name') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            required
+                            placeholder="As shown on passport"
+                        />
+                        {getError(index, 'Name') && (
+                            <p className="mt-1 text-xs text-red-600">{getError(index, 'Name')}</p>
+                        )}
+                    </div>
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Date of Birth
                     </label>
-                    <input
-                        type="date"
-                        value={passenger.dateOfBirth}
-                        onChange={(e) => onPassengerChange(index, 'dateOfBirth', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                        required
-                        max={new Date().toISOString().split('T')[0]}
-                    />
+                    <div className="relative">
+                        <input
+                            type="date"
+                            value={passenger.dateOfBirth}
+                            onChange={(e) => onPassengerChange(index, 'dateOfBirth', e.target.value)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${getError(index, 'Birth') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            required
+                            max={new Date().toISOString().split('T')[0]}
+                        />
+                        {getError(index, 'Birth') && (
+                            <p className="mt-1 text-xs text-red-600">{getError(index, 'Birth')}</p>
+                        )}
+                    </div>
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Nationality
                     </label>
-                    <input
-                        type="text"
-                        value={passenger.nationality}
-                        onChange={(e) => onPassengerChange(index, 'nationality', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                        required
-                        placeholder="Country of citizenship"
-                    />
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={passenger.nationality}
+                            onChange={(e) => onPassengerChange(index, 'nationality', e.target.value)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${getError(index, 'Nationality') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            required
+                            placeholder="Country of citizenship"
+                        />
+                        {getError(index, 'Nationality') && (
+                            <p className="mt-1 text-xs text-red-600">{getError(index, 'Nationality')}</p>
+                        )}
+                    </div>
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Passport Number
                     </label>
-                    <input
-                        type="text"
-                        value={passenger.passportNumber}
-                        onChange={(e) => onPassengerChange(index, 'passportNumber', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                        required
-                        placeholder="Valid passport number"
-                    />
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={passenger.passportNumber}
+                            onChange={(e) => onPassengerChange(index, 'passportNumber', e.target.value)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${getError(index, 'Passport') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            required
+                            placeholder="Valid passport number"
+                        />
+                        {getError(index, 'Passport') && (
+                            <p className="mt-1 text-xs text-red-600">{getError(index, 'Passport')}</p>
+                        )}
+                    </div>
                 </div>
 
                 <div className="md:col-span-2">
@@ -116,10 +146,14 @@ export function PassengerInformation({
                             type="date"
                             value={passenger.passportExpiry}
                             onChange={(e) => onPassengerChange(index, 'passportExpiry', e.target.value)}
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${getError(index, 'Expiry') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
                             required
                             min={new Date().toISOString().split('T')[0]}
                         />
+                        {getError(index, 'Expiry') && (
+                            <p className="mt-1 text-xs text-red-600">{getError(index, 'Expiry')}</p>
+                        )}
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
                         Must be valid for at least 6 months beyond your planned stay

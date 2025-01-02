@@ -10,6 +10,7 @@ interface AirportSearchInputProps {
     placeholder?: string;
     required?: boolean;
     type?: 'departure' | 'arrival';
+    className?: string;
 }
 
 export function AirportSearchInput({
@@ -19,7 +20,8 @@ export function AirportSearchInput({
     onChange,
     placeholder = 'Enter city or airport',
     required = false,
-    type = 'departure'
+    type = 'departure',
+    className = ''
 }: AirportSearchInputProps) {
     const { query, setQuery, airports, isLoading, error } = useAirportSearch();
     const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null);
@@ -164,7 +166,7 @@ export function AirportSearchInput({
                         className={`w-full pl-10 pr-24 py-2 border rounded-xl
                             ${isFocused ? 'border-gold ring-2 ring-gold/20' : 'border-gray-300'}
                             ${selectedAirport ? 'bg-gray-50' : 'bg-white'}
-                            focus:outline-none transition-all duration-200`}
+                            focus:outline-none transition-all duration-200 ${className}`}
                         placeholder={placeholder}
                         required={required}
                         autoComplete="off"

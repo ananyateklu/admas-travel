@@ -533,7 +533,7 @@ export function Bookings() {
                                                 <div className="flex -space-x-2">
                                                     {booking.passengers.slice(0, 3).map((passenger) => (
                                                         <div
-                                                            key={passenger.passportNumber}
+                                                            key={`${passenger.passportNumber}-${passenger.fullName}`}
                                                             className="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center"
                                                             title={passenger.fullName}
                                                         >
@@ -980,7 +980,7 @@ export function Bookings() {
                                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                                                 {booking.passengers.map((passenger, index) => (
                                                                     <div
-                                                                        key={passenger.passportNumber}
+                                                                        key={`${passenger.passportNumber}-${passenger.fullName}`}
                                                                         className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300"
                                                                     >
                                                                         <div className="flex items-center gap-3 mb-3">

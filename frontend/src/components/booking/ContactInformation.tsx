@@ -7,6 +7,7 @@ interface ContactInformationProps {
     onContactChange: (field: 'contactName' | 'contactEmail' | 'contactPhone', value: string) => void;
     onAutoFill?: (field: 'name' | 'email' | 'phone') => void;
     showAutoFill?: boolean;
+    errors?: Record<string, string>;
 }
 
 export function ContactInformation({
@@ -15,7 +16,8 @@ export function ContactInformation({
     contactPhone,
     onContactChange,
     onAutoFill,
-    showAutoFill = false
+    showAutoFill = false,
+    errors = {}
 }: ContactInformationProps) {
     return (
         <div className="mb-8">
@@ -39,14 +41,20 @@ export function ContactInformation({
                             </motion.button>
                         )}
                     </div>
-                    <input
-                        type="text"
-                        value={contactName}
-                        onChange={(e) => onContactChange('contactName', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                        required
-                        placeholder="Contact person's full name"
-                    />
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={contactName}
+                            onChange={(e) => onContactChange('contactName', e.target.value)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${errors.contactName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            required
+                            placeholder="Contact person's full name"
+                        />
+                        {errors.contactName && (
+                            <p className="mt-1 text-xs text-red-600">{errors.contactName}</p>
+                        )}
+                    </div>
                 </div>
 
                 <div>
@@ -67,14 +75,20 @@ export function ContactInformation({
                             </motion.button>
                         )}
                     </div>
-                    <input
-                        type="email"
-                        value={contactEmail}
-                        onChange={(e) => onContactChange('contactEmail', e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                        required
-                        placeholder="Email for booking confirmation"
-                    />
+                    <div className="relative">
+                        <input
+                            type="email"
+                            value={contactEmail}
+                            onChange={(e) => onContactChange('contactEmail', e.target.value)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${errors.contactEmail ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            required
+                            placeholder="Email for booking confirmation"
+                        />
+                        {errors.contactEmail && (
+                            <p className="mt-1 text-xs text-red-600">{errors.contactEmail}</p>
+                        )}
+                    </div>
                 </div>
 
                 <div className="md:col-span-2">
@@ -100,7 +114,8 @@ export function ContactInformation({
                             type="tel"
                             value={contactPhone}
                             onChange={(e) => onContactChange('contactPhone', e.target.value)}
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent pl-12"
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent pl-12
+                                ${errors.contactPhone ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
                             required
                             placeholder="Contact phone number"
                         />
@@ -109,6 +124,9 @@ export function ContactInformation({
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                             </svg>
                         </div>
+                        {errors.contactPhone && (
+                            <p className="mt-1 text-xs text-red-600">{errors.contactPhone}</p>
+                        )}
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
                         We'll only use this to contact you about your booking

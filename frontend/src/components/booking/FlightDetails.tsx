@@ -11,6 +11,7 @@ interface FlightDetailsProps {
     onToChange: (airport: Airport | null) => void;
     onDepartureDateChange: (date: string) => void;
     onReturnDateChange: (date: string) => void;
+    errors?: Record<string, string>;
 }
 
 export function FlightDetails({
@@ -22,7 +23,8 @@ export function FlightDetails({
     onFromChange,
     onToChange,
     onDepartureDateChange,
-    onReturnDateChange
+    onReturnDateChange,
+    errors = {}
 }: FlightDetailsProps) {
     // Get minimum date (today)
     const getMinDate = () => {
@@ -42,42 +44,60 @@ export function FlightDetails({
                     From
                 </label>
                 <label className="block text-xs text-gray-400 mb-0.5">Departure Airport</label>
-                <AirportSearchInput
-                    label=""
-                    id="from"
-                    value={from?.name ?? ''}
-                    onChange={onFromChange}
-                    required
-                    type="departure"
-                />
+                <div className="relative">
+                    <AirportSearchInput
+                        label=""
+                        id="from"
+                        value={from?.name ?? ''}
+                        onChange={onFromChange}
+                        required
+                        type="departure"
+                        className={errors.from ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}
+                    />
+                    {errors.from && (
+                        <p className="mt-1 text-xs text-red-600">{errors.from}</p>
+                    )}
+                </div>
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                     To
                 </label>
                 <label className="block text-xs text-gray-400 mb-0.5">Arrival Airport</label>
-                <AirportSearchInput
-                    label=""
-                    id="to"
-                    value={to?.name ?? ''}
-                    onChange={onToChange}
-                    required
-                    type="arrival"
-                />
+                <div className="relative">
+                    <AirportSearchInput
+                        label=""
+                        id="to"
+                        value={to?.name ?? ''}
+                        onChange={onToChange}
+                        required
+                        type="arrival"
+                        className={errors.to ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}
+                    />
+                    {errors.to && (
+                        <p className="mt-1 text-xs text-red-600">{errors.to}</p>
+                    )}
+                </div>
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                     Departure
                 </label>
                 <label className="block text-xs text-gray-400 mb-0.5">Travel Date</label>
-                <input
-                    type="date"
-                    value={departureDate}
-                    onChange={(e) => onDepartureDateChange(e.target.value)}
-                    min={getMinDate()}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                    required
-                />
+                <div className="relative">
+                    <input
+                        type="date"
+                        value={departureDate}
+                        onChange={(e) => onDepartureDateChange(e.target.value)}
+                        min={getMinDate()}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                            ${errors.departureDate ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                        required
+                    />
+                    {errors.departureDate && (
+                        <p className="mt-1 text-xs text-red-600">{errors.departureDate}</p>
+                    )}
+                </div>
             </div>
             {isRoundTrip && (
                 <div>
@@ -85,14 +105,20 @@ export function FlightDetails({
                         Return
                     </label>
                     <label className="block text-xs text-gray-400 mb-0.5">Travel Date</label>
-                    <input
-                        type="date"
-                        value={returnDate}
-                        onChange={(e) => onReturnDateChange(e.target.value)}
-                        min={getMinReturnDate()}
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                        required
-                    />
+                    <div className="relative">
+                        <input
+                            type="date"
+                            value={returnDate}
+                            onChange={(e) => onReturnDateChange(e.target.value)}
+                            min={getMinReturnDate()}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${errors.returnDate ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            required
+                        />
+                        {errors.returnDate && (
+                            <p className="mt-1 text-xs text-red-600">{errors.returnDate}</p>
+                        )}
+                    </div>
                 </div>
             )}
         </div>
