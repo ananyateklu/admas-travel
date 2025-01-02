@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import heroImage from '../assets/mountain-two.jpg';
+import emailjs from '@emailjs/browser';
 
 interface ContactFormData {
     name: string;
@@ -67,8 +68,23 @@ export default function Contact() {
         setIsSubmitting(true);
 
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // Initialize EmailJS with your public key
+            emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+
+            // Send email using EmailJS
+            await emailjs.send(
+                import.meta.env.VITE_EMAILJS_SERVICE_ID,
+                import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+                {
+                    from_name: formData.name,
+                    from_email: formData.email,
+                    phone: formData.phone,
+                    subject: formData.subject,
+                    message: formData.message,
+                    to_email: "admastravel@gmail.com" // Your business email
+                }
+            );
+
             setSubmitStatus('success');
             // Reset form after success
             setTimeout(() => {
@@ -81,7 +97,8 @@ export default function Contact() {
                 });
                 setSubmitStatus('idle');
             }, 3000);
-        } catch {
+        } catch (error) {
+            console.error('Failed to send email:', error);
             setSubmitStatus('error');
         } finally {
             setIsSubmitting(false);
@@ -127,7 +144,24 @@ export default function Contact() {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    Sent Successfully!
+                    Message Sent!
+                </motion.div>
+            );
+        }
+
+        if (submitStatus === 'error') {
+            return (
+                <motion.div
+                    key="error"
+                    className="flex items-center text-red-500"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Failed to Send
                 </motion.div>
             );
         }
