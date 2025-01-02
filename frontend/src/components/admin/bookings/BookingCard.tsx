@@ -1,11 +1,11 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookingData, TabType, BookingStatus } from './types';
+import { BookingData, TabType, BookingStatus } from '../types';
 import { BookingStatusProgress } from './BookingStatusProgress';
 import { BookingDetails } from './BookingDetails';
 import { PassengerDetails } from './PassengerDetails';
 import { ContactDetails } from './ContactDetails';
-import { STATUS_OPTIONS } from './constants';
+import { STATUS_OPTIONS } from '../constants';
 
 const getStatusStyle = (status: string) => {
     switch (status) {

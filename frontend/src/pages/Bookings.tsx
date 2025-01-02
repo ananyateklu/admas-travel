@@ -6,8 +6,9 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import mountainTwo from '../assets/mountain-two.jpg';
 import { Airport } from '../services/flightService';
-import { BookingCard } from '../components/admin/BookingCard';
+import { BookingCard } from '../components/admin';
 import { toast } from 'react-hot-toast';
+import { NotificationToggle } from '../components/notifications/NotificationToggle';
 
 interface BookingData {
     bookingId: string;
@@ -341,31 +342,34 @@ export function Bookings() {
                 <div className="max-w-[90%] mx-auto px-6 -mt-20 pb-8 relative z-10">
                     {/* Status Filter */}
                     <motion.div
-                        className="bg-white rounded-xl shadow-md mb-6"
-                        initial={{ opacity: 0, y: -20 }}
+                        className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg shadow-black/5 mb-8"
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.2 }}
+                        transition={{ delay: 0.1 }}
                     >
-                        <nav className="flex space-x-12 px-8" aria-label="Booking status">
-                            {STATUS_OPTIONS.map((status) => (
-                                <motion.button
-                                    key={status.value}
-                                    onClick={() => setSelectedStatus(status.value)}
-                                    className={`
-                                        py-5 px-1 border-b-2 font-medium text-sm whitespace-nowrap flex items-center gap-2
-                                        ${selectedStatus === status.value
-                                            ? 'border-gold text-gold'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }
-                                    `}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    {status.icon}
-                                    {status.label}
-                                </motion.button>
-                            ))}
-                        </nav>
+                        <div className="flex justify-between items-center px-8">
+                            <nav className="flex space-x-12" aria-label="Booking status">
+                                {STATUS_OPTIONS.map((status) => (
+                                    <motion.button
+                                        key={status.value}
+                                        onClick={() => setSelectedStatus(status.value)}
+                                        className={`
+                                            py-5 px-1 border-b-2 font-medium text-sm whitespace-nowrap flex items-center gap-2
+                                            ${selectedStatus === status.value
+                                                ? 'border-gold text-gold'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                            }
+                                        `}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        {status.icon}
+                                        {status.label}
+                                    </motion.button>
+                                ))}
+                            </nav>
+                            <NotificationToggle className="py-2" />
+                        </div>
                     </motion.div>
 
                     {/* Bookings List */}

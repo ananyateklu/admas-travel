@@ -1,6 +1,23 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flight, TravellerLuggage } from '../../types/flight';
+import { Flight } from '../../../types/flight';
 import { createPortal } from 'react-dom';
+
+interface TravellerLuggage {
+    travellerReference: string;
+    luggageAllowance: {
+        luggageType: 'CHECKED_IN' | 'HAND';
+        maxPiece: number;
+        maxWeightPerPiece?: number;
+        massUnit?: string;
+        sizeRestrictions?: {
+            maxLength: number;
+            maxWidth: number;
+            maxHeight: number;
+            sizeUnit: string;
+        };
+    };
+    personalItem?: boolean;
+}
 
 interface FlightDetailsModalProps {
     flight: Flight | null;

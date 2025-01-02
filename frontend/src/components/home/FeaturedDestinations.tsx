@@ -100,10 +100,9 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
     };
 
     const containerVariants = {
-        hidden: { opacity: 0, y: 50 },
+        hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            y: 0,
             transition: {
                 duration: 0.8,
                 staggerChildren: 0.2
@@ -112,26 +111,38 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
     };
 
     const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            y: 0,
             transition: { duration: 0.5 }
         }
     };
 
     const slideVariants = {
         enter: (direction: number) => ({
-            x: direction * 50,
-            opacity: 0
+            x: direction > 0 ? 300 : -300,
+            opacity: 0,
+            scale: 0.9
         }),
         center: {
             x: 0,
-            opacity: 1
+            opacity: 1,
+            scale: 1,
+            transition: {
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+                scale: { duration: 0.2 }
+            }
         },
         exit: (direction: number) => ({
-            x: direction * -50,
-            opacity: 0
+            x: direction < 0 ? 300 : -300,
+            opacity: 0,
+            scale: 0.9,
+            transition: {
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+                scale: { duration: 0.2 }
+            }
         })
     };
 
@@ -147,12 +158,12 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                 >
                     <motion.div
                         variants={itemVariants}
-                        className="text-center mb-12"
+                        className="relative text-center mb-12"
                     >
                         <span className="text-primary-400 text-sm font-medium tracking-wider uppercase mb-4 block">Explore With Us</span>
                         <motion.h2
                             variants={itemVariants}
-                            className="text-3xl font-serif"
+                            className="text-3xl font-serif relative"
                         >
                             Featured Destinations
                         </motion.h2>
@@ -163,7 +174,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={prevDestinations}
-                            className="absolute -left-10 top-[calc(50%-3rem)] -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-full shadow-lg transition-all z-10 border border-gray-100"
+                            className="absolute -left-10 top-1/2 -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-full shadow-lg transition-all z-10 border border-gray-100"
                             aria-label="View previous destinations"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,96 +183,106 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                         </motion.button>
 
                         {/* Destinations Grid */}
-                        <div className="relative py-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                <AnimatePresence mode="wait" custom={slideDirection}>
+                        <div className="relative overflow-hidden py-8">
+                            <div className="relative w-full" style={{ height: 'min(50vh, 450px)' }}>
+                                <AnimatePresence mode="sync">
                                     {destinations
                                         .slice(currentDestinationIndex, currentDestinationIndex + 4)
                                         .map((destination, index) => (
                                             <motion.article
-                                                key={`destination-${currentDestinationIndex + index}`}
+                                                key={`${destination.name}-${currentDestinationIndex + index}`}
                                                 custom={slideDirection}
                                                 variants={slideVariants}
                                                 initial="enter"
                                                 animate="center"
                                                 exit="exit"
                                                 transition={{
-                                                    duration: 0.3,
-                                                    delay: index * 0.05,
+                                                    x: { type: "spring", stiffness: 300, damping: 30 },
+                                                    opacity: { duration: 0.2 }
+                                                }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    width: `${100 / 4}%`,
+                                                    left: `${(index * 100) / 4}%`,
+                                                    top: '2rem',
+                                                    bottom: '2rem',
+                                                    padding: '0 0.75rem'
                                                 }}
                                                 whileHover={{
                                                     scale: 1.08,
                                                     zIndex: 20,
                                                 }}
-                                                className="relative origin-center group"
+                                                className="origin-center group relative"
                                                 aria-label={`${destination.name} in ${destination.country}`}
                                             >
                                                 <motion.div
-                                                    className="relative rounded-3xl overflow-hidden aspect-[3/4] transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
+                                                    className="relative h-full rounded-3xl overflow-hidden transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
                                                 >
-                                                    {/* Loading Skeleton */}
-                                                    {!loadedImages.has(destination.image) && (
-                                                        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-                                                    )}
+                                                    <div className="absolute inset-0">
+                                                        {/* Loading Skeleton */}
+                                                        {!loadedImages.has(destination.image) && (
+                                                            <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+                                                        )}
 
-                                                    <motion.img
-                                                        src={destination.image}
-                                                        alt={destination.name}
-                                                        className={`w-full h-full object-cover transition-all duration-700 ${loadedImages.has(destination.image)
-                                                            ? 'opacity-100'
-                                                            : 'opacity-0'
-                                                            }`}
-                                                        onLoad={() => handleImageLoad(destination.image)}
-                                                    />
+                                                        <motion.img
+                                                            src={destination.image}
+                                                            alt={destination.name}
+                                                            className={`w-full h-full object-cover transition-all duration-700 ${loadedImages.has(destination.image)
+                                                                ? 'opacity-100'
+                                                                : 'opacity-0'
+                                                                }`}
+                                                            onLoad={() => handleImageLoad(destination.image)}
+                                                        />
 
-                                                    {/* Enhanced Gradient Overlay */}
-                                                    <motion.div
-                                                        className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-50 group-hover:opacity-90"
-                                                        initial={{ opacity: 0.5 }}
-                                                        whileHover={{ opacity: 0.9 }}
-                                                        transition={{ duration: 0.3 }}
-                                                    />
-
-                                                    {/* Content Overlay */}
-                                                    <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                                                        {/* Enhanced Gradient Overlay */}
                                                         <motion.div
-                                                            initial={false}
-                                                            animate={{ y: 0, opacity: 1 }}
+                                                            className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-50 group-hover:opacity-90"
+                                                            initial={{ opacity: 0.5 }}
+                                                            whileHover={{ opacity: 0.9 }}
                                                             transition={{ duration: 0.3 }}
-                                                            className="transform transition-all duration-500 group-hover:-translate-y-2"
-                                                        >
-                                                            <motion.h3
-                                                                className="text-xl font-serif mb-2 text-white/70 group-hover:text-white group-hover:text-2xl transition-all duration-300"
-                                                                layout
-                                                            >
-                                                                {destination.name}
-                                                            </motion.h3>
-                                                            <motion.p
-                                                                className="text-sm text-white/50 mb-1 group-hover:text-white group-hover:text-base transition-all duration-300 line-clamp-2 group-hover:line-clamp-none"
-                                                                layout
-                                                            >
-                                                                {destination.description}
-                                                            </motion.p>
+                                                        />
+
+                                                        {/* Content Overlay */}
+                                                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
                                                             <motion.div
-                                                                className="flex items-center justify-between gap-2 mt-3"
-                                                                layout
+                                                                initial={false}
+                                                                animate={{ y: 0, opacity: 1 }}
+                                                                transition={{ duration: 0.3 }}
+                                                                className="transform transition-all duration-500 group-hover:-translate-y-2"
                                                             >
-                                                                <span className="text-sm font-medium text-gold hover:text-gold-300 transition-colors">
-                                                                    {destination.country}
-                                                                </span>
-                                                                <motion.button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        handleBooking(destination);
-                                                                    }}
-                                                                    className="px-4 py-1.5 bg-primary text-white text-sm rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary-400"
-                                                                    whileHover={{ scale: 1.05 }}
-                                                                    whileTap={{ scale: 0.95 }}
+                                                                <motion.h3
+                                                                    className="text-xl font-serif mb-2 text-white/70 group-hover:text-white group-hover:text-2xl transition-all duration-300"
+                                                                    layout
                                                                 >
-                                                                    Book Now
-                                                                </motion.button>
+                                                                    {destination.name}
+                                                                </motion.h3>
+                                                                <motion.p
+                                                                    className="text-sm text-white/50 mb-1 group-hover:text-white group-hover:text-base transition-all duration-300 line-clamp-2 group-hover:line-clamp-none"
+                                                                    layout
+                                                                >
+                                                                    {destination.description}
+                                                                </motion.p>
+                                                                <motion.div
+                                                                    className="flex items-center justify-between gap-2 mt-3"
+                                                                    layout
+                                                                >
+                                                                    <span className="text-sm font-medium text-gold hover:text-gold-300 transition-colors">
+                                                                        {destination.country}
+                                                                    </span>
+                                                                    <motion.button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleBooking(destination);
+                                                                        }}
+                                                                        className="px-4 py-1.5 bg-primary text-white text-sm rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary-400"
+                                                                        whileHover={{ scale: 1.05 }}
+                                                                        whileTap={{ scale: 0.95 }}
+                                                                    >
+                                                                        Book Now
+                                                                    </motion.button>
+                                                                </motion.div>
                                                             </motion.div>
-                                                        </motion.div>
+                                                        </div>
                                                     </div>
                                                 </motion.div>
                                             </motion.article>
@@ -283,8 +304,8 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                             </svg>
                         </motion.button>
 
-                        {/* Enhanced Navigation Dots */}
-                        <nav className="flex justify-center gap-2 mt-8" aria-label="Destination pages">
+                        {/* Navigation Dots */}
+                        <nav className="flex justify-center gap-2 mt-4" aria-label="Destination pages">
                             {Array.from({ length: Math.ceil(destinations.length / 4) }).map((_, index) => (
                                 <motion.button
                                     key={`destination-page-${index + 1}`}

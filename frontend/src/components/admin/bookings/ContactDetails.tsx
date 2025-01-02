@@ -1,4 +1,4 @@
-import { BookingData } from './types';
+import { BookingData } from '../types';
 import { useState } from 'react';
 
 interface ContactDetailsProps {

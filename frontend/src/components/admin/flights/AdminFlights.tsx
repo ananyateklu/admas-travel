@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { flightService, Flight, FlightConfig } from '../../services/flightService';
+import { flightService, Flight, FlightConfig } from '../../../services/flightService';
 import { FlightSearchForm } from './FlightSearchForm';
 import { FlightDetailsModal } from './FlightDetailsModal';
 import { FlightGrid } from './FlightGrid';

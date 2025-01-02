@@ -1,5 +1,5 @@
-import { BookingData } from '../../types/booking';
-import { getStatusStyle } from './utils';
+import { BookingData } from '../types';
+import { getStatusStyle } from '../utils';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 

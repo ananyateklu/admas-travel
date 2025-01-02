@@ -1,4 +1,4 @@
-import { BOOKING_STATUSES } from './types';
+import { BOOKING_STATUSES } from "../types";
 
 interface SearchFiltersProps {
     searchTerm: string;

@@ -18,6 +18,7 @@ export interface BookingData {
     contactName: string;
     contactEmail: string;
     contactPhone: string;
+    specialRequests?: string;
     passengers: Array<{
         type: string;
         fullName: string;

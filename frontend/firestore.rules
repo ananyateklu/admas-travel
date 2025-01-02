@@ -8,11 +8,22 @@ service cloud.firestore {
 
     // Allow users to read and write their own data
     match /users/{userId} {
+      // Allow users to read and write their own document
       allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow access to user's settings subcollection
+      match /settings/{document} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
       
       // Allow access to user's bookings subcollection
       match /bookings/{bookingId} {
         allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      }
+      
+      // Allow access to all other subcollections under user's document
+      match /{collection}/{document} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }
     
@@ -35,4 +46,4 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
   }
-}
+} 

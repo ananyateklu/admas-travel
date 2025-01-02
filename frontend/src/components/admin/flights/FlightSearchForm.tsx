@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { AirportSearchInput } from '../AirportSearchInput';
-import { Airport } from '../../services/flightService';
+import { AirportSearchInput } from '../../../components/AirportSearchInput';
+import { Airport } from '../../../services/flightService';
 
 interface FlightSearchFormProps {
     onSearch: (params: {

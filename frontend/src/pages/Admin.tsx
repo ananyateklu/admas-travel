@@ -4,13 +4,20 @@ import { useAuth } from '../lib/firebase/useAuth';
 import { collection, query, orderBy, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import planeBoarding from '../assets/plane-boarding.jpg';
-import { BookingCard } from '../components/admin/BookingCard';
-import { SearchFilters } from '../components/admin/SearchFilters';
-import { ADMIN_EMAILS, BookingData } from '../components/admin/types';
-import { formatDate, formatDateShort, formatDateNumeric } from '../components/admin/utils';
-import { AdminAnalytics } from '../components/admin/AdminAnalytics';
-import { AdminFlights } from '../components/admin/AdminFlights';
+import {
+    BookingCard,
+    SearchFilters,
+    AdminAnalytics,
+    AdminFlights,
+    ADMIN_EMAILS,
+    BookingData,
+    formatDate,
+    formatDateShort,
+    formatDateNumeric
+} from '../components/admin';
 import { Airport } from '../services/flightService';
+import { AdminSettings } from '../components/admin/settings';
+import { motion } from 'framer-motion';
 
 // Add type guard for Airport
 const isAirport = (value: unknown): value is Airport => {
@@ -170,6 +177,33 @@ export default function Admin() {
         bookings.filter(booking => booking.status === 'pending').length,
         [bookings]);
 
+    // Get time-based greeting
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return 'Good Morning';
+        if (hour < 17) return 'Good Afternoon';
+        return 'Good Evening';
+    };
+
+    // Calculate completion rate
+    const getCompletionRate = () => {
+        const completedBookings = bookings.filter(b => b.status === 'completed').length;
+        const totalBookings = bookings.length;
+        return totalBookings > 0 ? Math.round((completedBookings / totalBookings) * 100) : 0;
+    };
+
+    // Format last active time
+    const getLastActiveTime = () => {
+        if (!user?.metadata.lastSignInTime) return '';
+        const lastActive = new Date(user.metadata.lastSignInTime);
+        const now = new Date();
+        const diffInHours = Math.abs(now.getTime() - lastActive.getTime()) / 36e5;
+
+        if (diffInHours < 1) return 'Active now';
+        if (diffInHours < 24) return `Last active ${Math.floor(diffInHours)}h ago`;
+        return `Last active ${Math.floor(diffInHours / 24)}d ago`;
+    };
+
     // Main render content based on tab
     const renderTabContent = () => {
         switch (activeTab) {
@@ -224,62 +258,7 @@ export default function Admin() {
             case 'analytics':
                 return <AdminAnalytics bookings={bookings} />;
             case 'settings':
-                return (
-                    <div className="bg-white rounded-xl shadow-sm p-8">
-                        <div className="max-w-2xl mx-auto">
-                            <h3 className="text-xl font-medium text-gray-900 mb-6">Admin Settings</h3>
-
-                            <div className="space-y-6">
-                                {/* Notification Settings */}
-                                <div className="border-b border-gray-200 pb-6">
-                                    <h4 className="text-lg font-medium text-gray-900 mb-4">Notification Preferences</h4>
-                                    <div className="space-y-4">
-                                        <label className="flex items-center justify-between">
-                                            <span className="text-gray-700">Email notifications for new bookings</span>
-                                            <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
-                                        </label>
-                                        <label className="flex items-center justify-between">
-                                            <span className="text-gray-700">SMS alerts for booking cancellations</span>
-                                            <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
-                                        </label>
-                                        <label className="flex items-center justify-between">
-                                            <span className="text-gray-700">Daily booking summary</span>
-                                            <input type="checkbox" className="form-checkbox h-5 w-5 text-gold rounded" />
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {/* API Integration Settings - Placeholder */}
-                                <div className="border-b border-gray-200 pb-6">
-                                    <h4 className="text-lg font-medium text-gray-900 mb-4">API Integration</h4>
-                                    <div className="bg-gray-50 rounded-lg p-4">
-                                        <p className="text-sm text-gray-600">
-                                            API integration settings will be available soon. This will allow you to
-                                            configure flight APIs and other third-party services.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Admin Access Control - Placeholder */}
-                                <div>
-                                    <h4 className="text-lg font-medium text-gray-900 mb-4">Access Control</h4>
-                                    <div className="bg-gray-50 rounded-lg p-4">
-                                        <p className="text-sm text-gray-600">
-                                            Admin access control settings will be available soon. This will allow you to
-                                            manage admin permissions and roles.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-8 flex justify-end">
-                                <button className="px-4 py-2 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors">
-                                    Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                );
+                return <AdminSettings />;
             default:
                 return null;
         }
@@ -305,155 +284,286 @@ export default function Admin() {
                         <div className="absolute w-2 h-2 bg-white rounded-full top-1/2 left-3/4 animate-float" style={{ animationDelay: '1.5s' }} />
                     </div>
                 </div>
-                <div className="relative flex flex-col justify-center text-center pt-[260px]">
-                    <div className="w-full max-w-[2000px] mx-auto px-4">
-                        <h1 className="text-4xl md:text-6xl font-serif text-white mb-8 tracking-tight motion-safe:animate-fade-in-up">
-                            Admin Dashboard
-                        </h1>
-                        <p className="text-xl text-white/90 motion-safe:animate-fade-in-up animation-delay-200 mb-16">
-                            Manage and monitor all travel operations
-                        </p>
-
-                        {/* Quick stats */}
+                <div className="relative flex flex-col justify-center pt-[200px]">
+                    <div className="w-full max-w-[2000px] mx-auto px-8">
                         <div className="w-[80%] max-w-[2000px] mx-auto">
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-16 mt-8 mb-12 motion-safe:animate-fade-in-up animation-delay-300">
-                                <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
-                                    <div className="text-2xl font-bold text-gray-800">
-                                        {bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length}
-                                    </div>
-                                    <div className="text-sm text-gray-600">Active Bookings</div>
+                            <div className="flex flex-col items-center text-center mb-12">
+                                <motion.div
+                                    className="flex-shrink-0 mb-6 relative group"
+                                    initial={{ scale: 0.5, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{ duration: 0.5 }}
+                                    whileHover={{ scale: 1.05 }}
+                                >
+                                    {user?.photoURL ? (
+                                        <div className="relative">
+                                            <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300" />
+                                            <img
+                                                src={user.photoURL}
+                                                alt={user.displayName ?? 'Admin'}
+                                                className="w-28 h-28 rounded-full object-cover border-4 border-white/20 shadow-xl relative z-10"
+                                            />
+                                            <motion.div
+                                                className="absolute -bottom-2 -right-2 w-7 h-7 bg-green-500 rounded-full border-4 border-white z-20"
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ delay: 0.5, type: "spring" }}
+                                            />
+                                            <motion.div
+                                                className="absolute -bottom-2 -left-2 bg-gold text-white text-xs px-2 py-1 rounded-full shadow-lg z-20"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.6 }}
+                                            >
+                                                Admin
+                                            </motion.div>
+                                        </div>
+                                    ) : (
+                                        <div className="relative">
+                                            <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300" />
+                                            <div className="w-28 h-28 rounded-full bg-gold text-white flex items-center justify-center text-4xl font-medium border-4 border-white/20 shadow-xl relative z-10">
+                                                {user?.displayName?.charAt(0) ?? user?.email?.charAt(0) ?? 'A'}
+                                            </div>
+                                            <motion.div
+                                                className="absolute -bottom-2 -right-2 w-7 h-7 bg-green-500 rounded-full border-4 border-white z-20"
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                transition={{ delay: 0.5, type: "spring" }}
+                                            />
+                                            <motion.div
+                                                className="absolute -bottom-2 -left-2 bg-gold text-white text-xs px-2 py-1 rounded-full shadow-lg z-20"
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.6 }}
+                                            >
+                                                Admin
+                                            </motion.div>
+                                        </div>
+                                    )}
+                                </motion.div>
+                                <div>
+                                    <motion.div
+                                        initial={{ y: -20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ duration: 0.5, delay: 0.2 }}
+                                    >
+                                        <span className="text-gold text-xl mb-2 block font-medium tracking-wide">{getGreeting()},</span>
+                                        <h1 className="text-4xl md:text-6xl font-serif text-white mb-2 tracking-tight">
+                                            {user?.displayName ?? 'Admin'}
+                                        </h1>
+                                    </motion.div>
+                                    <motion.div
+                                        className="flex items-center justify-center gap-4 flex-wrap"
+                                        initial={{ y: -20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ duration: 0.5, delay: 0.3 }}
+                                    >
+                                        <div className="flex items-center text-white/60">
+                                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                                            {getLastActiveTime()}
+                                        </div>
+                                        <div className="text-white/60">•</div>
+                                        <div className="text-white/60 hover:text-white transition-colors">{user?.email}</div>
+                                        <div className="text-white/60">•</div>
+                                        <div className="text-white/60">Last login: {new Date(user?.metadata.lastSignInTime ?? '').toLocaleDateString()}</div>
+                                    </motion.div>
                                 </div>
-                                <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
-                                    <div className="text-2xl font-bold text-gray-800">
-                                        {bookings.filter(b => {
+                            </div>
+
+                            <motion.p
+                                className="text-xl text-white/80 text-center mx-auto max-w-2xl mb-16"
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.4 }}
+                            >
+                                Welcome to your command center. Monitor bookings, manage flights, and keep your travel operations running smoothly.
+                            </motion.p>
+
+                            {/* Quick stats */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mt-8 mb-12">
+                                {[
+                                    {
+                                        value: bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length,
+                                        label: 'Active Bookings',
+                                        icon: (
+                                            <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        ),
+                                        trend: '+12% from last week',
+                                        trendUp: true
+                                    },
+                                    {
+                                        value: bookings.filter(b => {
                                             const today = new Date();
                                             const bookingDate = new Date(b.departureDate);
                                             return bookingDate.toDateString() === today.toDateString();
-                                        }).length}
-                                    </div>
-                                    <div className="text-sm text-gray-600">Today's Flights</div>
-                                </div>
-                                <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
-                                    <div className="text-2xl font-bold text-gray-800">
-                                        {(() => {
-                                            const completedBookings = bookings.filter(b => b.status === 'completed').length;
-                                            const totalBookings = bookings.length;
-                                            return totalBookings > 0
-                                                ? Math.round((completedBookings / totalBookings) * 100)
-                                                : 0;
-                                        })()}%
-                                    </div>
-                                    <div className="text-sm text-gray-600">Completion Rate</div>
-                                </div>
-                                <div className="bg-white/90 backdrop-blur-lg rounded-xl px-10 py-4 border border-white/20 hover:bg-white/95 transition-colors">
-                                    <div className="text-2xl font-bold text-gray-800">
-                                        {bookings.filter(b => {
+                                        }).length,
+                                        label: "Today's Flights",
+                                        icon: (
+                                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                            </svg>
+                                        ),
+                                        trend: 'On schedule',
+                                        trendUp: true
+                                    },
+                                    {
+                                        value: `${getCompletionRate()}%`,
+                                        label: 'Completion Rate',
+                                        icon: (
+                                            <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                        ),
+                                        trend: '+5% this month',
+                                        trendUp: true
+                                    },
+                                    {
+                                        value: bookings.filter(b => {
                                             const today = new Date();
                                             const bookingDate = typeof b.createdAt === 'string'
                                                 ? new Date(b.createdAt)
                                                 : b.createdAt.toDate();
                                             return bookingDate.toDateString() === today.toDateString();
-                                        }).length}
-                                    </div>
-                                    <div className="text-sm text-gray-600">Bookings Today</div>
-                                </div>
+                                        }).length,
+                                        label: 'New Bookings',
+                                        icon: (
+                                            <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        ),
+                                        trend: '3 in last hour',
+                                        trendUp: true
+                                    }
+                                ].map((stat, index) => (
+                                    <motion.div
+                                        key={stat.label}
+                                        className="bg-white/90 backdrop-blur-lg rounded-xl px-6 py-4 border border-white/20 hover:bg-white/95 transition-all duration-300 group hover:shadow-lg hover:-translate-y-1"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 + 0.5 }}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="p-2 rounded-lg bg-gray-50 group-hover:scale-110 transition-transform duration-300">
+                                                {stat.icon}
+                                            </div>
+                                            <div className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'} flex items-center gap-1`}>
+                                                {stat.trendUp ? (
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+                                                    </svg>
+                                                )}
+                                                {stat.trend}
+                                            </div>
+                                        </div>
+                                        <div className="text-2xl font-bold text-gray-800 mb-1 group-hover:text-gold transition-colors">
+                                            {stat.value}
+                                        </div>
+                                        <div className="text-sm text-gray-600">{stat.label}</div>
+                                    </motion.div>
+                                ))}
                             </div>
-                        </div>
 
-                        {/* Navigation Tabs */}
-                        <div className="w-[80%] max-w-[2000px] mx-auto mb-16">
-                            <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg shadow-black/5 motion-safe:animate-fade-in-up animation-delay-100">
-                                <nav className="flex flex-col sm:flex-row" aria-label="Admin sections">
-                                    <div className="flex overflow-x-auto sm:w-full scrollbar-hide">
-                                        <div className="flex-1 flex p-3 gap-3 justify-center">
-                                            {([
-                                                {
-                                                    id: 'bookings',
-                                                    label: 'Bookings',
-                                                    icon: (
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
-                                                        </svg>
-                                                    ),
-                                                    notifications: pendingBookingsCount
-                                                },
-                                                {
-                                                    id: 'flights',
-                                                    label: 'Flights',
-                                                    icon: (
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                                        </svg>
-                                                    )
-                                                },
-                                                {
-                                                    id: 'analytics',
-                                                    label: 'Analytics',
-                                                    icon: (
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                                        </svg>
-                                                    ),
-                                                    highlight: true
-                                                },
-                                                {
-                                                    id: 'settings',
-                                                    label: 'Settings',
-                                                    icon: (
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        </svg>
-                                                    )
-                                                }
-                                            ] as AdminTabConfig[]).map((tab) => (
-                                                <button
-                                                    key={tab.id}
-                                                    onClick={() => setActiveTab(tab.id)}
-                                                    className={`group relative flex-1 sm:flex-initial min-w-[140px] px-6 py-4 text-sm font-medium rounded-xl flex items-center justify-center gap-3 transition-all duration-500
-                                                        ${activeTab === tab.id
-                                                            ? 'bg-gradient-to-r from-gold via-gold/90 to-gold text-white shadow-lg shadow-gold/20 scale-[1.02] hover:shadow-xl hover:shadow-gold/25'
-                                                            : 'text-gray-500 hover:text-gray-700 hover:bg-black/5'
-                                                        }`}
-                                                    aria-current={activeTab === tab.id ? 'page' : undefined}
-                                                >
-                                                    {/* Background glow effect */}
-                                                    {activeTab === tab.id && (
-                                                        <div className="absolute inset-0 rounded-xl bg-gold/20 blur-xl transition-opacity duration-500" />
-                                                    )}
+                            {/* Navigation Tabs */}
+                            <div className="w-[80%] max-w-[2000px] mx-auto mb-16">
+                                <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg shadow-black/5 motion-safe:animate-fade-in-up animation-delay-100">
+                                    <nav className="flex flex-col sm:flex-row" aria-label="Admin sections">
+                                        <div className="flex overflow-x-auto sm:w-full scrollbar-hide">
+                                            <div className="flex-1 flex p-3 gap-3 justify-center">
+                                                {([
+                                                    {
+                                                        id: 'bookings',
+                                                        label: 'Bookings',
+                                                        icon: (
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
+                                                            </svg>
+                                                        ),
+                                                        notifications: pendingBookingsCount
+                                                    },
+                                                    {
+                                                        id: 'flights',
+                                                        label: 'Flights',
+                                                        icon: (
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                                            </svg>
+                                                        )
+                                                    },
+                                                    {
+                                                        id: 'analytics',
+                                                        label: 'Analytics',
+                                                        icon: (
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                            </svg>
+                                                        ),
+                                                        highlight: true
+                                                    },
+                                                    {
+                                                        id: 'settings',
+                                                        label: 'Settings',
+                                                        icon: (
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            </svg>
+                                                        )
+                                                    }
+                                                ] as AdminTabConfig[]).map((tab) => (
+                                                    <button
+                                                        key={tab.id}
+                                                        onClick={() => setActiveTab(tab.id)}
+                                                        className={`group relative flex-1 sm:flex-initial min-w-[140px] px-6 py-4 text-sm font-medium rounded-xl flex items-center justify-center gap-3 transition-all duration-500
+                                                            ${activeTab === tab.id
+                                                                ? 'bg-gradient-to-r from-gold via-gold/90 to-gold text-white shadow-lg shadow-gold/20 scale-[1.02] hover:shadow-xl hover:shadow-gold/25'
+                                                                : 'text-gray-500 hover:text-gray-700 hover:bg-black/5'
+                                                            }`}
+                                                        aria-current={activeTab === tab.id ? 'page' : undefined}
+                                                    >
+                                                        {/* Background glow effect */}
+                                                        {activeTab === tab.id && (
+                                                            <div className="absolute inset-0 rounded-xl bg-gold/20 blur-xl transition-opacity duration-500" />
+                                                        )}
 
-                                                    {/* Icon with hover animation */}
-                                                    <span className={`relative transition-all duration-500 ${activeTab === tab.id ? 'scale-110' : 'group-hover:scale-110'}`}>
-                                                        {tab.icon}
-                                                    </span>
+                                                        {/* Icon with hover animation */}
+                                                        <span className={`relative transition-all duration-500 ${activeTab === tab.id ? 'scale-110' : 'group-hover:scale-110'}`}>
+                                                            {tab.icon}
+                                                        </span>
 
-                                                    {/* Label with underline effect */}
-                                                    <span className="relative">
-                                                        {tab.label}
-                                                        <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-current transform origin-left transition-transform duration-300 ${activeTab === tab.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
-                                                    </span>
+                                                        {/* Label with underline effect */}
+                                                        <span className="relative">
+                                                            {tab.label}
+                                                            <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-current transform origin-left transition-transform duration-300 ${activeTab === tab.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                                                        </span>
 
-                                                    {/* Notification badge with pulse effect */}
-                                                    {tab.notifications && tab.notifications > 0 && (
-                                                        <span className="absolute -top-1 -right-1">
-                                                            <span className="relative flex h-5 w-5">
-                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                                                <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs font-bold items-center justify-center">
-                                                                    {tab.notifications}
+                                                        {/* Notification badge with pulse effect */}
+                                                        {tab.notifications && tab.notifications > 0 && (
+                                                            <span className="absolute -top-1 -right-1">
+                                                                <span className="relative flex h-5 w-5">
+                                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                                    <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs font-bold items-center justify-center">
+                                                                        {tab.notifications}
+                                                                    </span>
                                                                 </span>
                                                             </span>
-                                                        </span>
-                                                    )}
+                                                        )}
 
-                                                    {/* Highlight indicator */}
-                                                    {tab.highlight && (
-                                                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                                                    )}
-                                                </button>
-                                            ))}
+                                                        {/* Highlight indicator */}
+                                                        {tab.highlight && (
+                                                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                </nav>
+                                    </nav>
+                                </div>
                             </div>
                         </div>
                     </div>

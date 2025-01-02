@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flight, FlightConfig } from '../../services/flightService';
+import { Flight, FlightConfig } from '../../../services/flightService';
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },

@@ -1,6 +1,6 @@
-import { STATUS_OPTIONS } from './constants';
-import { getStatusButtonStyle } from './utils';
-import { BookingStatus } from './types';
+import { STATUS_OPTIONS } from "../constants";
+import { getStatusButtonStyle } from "../utils";
+import { BookingStatus } from '../types';
 
 interface BookingStatusProgressProps {
     currentStatus: BookingStatus;

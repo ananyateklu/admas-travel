@@ -9,6 +9,8 @@ import { TravelPreference } from '../hooks/useTravelPreferences';
 import { BookingHero } from '../components/booking/BookingHero';
 import { BookingForm } from '../components/booking/BookingForm';
 import { Airport } from '../services/flightService';
+import emailjs from '@emailjs/browser';
+import { NotificationToggle } from '../components/notifications/NotificationToggle';
 
 interface PassengerInfo {
     type: 'adult' | 'child';
@@ -169,6 +171,76 @@ Duration: ${preferences.duration}` : ''
         return '';
     };
 
+    const sendBookingEmails = async (bookingData: BookingFormData & { createdAt: string; status: string; }) => {
+        try {
+            // Check if user has enabled email notifications
+            const settingsDoc = await getDoc(doc(db, `users/${user!.uid}/settings/preferences`));
+            const settings = settingsDoc.data();
+
+            if (!settings?.notifications?.emailNotifications) {
+                console.log('Email notifications are disabled for this user');
+                return;
+            }
+
+            // Initialize EmailJS
+            emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+
+            // Format booking details for email
+            const formatDate = (date: string) => new Date(date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const bookingDetails = `
+Flight Booking Details:
+------------------------
+Trip Type: ${bookingData.tripType}
+From: ${bookingData.from?.name ?? bookingData.from}
+To: ${bookingData.to?.name ?? bookingData.to}
+Departure: ${formatDate(bookingData.departureDate)}
+${bookingData.returnDate ? `Return: ${formatDate(bookingData.returnDate)}` : ''}
+Class: ${bookingData.class}
+Number of Passengers: ${bookingData.adults + bookingData.children}
+Contact Information: ${bookingData.contactName} (${bookingData.contactPhone})
+
+Special Requests:
+${bookingData.specialRequests || 'None'}
+
+Passenger Details:
+${bookingData.passengers.map((p, i) => `
+Passenger ${i + 1}:
+- Name: ${p.fullName}
+- Type: ${p.type}
+- Nationality: ${p.nationality}
+- Passport: ${p.passportNumber}
+- Passport Expiry: ${p.passportExpiry}
+- Date of Birth: ${p.dateOfBirth}
+`).join('\n')}
+            `.trim();
+
+            // Send booking notification (auto-reply will handle customer confirmation)
+            await emailjs.send(
+                import.meta.env.VITE_EMAILJS_SERVICE_ID,
+                import.meta.env.VITE_EMAILJS_BOOKING_TEMPLATE_ID,
+                {
+                    to_name: bookingData.contactName,
+                    to_email: bookingData.contactEmail,
+                    customer_name: bookingData.contactName,
+                    customer_email: bookingData.contactEmail,
+                    customer_phone: bookingData.contactPhone,
+                    booking_details: bookingDetails
+                }
+            );
+
+        } catch (error) {
+            console.error('Error sending booking emails:', error);
+            // Don't throw the error - we don't want to interrupt the booking process
+            // just because email sending failed
+        }
+    };
+
     const handleSubmit = async (formData: BookingFormData) => {
         if (!user) {
             toast.error('Please sign in to make a booking');
@@ -214,6 +286,9 @@ Duration: ${preferences.duration}` : ''
                 ...bookingData
             });
 
+            // Send confirmation emails if notifications are enabled
+            await sendBookingEmails(bookingData);
+
             toast.success('Booking submitted successfully!');
             navigate('/bookings');
         } catch (error) {
@@ -230,6 +305,9 @@ Duration: ${preferences.duration}` : ''
 
             <section className="py-16">
                 <div className="max-w-4xl mx-auto px-4">
+                    <div className="mb-6 flex justify-end">
+                        <NotificationToggle className="bg-white shadow-sm border border-gray-200 rounded-lg px-4 py-2" />
+                    </div>
                     <div className="border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300">
                         <BookingForm
                             initialData={initialFormData}
@@ -255,7 +333,7 @@ Duration: ${preferences.duration}` : ''
                                     </svg>
                                 </div>
                                 <h3 className="text-lg font-semibold mb-2">Email Support</h3>
-                                <p className="text-gray-600">support@admastravel.com</p>
+                                <p className="text-gray-600">ananya.meseret@gmail.com</p>
                             </div>
                             <div className="text-center">
                                 <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-gold/10 rounded-full">
