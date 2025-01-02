@@ -1,5 +1,5 @@
 import { STATUS_OPTIONS } from './constants';
-import { getConnectorGradient, getStatusButtonStyle } from './utils';
+import { getStatusButtonStyle } from './utils';
 import { BookingStatus } from './types';
 
 interface BookingStatusProgressProps {
@@ -33,16 +33,11 @@ export function BookingStatusProgress({
                             className={`relative flex items-center ${index > 0 ? 'ml-8' : ''}`}
                             onClick={() => onStatusChange(bookingId, option.value, userId)}
                         >
-                            {/* Connector Line with Gradient */}
+                            {/* Connector Line */}
                             {index > 0 && (
                                 <div className="absolute right-full w-8 h-0.5 -translate-y-1/2 top-1/2">
                                     <div
-                                        className="w-full h-full rounded-full transition-all duration-300"
-                                        style={
-                                            isActive || isPassed
-                                                ? getConnectorGradient(STATUS_OPTIONS[index - 1], option, true)
-                                                : { backgroundColor: 'rgb(229 231 235)' }
-                                        }
+                                        className="w-full h-full rounded-full bg-gray-200 transition-all duration-300"
                                     />
                                 </div>
                             )}

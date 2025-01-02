@@ -8,6 +8,7 @@ export interface BookingData {
     departureDate: string;
     returnDate?: string;
     status: string;
+    previousStatus?: string;
     totalPassengers: number;
     createdAt: string | { toDate: () => Date };
     from: Airport | null;
