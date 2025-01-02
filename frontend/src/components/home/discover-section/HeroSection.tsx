@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollAnimation } from '../../../hooks/useScrollAnimation';
 import { NavigationIndicator } from './NavigationArrows';
@@ -8,7 +8,7 @@ import { Wonder, wonders } from './types';
 
 export function HeroSection() {
     const navigate = useNavigate();
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const [currentWonder, setCurrentWonder] = useState<Wonder>(wonders[0]);
     const [isChanging, setIsChanging] = useState(false);
     const [direction, setDirection] = useState<'left' | 'right'>('right');
@@ -27,11 +27,11 @@ export function HeroSection() {
         threshold: 0.2
     });
 
-    const handleStartJourney = () => {
+    const handleStartJourney = useCallback(() => {
         navigate('/get-started');
-    };
+    }, [navigate]);
 
-    const handleNavigate = (wonderId: string) => {
+    const handleNavigate = useCallback((wonderId: string) => {
         if (isChanging) return;
 
         const targetWonder = wonders.find(w => w.id === wonderId);
@@ -45,16 +45,20 @@ export function HeroSection() {
         setTimeout(() => {
             setIsChanging(false);
         }, 300);
-    };
+    }, [isChanging, currentWonder]);
 
-    const handleImageLoad = () => {
+    const handleImageLoad = useCallback(() => {
         setIsLoading(false);
-    };
+    }, []);
 
     return (
         <motion.section
             ref={containerRef}
-            className="relative min-h-screen bg-black overflow-hidden"
+            className="relative min-h-screen bg-black overflow-hidden will-change-transform"
+            style={{
+                transform: 'translate3d(0,0,0)',
+                backfaceVisibility: 'hidden'
+            }}
         >
             <AnimatePresence mode="wait">
                 <motion.div
@@ -64,6 +68,11 @@ export function HeroSection() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: direction === 'right' ? '-100%' : '100%' }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
+                    style={{
+                        transform: 'translate3d(0,0,0)',
+                        backfaceVisibility: 'hidden',
+                        willChange: 'transform, opacity'
+                    }}
                 >
                     {isLoading && (
                         <div className="absolute inset-0 bg-gray-900 animate-pulse z-10" />
@@ -73,11 +82,17 @@ export function HeroSection() {
                         src={currentWonder.image}
                         alt={currentWonder.title}
                         className="w-full h-full object-cover"
-                        style={{ y }}
+                        style={{
+                            y,
+                            transform: 'translate3d(0,0,0)',
+                            backfaceVisibility: 'hidden',
+                            willChange: 'transform'
+                        }}
                         onLoad={handleImageLoad}
                         initial={{ scale: 1.1 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
+                        loading="eager"
                     />
                     <motion.div
                         className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"
@@ -120,6 +135,10 @@ export function HeroSection() {
             <motion.div
                 ref={contentRef}
                 className="relative min-h-screen flex flex-col"
+                style={{
+                    transform: 'translate3d(0,0,0)',
+                    backfaceVisibility: 'hidden'
+                }}
             >
                 <div className="flex-1 flex items-center">
                     <div className="max-w-7xl mx-auto px-8 w-full">
