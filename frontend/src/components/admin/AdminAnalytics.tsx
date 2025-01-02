@@ -94,11 +94,13 @@ export function AdminAnalytics({ bookings }: AdminAnalyticsProps) {
 
     // Get popular destinations
     const getPopularDestinations = () => {
-        const destinations = bookings.reduce((acc, booking) => {
-            const dest = booking.to;
-            acc[dest] = (acc[dest] || 0) + 1;
+        const destinations = bookings.reduce((acc: Record<string, number>, booking) => {
+            const dest = typeof booking.to === 'object' && booking.to ? booking.to.city : booking.to;
+            if (dest) {
+                acc[dest] = (acc[dest] || 0) + 1;
+            }
             return acc;
-        }, {} as Record<string, number>);
+        }, {});
 
         return Object.entries(destinations)
             .sort((a, b) => b[1] - a[1])

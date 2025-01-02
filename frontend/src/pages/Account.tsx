@@ -18,6 +18,7 @@ interface AccountFormData {
     nationality: string;
     passportNumber: string;
     passportExpiry: string;
+    dateOfBirth: string;
     preferences: Preferences;
 }
 
@@ -37,6 +38,7 @@ export default function Account() {
         nationality: '',
         passportNumber: '',
         passportExpiry: '',
+        dateOfBirth: '',
         preferences: {
             travelStyle: 'comfort',
             destinations: [],
@@ -115,6 +117,7 @@ export default function Account() {
                 nationality: formData.nationality,
                 passportNumber: formData.passportNumber,
                 passportExpiry: formData.passportExpiry,
+                dateOfBirth: formData.dateOfBirth,
                 preferences: formData.preferences
             }, { merge: true });
 
@@ -244,6 +247,19 @@ export default function Account() {
                                             value={formData.email}
                                             disabled
                                             className="w-full px-4 py-2 border rounded-lg bg-gray-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Date of Birth
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="dateOfBirth"
+                                            value={formData.dateOfBirth}
+                                            onChange={handleInputChange}
+                                            disabled={!isEditing}
+                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent disabled:bg-gray-50"
                                         />
                                     </div>
                                     <div>

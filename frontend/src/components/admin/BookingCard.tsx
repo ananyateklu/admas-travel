@@ -65,7 +65,7 @@ export function BookingCard({
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    <span>{booking.from} → {booking.to}</span>
+                                    <span>{(booking.from && typeof booking.from === 'object' ? booking.from.city : booking.from) ?? 'Unknown'} → {(booking.to && typeof booking.to === 'object' ? booking.to.city : booking.to) ?? 'Unknown'}</span>
                                 </div>
                                 <span className="text-gray-400">•</span>
                                 <div className="flex items-center gap-1">
@@ -198,7 +198,7 @@ export function BookingCard({
                                         onClick={async () => {
                                             const shareData = {
                                                 title: `Travel Booking - ${booking.bookingReference}`,
-                                                text: `Check travel booking from ${booking.from} to ${booking.to}`,
+                                                text: `Check travel booking from ${booking.from && typeof booking.from === 'object' ? booking.from.city : booking.from ?? 'Unknown'} to ${booking.to && typeof booking.to === 'object' ? booking.to.city : booking.to ?? 'Unknown'}`,
                                                 url: window.location.href
                                             };
                                             if (navigator.share) {

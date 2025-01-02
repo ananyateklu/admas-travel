@@ -5,6 +5,7 @@ import { db } from '../lib/firebase';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import mountainTwo from '../assets/mountain-two.jpg';
+import { Airport } from '../services/flightService';
 
 interface BookingData {
     bookingId: string;
@@ -183,6 +184,18 @@ const formatDate = (date: string | { toDate: () => Date } | Date) => {
 
 const getStatusText = (status: string) => {
     return status.charAt(0).toUpperCase() + status.slice(1);
+};
+
+// Add type guard for Airport
+const isAirport = (value: unknown): value is Airport => {
+    return value !== null && typeof value === 'object' && 'city' in value;
+};
+
+// Add helper function to get location display
+const getLocationDisplay = (location: Airport | string | null): string => {
+    if (!location) return '';
+    if (isAirport(location)) return location.city;
+    return location;
 };
 
 export function Bookings() {
@@ -434,7 +447,7 @@ export function Bookings() {
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         </svg>
-                                                        <span>{booking.from} → {booking.to}</span>
+                                                        <span>{getLocationDisplay(booking.from)} → {getLocationDisplay(booking.to)}</span>
                                                     </div>
                                                     <span className="text-gray-400">•</span>
                                                     <div className="flex items-center gap-1">
@@ -648,7 +661,7 @@ export function Bookings() {
                                                                 <div className="flex-1 bg-gold/5 rounded-lg p-3">
                                                                     <div className="flex items-center justify-between">
                                                                         <div>
-                                                                            <p className="font-medium text-gray-900">{booking.from}</p>
+                                                                            <p className="font-medium text-gray-900">{getLocationDisplay(booking.from)}</p>
                                                                             <p className="text-sm text-gray-500">Departure</p>
                                                                         </div>
                                                                         <span className="text-xs px-2 py-0.5 bg-gold/10 text-gold rounded-full">
@@ -672,7 +685,7 @@ export function Bookings() {
                                                                 <div className="flex-1 bg-emerald-50 rounded-lg p-3">
                                                                     <div className="flex items-center justify-between">
                                                                         <div>
-                                                                            <p className="font-medium text-gray-900">{booking.to}</p>
+                                                                            <p className="font-medium text-gray-900">{getLocationDisplay(booking.to)}</p>
                                                                             <p className="text-sm text-gray-500">Arrival</p>
                                                                         </div>
                                                                         <span className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-600 rounded-full">
@@ -698,7 +711,7 @@ export function Bookings() {
                                                                         <div className="flex-1 bg-blue-50 rounded-lg p-3">
                                                                             <div className="flex items-center justify-between">
                                                                                 <div>
-                                                                                    <p className="font-medium text-gray-900">{booking.to}</p>
+                                                                                    <p className="font-medium text-gray-900">{getLocationDisplay(booking.to)}</p>
                                                                                     <p className="text-sm text-gray-500">Return Departure</p>
                                                                                 </div>
                                                                                 <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full">
@@ -722,7 +735,7 @@ export function Bookings() {
                                                                         <div className="flex-1 bg-indigo-50 rounded-lg p-3">
                                                                             <div className="flex items-center justify-between">
                                                                                 <div>
-                                                                                    <p className="font-medium text-gray-900">{booking.from}</p>
+                                                                                    <p className="font-medium text-gray-900">{getLocationDisplay(booking.from)}</p>
                                                                                     <p className="text-sm text-gray-500">Return Arrival</p>
                                                                                 </div>
                                                                                 <span className="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full">
@@ -829,7 +842,7 @@ export function Bookings() {
                                                                             </div>
                                                                             <div className="flex items-center gap-3">
                                                                                 <div className="flex-1 text-right">
-                                                                                    <span className="font-medium text-gray-900">{booking.from}</span>
+                                                                                    <span className="font-medium text-gray-900">{getLocationDisplay(booking.from)}</span>
                                                                                     <p className="text-xs text-gray-500">Departure</p>
                                                                                 </div>
                                                                                 <div className="flex-shrink-0">
@@ -838,7 +851,7 @@ export function Bookings() {
                                                                                     </svg>
                                                                                 </div>
                                                                                 <div className="flex-1">
-                                                                                    <span className="font-medium text-gray-900">{booking.to}</span>
+                                                                                    <span className="font-medium text-gray-900">{getLocationDisplay(booking.to)}</span>
                                                                                     <p className="text-xs text-gray-500">Arrival</p>
                                                                                 </div>
                                                                             </div>

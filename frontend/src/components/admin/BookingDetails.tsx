@@ -35,7 +35,7 @@ export function BookingDetails({ booking }: BookingDetailsProps) {
                             <div className="flex-1 bg-gold/5 rounded-lg p-3">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="font-medium text-gray-900">{booking.from}</p>
+                                        <p className="font-medium text-gray-900">{(booking.from && typeof booking.from === 'object' ? booking.from.city : booking.from) ?? 'Unknown'}</p>
                                         <p className="text-sm text-gray-500">Departure</p>
                                     </div>
                                     <span className="text-xs px-2 py-0.5 bg-gold/10 text-gold rounded-full">
@@ -59,7 +59,7 @@ export function BookingDetails({ booking }: BookingDetailsProps) {
                             <div className="flex-1 bg-emerald-50 rounded-lg p-3">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="font-medium text-gray-900">{booking.to}</p>
+                                        <p className="font-medium text-gray-900">{(booking.to && typeof booking.to === 'object' ? booking.to.city : booking.to) ?? 'Unknown'}</p>
                                         <p className="text-sm text-gray-500">Arrival</p>
                                     </div>
                                     <span className="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-600 rounded-full">
@@ -85,7 +85,7 @@ export function BookingDetails({ booking }: BookingDetailsProps) {
                                     <div className="flex-1 bg-blue-50 rounded-lg p-3">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="font-medium text-gray-900">{booking.to}</p>
+                                                <p className="font-medium text-gray-900">{(booking.to && typeof booking.to === 'object' ? booking.to.city : booking.to) ?? 'Unknown'}</p>
                                                 <p className="text-sm text-gray-500">Return Departure</p>
                                             </div>
                                             <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full">
@@ -109,7 +109,7 @@ export function BookingDetails({ booking }: BookingDetailsProps) {
                                     <div className="flex-1 bg-indigo-50 rounded-lg p-3">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="font-medium text-gray-900">{booking.from}</p>
+                                                <p className="font-medium text-gray-900">{(booking.from && typeof booking.from === 'object' ? booking.from.city : booking.from) ?? 'Unknown'}</p>
                                                 <p className="text-sm text-gray-500">Return Arrival</p>
                                             </div>
                                             <span className="text-xs px-2 py-0.5 bg-indigo-100 text-indigo-600 rounded-full">
@@ -172,7 +172,7 @@ export function BookingDetails({ booking }: BookingDetailsProps) {
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="flex-1 text-right">
-                                    <span className="font-medium text-gray-900">{booking.from}</span>
+                                    <span className="font-medium text-gray-900">{(booking.from && typeof booking.from === 'object' ? booking.from.city : booking.from) ?? 'Unknown'}</span>
                                     <p className="text-xs text-gray-500">Departure</p>
                                 </div>
                                 <div className="flex-shrink-0">
@@ -181,7 +181,7 @@ export function BookingDetails({ booking }: BookingDetailsProps) {
                                     </svg>
                                 </div>
                                 <div className="flex-1">
-                                    <span className="font-medium text-gray-900">{booking.to}</span>
+                                    <span className="font-medium text-gray-900">{(booking.to && typeof booking.to === 'object' ? booking.to.city : booking.to) ?? 'Unknown'}</span>
                                     <p className="text-xs text-gray-500">Arrival</p>
                                 </div>
                             </div>

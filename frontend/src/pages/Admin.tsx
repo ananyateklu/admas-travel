@@ -10,6 +10,19 @@ import { ADMIN_EMAILS, BookingData } from '../components/admin/types';
 import { formatDate, formatDateShort, formatDateNumeric } from '../components/admin/utils';
 import { AdminAnalytics } from '../components/admin/AdminAnalytics';
 import { AdminFlights } from '../components/admin/AdminFlights';
+import { Airport } from '../services/flightService';
+
+// Add type guard for Airport
+const isAirport = (value: unknown): value is Airport => {
+    return value !== null && typeof value === 'object' && 'city' in value;
+};
+
+// Add helper function to get searchable location text
+const getLocationSearchText = (location: Airport | string | null): string => {
+    if (!location) return '';
+    if (isAirport(location)) return location.city.toLowerCase();
+    return location.toLowerCase();
+};
 
 type AdminTab = 'bookings' | 'flights' | 'analytics' | 'settings';
 
@@ -137,8 +150,8 @@ export default function Admin() {
             booking.contactEmail?.toLowerCase().includes(searchLower) ||
             departureDateFormats.some(format => format.includes(searchLower)) ||
             returnDateFormats.some(format => format.includes(searchLower)) ||
-            booking.from?.toLowerCase().includes(searchLower) ||
-            booking.to?.toLowerCase().includes(searchLower) ||
+            getLocationSearchText(booking.from).includes(searchLower) ||
+            getLocationSearchText(booking.to).includes(searchLower) ||
             booking.class?.toLowerCase().includes(searchLower) ||
             booking.passengers.some(passenger =>
                 passenger.fullName.toLowerCase().includes(searchLower) ||

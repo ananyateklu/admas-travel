@@ -1,3 +1,5 @@
+import { Airport } from '../../services/flightService';
+
 export interface BookingData {
     bookingId: string;
     userId: string;
@@ -8,8 +10,8 @@ export interface BookingData {
     status: string;
     totalPassengers: number;
     createdAt: string | { toDate: () => Date };
-    from: string;
-    to: string;
+    from: Airport | null;
+    to: Airport | null;
     tripType: string;
     class: string;
     contactName: string;
