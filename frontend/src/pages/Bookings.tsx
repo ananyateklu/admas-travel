@@ -255,8 +255,8 @@ export function Bookings() {
 
             switch (selectedStatus) {
                 case 'upcoming':
-                    // Show future bookings that are confirmed or pending
-                    return bookingDate > now && (dbStatus === 'confirmed' || dbStatus === 'pending');
+                    // Show all future bookings regardless of status
+                    return bookingDate > now;
                 case 'completed':
                     // Show bookings with status 'completed'
                     return dbStatus === 'completed';
