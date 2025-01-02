@@ -9,12 +9,12 @@ import { STATUS_OPTIONS } from './constants';
 
 const getStatusStyle = (status: string) => {
     switch (status) {
-        case 'upcoming': return 'bg-blue-100 text-blue-800';
-        case 'confirmed': return 'bg-emerald-100 text-emerald-800';
-        case 'pending': return 'bg-amber-100 text-amber-800';
-        case 'completed': return 'bg-purple-100 text-purple-800';
-        case 'cancelled': return 'bg-rose-100 text-rose-800';
-        default: return 'bg-gray-100 text-gray-800';
+        case 'upcoming': return 'bg-blue-50/80 text-blue-700 border border-blue-200/50 shadow-sm shadow-blue-100/20';
+        case 'confirmed': return 'bg-emerald-50/80 text-emerald-700 border border-emerald-200/50 shadow-sm shadow-emerald-100/20';
+        case 'pending': return 'bg-amber-50/80 text-amber-700 border border-amber-200/50 shadow-sm shadow-amber-100/20';
+        case 'completed': return 'bg-purple-50/80 text-purple-700 border border-purple-200/50 shadow-sm shadow-purple-100/20';
+        case 'cancelled': return 'bg-rose-50/80 text-rose-700 border border-rose-200/50 shadow-sm shadow-rose-100/20';
+        default: return 'bg-gray-50/80 text-gray-700 border border-gray-200/50 shadow-sm shadow-gray-100/20';
     }
 };
 
@@ -72,6 +72,7 @@ interface BookingCardProps {
     onDelete?: (bookingId: string) => Promise<void>;
     isDeleting?: boolean;
     currentUserId?: string;
+    onEdit?: (bookingId: string, updates: Partial<BookingData>) => Promise<void>;
 }
 
 export function BookingCard({
@@ -83,10 +84,12 @@ export function BookingCard({
     isReadOnly = false,
     onDelete,
     isDeleting,
-    currentUserId
+    currentUserId,
+    onEdit
 }: BookingCardProps) {
     const [activeTab, setActiveTab] = React.useState<TabType>('details');
     const [copySuccess, setCopySuccess] = React.useState<'reference' | 'contact' | null>(null);
+    const [isEditing, setIsEditing] = React.useState(false);
 
     const handleCopy = async (text: string, type: 'reference' | 'contact') => {
         try {
@@ -98,7 +101,12 @@ export function BookingCard({
         }
     };
 
+    const canEdit = !isReadOnly && booking.status === 'pending' && currentUserId === booking.userId;
     const canDelete = currentUserId === booking.userId;
+
+    const handleEditToggle = () => {
+        setIsEditing(!isEditing);
+    };
 
     const renderReadOnlyStatus = () => {
         const currentStepIndex = STATUS_OPTIONS.findIndex(opt => opt.value === booking.status);
@@ -181,69 +189,75 @@ export function BookingCard({
             initial="hidden"
             animate="visible"
             whileHover="hover"
-            className="bg-white rounded-xl shadow-[0_4px_12px_-2px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.12)] transition-all duration-300"
+            className="bg-white/95 rounded-2xl shadow-xl border border-gray-100/50 overflow-hidden backdrop-blur-sm backdrop-saturate-150 ring-1 ring-black/[0.02]"
         >
-            <div className="p-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="px-6 py-5 lg:px-8 lg:py-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     {/* Left Section: Date and Main Info */}
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-5">
                         <motion.div
                             className="flex-shrink-0"
                             whileHover={{ scale: 1.05 }}
                             transition={{ type: "spring", stiffness: 400 }}
                         >
-                            <div className="w-16 h-16 flex flex-col items-center justify-center bg-gradient-to-br from-gold/5 to-gold/10 rounded-lg border border-gold/20">
-                                <span className="text-sm font-medium text-gold">
+                            <div className="w-[4.5rem] h-[4.5rem] flex flex-col items-center justify-center bg-gradient-to-br from-gold/10 via-gold/5 to-transparent rounded-2xl border border-gold/20 shadow-sm ring-1 ring-black/[0.02]">
+                                <span className="text-sm font-semibold bg-gradient-to-r from-gold to-gold/80 bg-clip-text text-transparent">
                                     {new Date(booking.departureDate).toLocaleDateString(undefined, {
                                         month: 'short'
                                     })}
                                 </span>
-                                <span className="text-xl font-bold text-gray-800">
+                                <span className="text-2xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent">
                                     {new Date(booking.departureDate).getDate()}
                                 </span>
                             </div>
                         </motion.div>
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h3 className="text-lg font-medium text-gray-800">{booking.contactName}</h3>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <h3 className="text-lg font-semibold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                                    {booking.contactName}
+                                </h3>
                                 <motion.span
-                                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusStyle(booking.status)}`}
+                                    className={`px-3 py-1 rounded-full text-xs font-medium tracking-wide ${getStatusStyle(booking.status)}`}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
                                     {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                                 </motion.span>
                                 <motion.div
-                                    className="flex items-center gap-1 ml-2 bg-gold/10 text-gold/90 px-2 py-0.5 rounded-full text-xs font-medium"
+                                    className="flex items-center gap-2 bg-gradient-to-r from-gold/10 via-gold/5 to-transparent px-3 py-1 rounded-full text-xs font-medium border border-gold/20 shadow-sm ring-1 ring-black/[0.02]"
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    <svg className="w-3.5 h-3.5 text-gold/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
-                                    <span>{booking.passengers.length} {booking.passengers.length === 1 ? 'Passenger' : 'Passengers'}</span>
+                                    <span className="text-gold/90">{booking.passengers.length} {booking.passengers.length === 1 ? 'Passenger' : 'Passengers'}</span>
                                 </motion.div>
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-gray-500 flex-wrap">
+                            <div className="flex items-center gap-6 text-sm text-gray-600">
                                 <motion.div
-                                    className="flex items-center gap-1 hover:text-gray-700 transition-colors"
+                                    className="flex items-center gap-2.5 hover:text-gray-900 transition-colors"
                                     whileHover={{ scale: 1.02 }}
                                 >
-                                    <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <span>{(booking.from && typeof booking.from === 'object' ? booking.from.city : booking.from) ?? 'Unknown'} → {(booking.to && typeof booking.to === 'object' ? booking.to.city : booking.to) ?? 'Unknown'}</span>
+                                    <div className="p-1.5 bg-gradient-to-br from-gold/10 via-gold/5 to-transparent rounded-lg shadow-sm ring-1 ring-black/[0.02]">
+                                        <svg className="w-4 h-4 text-gold/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </div>
+                                    <span className="font-medium tracking-wide">{(booking.from && typeof booking.from === 'object' ? booking.from.city : booking.from) ?? 'Unknown'} → {(booking.to && typeof booking.to === 'object' ? booking.to.city : booking.to) ?? 'Unknown'}</span>
                                 </motion.div>
-                                <span className="text-gray-400">•</span>
+                                <span className="text-gray-300">•</span>
                                 <motion.div
-                                    className="flex items-center gap-1 hover:text-gray-700 transition-colors"
+                                    className="flex items-center gap-2.5 hover:text-gray-900 transition-colors"
                                     whileHover={{ scale: 1.02 }}
                                 >
-                                    <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span>
+                                    <div className="p-1.5 bg-gradient-to-br from-gold/10 via-gold/5 to-transparent rounded-lg shadow-sm ring-1 ring-black/[0.02]">
+                                        <svg className="w-4 h-4 text-gold/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <span className="font-medium tracking-wide">
                                         {new Date(booking.departureDate).toLocaleTimeString(undefined, {
                                             hour: '2-digit',
                                             minute: '2-digit'
@@ -260,33 +274,37 @@ export function BookingCard({
                                     </span>
                                 </motion.div>
                             </div>
-                            <div className="flex items-center gap-4 text-sm flex-wrap">
+                            <div className="flex items-center gap-6 text-sm">
                                 <motion.div
-                                    className="flex items-center gap-1 text-gray-500 hover:text-gray-700 transition-colors"
+                                    className="flex items-center gap-2.5 text-gray-600 hover:text-gray-900 transition-colors"
                                     whileHover={{ scale: 1.02 }}
                                 >
-                                    <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                    </svg>
-                                    <span className="capitalize">{booking.class}</span>
+                                    <div className="p-1.5 bg-gradient-to-br from-gold/10 via-gold/5 to-transparent rounded-lg shadow-sm ring-1 ring-black/[0.02]">
+                                        <svg className="w-4 h-4 text-gold/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                    </div>
+                                    <span className="font-medium tracking-wide capitalize">{booking.class}</span>
                                 </motion.div>
-                                <span className="text-gray-400">•</span>
+                                <span className="text-gray-300">•</span>
                                 <motion.div
-                                    className="flex items-center gap-1 text-gray-500 group cursor-pointer"
+                                    className="flex items-center gap-2.5 text-gray-600 group cursor-pointer hover:text-gray-900 transition-colors"
                                     whileHover={{ scale: 1.02 }}
                                     onClick={() => handleCopy(booking.bookingReference, 'reference')}
                                 >
-                                    <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                    <span className="text-gray-600 group-hover:text-gray-900">Ref: {booking.bookingReference}</span>
+                                    <div className="p-1.5 bg-gradient-to-br from-gold/10 via-gold/5 to-transparent rounded-lg shadow-sm ring-1 ring-black/[0.02]">
+                                        <svg className="w-4 h-4 text-gold/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </div>
+                                    <span className="font-medium tracking-wide">Ref: {booking.bookingReference}</span>
                                     {copySuccess === 'reference' && (
                                         <motion.span
                                             initial={{ opacity: 0, y: -10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
-                                            className="ml-2 text-xs text-emerald-500"
+                                            className="ml-2 text-xs text-emerald-500 font-medium"
                                         >
                                             Copied!
                                         </motion.span>
@@ -297,27 +315,43 @@ export function BookingCard({
                     </div>
 
                     {/* Right Section: Status and Actions */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6">
                         <motion.div
                             className="flex flex-col items-end gap-2"
                             whileHover={{ scale: 1.02 }}
                         >
-                            <div className="flex -space-x-2">
-                                {booking.passengers.slice(0, 3).map((passenger) => (
+                            <div className="flex -space-x-3">
+                                {booking.passengers.map((passenger, index) => (
                                     <motion.div
                                         key={passenger.passportNumber}
-                                        className="w-8 h-8 rounded-full bg-gradient-to-br from-gold/5 to-gold/10 border-2 border-white flex items-center justify-center"
+                                        className={`w-10 h-10 rounded-full bg-gradient-to-br from-gold/10 via-gold/5 to-transparent border-2 border-white shadow-sm ring-1 ring-black/[0.02] flex items-center justify-center relative group`}
                                         title={passenger.fullName}
                                         initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        whileHover={{ scale: 1.1, zIndex: 10 }}
+                                        animate={{ opacity: 1, x: 0, zIndex: booking.passengers.length - index }}
+                                        whileHover={{ scale: 1.1, zIndex: 20 }}
+                                        style={{
+                                            transformOrigin: 'center'
+                                        }}
                                     >
-                                        <span className="text-xs font-medium text-gray-700">
+                                        <span className="text-sm font-semibold bg-gradient-to-br from-gray-800 to-gray-600 bg-clip-text text-transparent">
                                             {passenger.fullName.charAt(0)}
                                         </span>
+                                        <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            <div className="absolute inset-0 bg-white/90 rounded-full backdrop-blur-sm" />
+                                            <div className="relative h-full flex items-center justify-center px-1">
+                                                <span className="text-[10px] font-medium text-gray-700 truncate">
+                                                    {passenger.fullName}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </motion.div>
                                 ))}
                             </div>
+                            {booking.passengers.length > 1 && (
+                                <span className="text-xs font-medium text-gray-500">
+                                    {booking.passengers.length} Passengers
+                                </span>
+                            )}
                         </motion.div>
                         {!isReadOnly && onStatusChange ? (
                             <BookingStatusProgress
@@ -330,24 +364,16 @@ export function BookingCard({
                         ) : (
                             renderReadOnlyStatus()
                         )}
-                        <motion.button
-                            onClick={onToggleExpand}
-                            className="p-2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 rounded-full"
-                            variants={buttonVariants}
-                            whileHover="hover"
-                            whileTap="tap"
-                        >
-                            <motion.svg
-                                className={`w-5 h-5 transform transition-transform`}
-                                animate={{ rotate: isExpanded ? 180 : 0 }}
-                                transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                        <div className="flex items-center gap-2">
+                            <motion.button
+                                onClick={onToggleExpand}
+                                className="inline-flex items-center px-3 py-1.5 text-xs bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                             >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </motion.svg>
-                        </motion.button>
+                                {isExpanded ? 'Show Less' : 'Show More'}
+                            </motion.button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -359,53 +385,53 @@ export function BookingCard({
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                        className="border-t border-gray-100"
+                        className="border-t border-gray-100/50"
                     >
-                        <div className="p-4 bg-gradient-to-b from-gray-50 to-white">
+                        <div className="px-6 py-5 lg:px-8 lg:py-6 bg-gradient-to-b from-gray-50/30 to-white">
                             {/* Quick Actions Bar */}
                             <motion.div
-                                className="flex items-center justify-between mb-4 bg-white rounded-lg p-2 shadow-sm"
+                                className="flex items-center justify-between mb-8 bg-white/95 rounded-2xl p-4 shadow-sm border border-gray-100/50 ring-1 ring-black/[0.02]"
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
                             >
-                                <div className="flex items-center gap-4 overflow-x-auto">
+                                <div className="flex items-center gap-6 overflow-x-auto">
                                     <motion.button
                                         onClick={() => handleCopy(booking.bookingReference, 'reference')}
-                                        className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors group"
+                                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 rounded-xl transition-colors group"
                                         variants={buttonVariants}
                                         whileHover="hover"
                                         whileTap="tap"
                                     >
-                                        <svg className="w-4 h-4 text-gold group-hover:text-gold/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        <svg className="w-4 h-4 text-gold/90 group-hover:text-gold/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                                         </svg>
-                                        <span className="whitespace-nowrap">Copy Reference</span>
+                                        <span className="whitespace-nowrap font-medium tracking-wide">Copy Reference</span>
                                         {copySuccess === 'reference' && (
                                             <motion.span
                                                 initial={{ opacity: 0, y: -10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 10 }}
-                                                className="ml-2 text-xs text-emerald-500"
+                                                className="ml-2 text-xs text-emerald-500 font-medium"
                                             >
                                                 Copied!
                                             </motion.span>
                                         )}
                                     </motion.button>
-                                    <div className="h-4 w-px bg-gray-200"></div>
+                                    <div className="h-8 w-px bg-gray-200/70"></div>
                                     <motion.button
                                         onClick={() => window.print()}
-                                        className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors group"
+                                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 rounded-xl transition-colors group"
                                         variants={buttonVariants}
                                         whileHover="hover"
                                         whileTap="tap"
                                     >
-                                        <svg className="w-4 h-4 text-gold group-hover:text-gold/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                        <svg className="w-4 h-4 text-gold/90 group-hover:text-gold/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                         </svg>
-                                        <span className="whitespace-nowrap">Print Details</span>
+                                        <span className="whitespace-nowrap font-medium tracking-wide">Print Details</span>
                                     </motion.button>
-                                    <div className="h-4 w-px bg-gray-200"></div>
+                                    <div className="h-8 w-px bg-gray-200/70"></div>
                                     <motion.button
                                         onClick={async () => {
                                             const shareData = {
@@ -423,16 +449,32 @@ export function BookingCard({
                                                 }
                                             }
                                         }}
-                                        className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors group"
+                                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 rounded-xl transition-colors group"
                                         variants={buttonVariants}
                                         whileHover="hover"
                                         whileTap="tap"
                                     >
-                                        <svg className="w-4 h-4 text-gold group-hover:text-gold/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                        <svg className="w-4 h-4 text-gold/90 group-hover:text-gold/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                                         </svg>
-                                        <span className="whitespace-nowrap">Share</span>
+                                        <span className="whitespace-nowrap font-medium tracking-wide">Share</span>
                                     </motion.button>
+                                    {canEdit && (
+                                        <motion.button
+                                            onClick={handleEditToggle}
+                                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 rounded-xl transition-colors group"
+                                            variants={buttonVariants}
+                                            whileHover="hover"
+                                            whileTap="tap"
+                                        >
+                                            <svg className="w-4 h-4 text-gold/90 group-hover:text-gold/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                            <span className="whitespace-nowrap font-medium tracking-wide">
+                                                {isEditing ? 'Cancel Edit' : 'Edit Booking'}
+                                            </span>
+                                        </motion.button>
+                                    )}
                                 </div>
                                 <motion.div
                                     className="flex items-center gap-2"
@@ -440,7 +482,7 @@ export function BookingCard({
                                     animate={{ opacity: 1, x: 0 }}
                                 >
                                     <motion.span
-                                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(booking.status)}`}
+                                        className={`px-4 py-2 rounded-xl text-sm font-medium tracking-wide ${getStatusStyle(booking.status)}`}
                                         whileHover={{ scale: 1.05 }}
                                     >
                                         {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
@@ -450,18 +492,18 @@ export function BookingCard({
 
                             {/* Tabs Navigation */}
                             <motion.div
-                                className="bg-white rounded-lg shadow-sm mb-4"
+                                className="bg-white/95 rounded-2xl shadow-sm mb-8 border border-gray-100/50 ring-1 ring-black/[0.02]"
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
                             >
-                                <div className="border-b border-gray-200">
-                                    <nav className="flex space-x-8 px-4 overflow-x-auto" aria-label="Booking Information">
+                                <div className="border-b border-gray-100/80">
+                                    <nav className="flex space-x-10 px-8" aria-label="Booking Information">
                                         {['details', 'passengers', 'contact'].map((tab) => (
                                             <motion.button
                                                 key={tab}
                                                 onClick={() => setActiveTab(tab as TabType)}
-                                                className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap relative ${activeTab === tab
+                                                className={`py-4 px-3 border-b-2 font-medium text-sm tracking-wide whitespace-nowrap relative ${activeTab === tab
                                                     ? 'border-gold text-gold'
                                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                                     }`}
@@ -472,7 +514,7 @@ export function BookingCard({
                                                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
                                                 {activeTab === tab && (
                                                     <motion.div
-                                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold"
+                                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-gold via-gold/90 to-gold/80"
                                                         layoutId="activeTab"
                                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                                     />
@@ -497,6 +539,9 @@ export function BookingCard({
                                             onDelete={onDelete}
                                             isDeleting={isDeleting}
                                             canDelete={canDelete}
+                                            isEditing={isEditing}
+                                            onEdit={onEdit}
+                                            onEditComplete={() => setIsEditing(false)}
                                         />
                                     </motion.div>
                                 )}
@@ -509,7 +554,12 @@ export function BookingCard({
                                         exit={{ opacity: 0, y: -20 }}
                                         transition={{ type: "spring", stiffness: 100, damping: 15 }}
                                     >
-                                        <PassengerDetails booking={booking} />
+                                        <PassengerDetails
+                                            booking={booking}
+                                            isEditing={isEditing}
+                                            onEdit={onEdit}
+                                            onEditComplete={() => setIsEditing(false)}
+                                        />
                                     </motion.div>
                                 )}
 
@@ -521,7 +571,12 @@ export function BookingCard({
                                         exit={{ opacity: 0, y: -20 }}
                                         transition={{ type: "spring", stiffness: 100, damping: 15 }}
                                     >
-                                        <ContactDetails booking={booking} />
+                                        <ContactDetails
+                                            booking={booking}
+                                            isEditing={isEditing}
+                                            onEdit={onEdit}
+                                            onEditComplete={() => setIsEditing(false)}
+                                        />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -529,6 +584,6 @@ export function BookingCard({
                     </motion.div>
                 )}
             </AnimatePresence>
-        </motion.div>
+        </motion.div >
     );
 } 

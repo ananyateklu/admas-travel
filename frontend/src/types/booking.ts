@@ -1,23 +1,32 @@
+import { Airport } from '../services/flightService';
+
 export interface BookingData {
     bookingId: string;
     bookingReference: string;
     contactName: string;
     contactEmail: string;
-    from: string;
-    to: string;
+    from: Airport | null;
+    to: Airport | null;
     departureDate: string;
     returnDate?: string;
     passengers: {
-        name: string;
-        age: number;
-        passportNumber?: string;
+        type: string;
+        fullName: string;
+        dateOfBirth: string;
+        passportNumber: string;
+        passportExpiry: string;
+        nationality: string;
     }[];
-    status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+    status: string;
     createdAt: {
         toDate: () => Date;
     } | string;
-    updatedAt: {
+    updatedAt?: {
         toDate: () => Date;
     } | string;
-    totalAmount: number;
+    totalAmount?: number;
+    specialRequests?: string;
+    class: string;
+    tripType: string;
+    userId: string;
 } 

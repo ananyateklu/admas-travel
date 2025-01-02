@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../lib/firebase/useAuth';
-import { collection, query, orderBy, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, deleteDoc, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase/firebase';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import mountainTwo from '../assets/mountain-two.jpg';
 import { Airport } from '../services/flightService';
 import { BookingCard } from '../components/admin/BookingCard';
+import { toast } from 'react-hot-toast';
 
 interface BookingData {
     bookingId: string;
@@ -221,6 +222,29 @@ export function Bookings() {
         }
     };
 
+    const handleEdit = async (bookingId: string, updates: Partial<BookingData>) => {
+        if (!user) {
+            toast.error('Please sign in to edit your booking');
+            return;
+        }
+
+        try {
+            // Update in both collections
+            const bookingRef = doc(db, 'bookings', bookingId);
+            const userBookingRef = doc(db, `users/${user.uid}/bookings`, bookingId);
+
+            await Promise.all([
+                setDoc(bookingRef, updates, { merge: true }),
+                setDoc(userBookingRef, updates, { merge: true })
+            ]);
+
+            toast.success('Booking updated successfully!');
+        } catch (err) {
+            console.error('Error updating booking:', err);
+            toast.error('Failed to update booking. Please try again.');
+        }
+    };
+
     // Filter bookings based on selected status
     const filteredBookings = useMemo(() => {
         const now = new Date();
@@ -391,12 +415,12 @@ export function Bookings() {
                                         <BookingCard
                                             key={booking.bookingId}
                                             booking={booking}
-                                            isReadOnly={true}
                                             isExpanded={expandedBookingId === booking.bookingId}
                                             onToggleExpand={() => toggleBookingDetails(booking.bookingId)}
                                             onDelete={handleDelete}
                                             isDeleting={isDeleting === booking.bookingId}
                                             currentUserId={user?.uid}
+                                            onEdit={handleEdit}
                                         />
                                     ))}
 
