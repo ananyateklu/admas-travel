@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import lalibela from '../assets/lalibela.jpeg';
 import { useTravelPreferences, TravelPreference } from '../hooks/useTravelPreferences';
 
@@ -121,10 +123,50 @@ const resources = [
     }
 ];
 
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.2,
+            delayChildren: 0.3
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.5 }
+    }
+};
+
 export default function GetStarted() {
     const [currentStep, setCurrentStep] = useState(0);
     const navigate = useNavigate();
     const { preferences, updatePreferences } = useTravelPreferences();
+
+    const { ref: heroRef, isInView: isHeroInView } = useScrollAnimation({
+        threshold: 0.2,
+        once: true
+    });
+
+    const { ref: stepsRef, isInView: isStepsInView } = useScrollAnimation({
+        threshold: 0.2,
+        once: true
+    });
+
+    const { ref: quizRef, isInView: isQuizInView } = useScrollAnimation({
+        threshold: 0.2,
+        once: true
+    });
+
+    const { ref: resourcesRef, isInView: isResourcesInView } = useScrollAnimation({
+        threshold: 0.2,
+        once: true
+    });
 
     const handleSingleAnswer = (questionId: string, value: string) => {
         updatePreferences({ [questionId]: value });
@@ -175,182 +217,330 @@ export default function GetStarted() {
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
-            <div className="relative h-[50vh] bg-gray-900">
-                <div className="absolute inset-0">
+            <motion.div
+                ref={heroRef}
+                className="relative h-[50vh] bg-gray-900"
+                initial="hidden"
+                animate={isHeroInView ? "visible" : "hidden"}
+                variants={containerVariants}
+            >
+                <motion.div
+                    className="absolute inset-0"
+                    initial={{ scale: 1.1 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                >
                     <img
                         src={lalibela}
                         alt="Travel Planning"
                         className="w-full h-full object-cover object-center"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30" />
-                </div>
+                </motion.div>
                 <div className="relative h-full flex items-center">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-4xl md:text-5xl font-serif text-white mb-4">
+                        <motion.h1
+                            className="text-4xl md:text-5xl font-serif text-white mb-4"
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                        >
                             Start Your Journey
-                        </h1>
-                        <p className="text-xl text-white/90 max-w-2xl">
+                        </motion.h1>
+                        <motion.p
+                            className="text-xl text-white/90 max-w-2xl"
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                        >
                             Let us help you plan the perfect trip. Take our quick quiz to get personalized recommendations.
-                        </p>
+                        </motion.p>
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Quick Start Steps */}
-            <section className="py-16 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-serif mb-12 text-center">How It Works</h2>
+            <motion.section
+                ref={stepsRef}
+                className="py-16 bg-gray-50"
+                initial="hidden"
+                animate={isStepsInView ? "visible" : "hidden"}
+                variants={containerVariants}
+            >
+                <motion.div
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+                    variants={containerVariants}
+                >
+                    <motion.h2
+                        className="text-3xl font-serif mb-12 text-center"
+                        variants={itemVariants}
+                    >
+                        How It Works
+                    </motion.h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {quickStartSteps.map((step, index) => (
-                            <div key={step.title} className="relative">
-                                <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                                    <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center mb-6">
+                            <motion.div
+                                key={step.title}
+                                className="relative"
+                                variants={itemVariants}
+                                custom={index}
+                            >
+                                <motion.div
+                                    className="bg-white rounded-2xl p-8 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1),0_12px_25px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.15),0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all"
+                                    whileHover={{ scale: 1.02 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    <motion.div
+                                        className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center mb-6"
+                                        whileHover={{ rotate: 360 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
                                         <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={step.icon} />
                                         </svg>
-                                    </div>
+                                    </motion.div>
                                     <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
                                     <p className="text-gray-600">{step.description}</p>
                                     {index < quickStartSteps.length - 1 && (
-                                        <div className="hidden lg:block absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2">
+                                        <motion.div
+                                            className="hidden lg:block absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2"
+                                            animate={{ x: [0, 10, 0] }}
+                                            transition={{ duration: 1.5, repeat: Infinity }}
+                                        >
                                             <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                             </svg>
-                                        </div>
+                                        </motion.div>
                                     )}
-                                </div>
-                            </div>
+                                </motion.div>
+                            </motion.div>
                         ))}
                     </div>
-                </div>
-            </section>
+                </motion.div>
+            </motion.section>
 
             {/* Travel Quiz Section */}
-            <section className="py-16">
+            <motion.section
+                ref={quizRef}
+                className="py-16"
+                initial="hidden"
+                animate={isQuizInView ? "visible" : "hidden"}
+                variants={containerVariants}
+            >
                 <div className="max-w-4xl mx-auto px-4">
-                    <div className="bg-white rounded-2xl shadow-lg p-8">
-                        <div className="mb-8">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-2xl font-serif">Travel Preferences Quiz</h3>
-                                <span className="text-sm text-gray-500">
-                                    Step {currentStep + 1} of {quizQuestions.length}
-                                </span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div
-                                    className="bg-gold rounded-full h-2 transition-all duration-300"
-                                    style={{ width: `${((currentStep + 1) / quizQuestions.length) * 100}%` }}
-                                />
-                            </div>
-                        </div>
+                    <motion.div
+                        className="bg-white rounded-2xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1),0_12px_25px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.15),0_20px_40px_-10px_rgba(0,0,0,0.1)] p-8 transition-all"
+                        variants={itemVariants}
+                    >
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentStep}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <div className="mb-8">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h3 className="text-2xl font-serif">Travel Preferences Quiz</h3>
+                                        <span className="text-sm text-gray-500">
+                                            Step {currentStep + 1} of {quizQuestions.length}
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <motion.div
+                                            className="bg-gold rounded-full h-2"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${((currentStep + 1) / quizQuestions.length) * 100}%` }}
+                                            transition={{ duration: 0.5 }}
+                                        />
+                                    </div>
+                                </div>
 
-                        <div className="mb-8">
-                            <h4 className="text-xl mb-6">{currentQuestion.question}</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {currentQuestion.options.map((option) => (
-                                    <button
-                                        key={option.value}
-                                        onClick={() => currentQuestion.type === 'single'
-                                            ? handleSingleAnswer(currentQuestion.id, option.value)
-                                            : handleMultipleAnswer(currentQuestion.id, option.value)
-                                        }
-                                        className={getOptionClassName(currentQuestion.id, option.value)}
-                                    >
-                                        <div className="flex items-start gap-4">
-                                            <div className="w-8 h-8 flex-shrink-0 bg-gold/10 rounded-lg flex items-center justify-center">
-                                                <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={option.icon} />
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <h5 className="font-medium mb-1">{option.label}</h5>
-                                                <p className="text-sm text-gray-600">{option.description}</p>
-                                            </div>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                                <div className="mb-8">
+                                    <h4 className="text-xl mb-6">{currentQuestion.question}</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {currentQuestion.options.map((option) => (
+                                            <motion.button
+                                                key={option.value}
+                                                onClick={() => currentQuestion.type === 'single'
+                                                    ? handleSingleAnswer(currentQuestion.id, option.value)
+                                                    : handleMultipleAnswer(currentQuestion.id, option.value)
+                                                }
+                                                className={getOptionClassName(currentQuestion.id, option.value)}
+                                                whileHover={{ scale: 1.02 }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                <div className="flex items-start gap-4">
+                                                    <motion.div
+                                                        className="w-8 h-8 flex-shrink-0 bg-gold/10 rounded-lg flex items-center justify-center"
+                                                        whileHover={{ rotate: 360 }}
+                                                        transition={{ duration: 0.5 }}
+                                                    >
+                                                        <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={option.icon} />
+                                                        </svg>
+                                                    </motion.div>
+                                                    <div>
+                                                        <h5 className="font-medium mb-1">{option.label}</h5>
+                                                        <p className="text-sm text-gray-600">{option.description}</p>
+                                                    </div>
+                                                </div>
+                                            </motion.button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </AnimatePresence>
 
                         <div className="flex justify-between">
-                            <button
+                            <motion.button
                                 onClick={handleBack}
                                 disabled={currentStep === 0}
                                 className="px-6 py-2 text-gray-600 disabled:opacity-50"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                             >
                                 Back
-                            </button>
+                            </motion.button>
                             {currentQuestion.type === 'multiple' && (
-                                <button
+                                <motion.button
                                     onClick={handleNext}
                                     disabled={currentStep === quizQuestions.length - 1}
                                     className="px-6 py-2 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                 >
                                     Next
-                                </button>
+                                </motion.button>
                             )}
                         </div>
 
                         {currentStep === quizQuestions.length - 1 && preferences.interests.length > 0 && (
-                            <div className="mt-8 pt-8 border-t">
-                                <button
+                            <motion.div
+                                className="mt-8 pt-8 border-t"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <motion.button
                                     onClick={handleComplete}
                                     className="block w-full px-6 py-3 bg-gold text-white rounded-lg text-center hover:bg-gold/90 transition-colors"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
                                 >
                                     See Recommended Trips
-                                </button>
-                            </div>
+                                </motion.button>
+                            </motion.div>
                         )}
-                    </div>
+                    </motion.div>
                 </div>
-            </section>
+            </motion.section>
 
             {/* Resources Section */}
-            <section className="py-16 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-serif mb-12 text-center">Travel Resources</h2>
+            <motion.section
+                ref={resourcesRef}
+                className="py-16 bg-gray-50"
+                initial="hidden"
+                animate={isResourcesInView ? "visible" : "hidden"}
+                variants={containerVariants}
+            >
+                <motion.div
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+                    variants={containerVariants}
+                >
+                    <motion.h2
+                        className="text-3xl font-serif mb-12 text-center"
+                        variants={itemVariants}
+                    >
+                        Travel Resources
+                    </motion.h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {resources.map((resource) => (
-                            <div key={resource.title} className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
-                                <div className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center mb-6">
+                        {resources.map((resource, index) => (
+                            <motion.div
+                                key={resource.title}
+                                className="bg-white rounded-2xl p-8 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1),0_12px_25px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.15),0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all"
+                                variants={itemVariants}
+                                whileHover={{ scale: 1.02 }}
+                                custom={index}
+                            >
+                                <motion.div
+                                    className="w-12 h-12 bg-gold/10 rounded-xl flex items-center justify-center mb-6"
+                                    whileHover={{ rotate: 360 }}
+                                    transition={{ duration: 0.5 }}
+                                >
                                     <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={resource.icon} />
                                     </svg>
-                                </div>
+                                </motion.div>
                                 <h3 className="text-xl font-semibold mb-2">{resource.title}</h3>
                                 <p className="text-gray-600">{resource.description}</p>
-                                <button className="mt-4 text-gold hover:text-gold/80 transition-colors">
-                                    Learn More →
-                                </button>
-                            </div>
+                                <motion.button
+                                    className="mt-4 text-gold hover:text-gold/80 transition-colors group flex items-center"
+                                    whileHover={{ x: 5 }}
+                                >
+                                    Learn More
+                                    <motion.span
+                                        className="inline-block ml-1"
+                                        animate={{ x: [0, 5, 0] }}
+                                        transition={{ duration: 1.5, repeat: Infinity }}
+                                    >
+                                        →
+                                    </motion.span>
+                                </motion.button>
+                            </motion.div>
                         ))}
                     </div>
-                </div>
-            </section>
+                </motion.div>
+            </motion.section>
 
             {/* Call to Action */}
-            <section className="py-24 bg-gray-900">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl font-serif mb-6 text-white">Ready to Start Planning?</h2>
-                    <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+            <motion.section
+                className="py-24 bg-gray-900"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+            >
+                <motion.div
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+                    variants={containerVariants}
+                >
+                    <motion.h2
+                        className="text-3xl font-serif mb-6 text-white"
+                        variants={itemVariants}
+                    >
+                        Ready to Start Planning?
+                    </motion.h2>
+                    <motion.p
+                        className="text-xl text-white/80 mb-8 max-w-2xl mx-auto"
+                        variants={itemVariants}
+                    >
                         Our travel experts are here to help you create the perfect itinerary based on your preferences.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            to="/contact"
-                            className="px-8 py-3 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors"
-                        >
-                            Contact an Expert
-                        </Link>
-                        <Link
-                            to="/book"
-                            className="px-8 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
-                        >
-                            Book Now
-                        </Link>
-                    </div>
-                </div>
-            </section>
+                    </motion.p>
+                    <motion.div
+                        className="flex flex-col sm:flex-row gap-4 justify-center"
+                        variants={itemVariants}
+                    >
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <Link
+                                to="/contact"
+                                className="px-8 py-3 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors inline-block"
+                            >
+                                Contact an Expert
+                            </Link>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <Link
+                                to="/book"
+                                className="px-8 py-3 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors inline-block"
+                            >
+                                Book Now
+                            </Link>
+                        </motion.div>
+                    </motion.div>
+                </motion.div>
+            </motion.section>
         </div>
     );
 } 

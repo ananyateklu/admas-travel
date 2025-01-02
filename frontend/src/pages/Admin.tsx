@@ -100,18 +100,22 @@ export default function Admin() {
         console.log('Admin - Updating status:', { bookingId, newStatus, userId });
         setUpdateLoading(bookingId);
         try {
-            await updateDoc(doc(db, 'bookings', bookingId), {
-                status: newStatus
-            });
+            // Get the current booking to store its status as previousStatus
+            const currentBooking = bookings.find(b => b.bookingId === bookingId);
+            if (!currentBooking) return;
 
-            await updateDoc(doc(db, 'users', userId, 'bookings', bookingId), {
-                status: newStatus
-            });
+            const updateData = {
+                status: newStatus,
+                previousStatus: currentBooking.status
+            };
+
+            await updateDoc(doc(db, 'bookings', bookingId), updateData);
+            await updateDoc(doc(db, 'users', userId, 'bookings', bookingId), updateData);
 
             setBookings(prevBookings =>
                 prevBookings.map(booking =>
                     booking.bookingId === bookingId
-                        ? { ...booking, status: newStatus }
+                        ? { ...booking, ...updateData }
                         : booking
                 )
             );

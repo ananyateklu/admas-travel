@@ -22,7 +22,8 @@ export function BookingStatusProgress({
             <div className="flex items-center gap-1">
                 {STATUS_OPTIONS.map((option, index) => {
                     const isActive = currentStatus === option.value;
-                    const isPassed = STATUS_OPTIONS.findIndex(opt => opt.value === currentStatus) > index;
+                    const currentStepIndex = STATUS_OPTIONS.findIndex(opt => opt.value === currentStatus);
+                    const isPassed = currentStepIndex > index;
 
                     return (
                         <button
@@ -37,12 +38,11 @@ export function BookingStatusProgress({
                                 <div className="absolute right-full w-8 h-0.5 -translate-y-1/2 top-1/2">
                                     <div
                                         className="w-full h-full rounded-full transition-all duration-300"
-                                        style={{
-                                            ...(isActive || isPassed
+                                        style={
+                                            isActive || isPassed
                                                 ? getConnectorGradient(STATUS_OPTIONS[index - 1], option, true)
                                                 : { backgroundColor: 'rgb(229 231 235)' }
-                                            )
-                                        }}
+                                        }
                                     />
                                 </div>
                             )}
@@ -51,13 +51,13 @@ export function BookingStatusProgress({
                             <div className={`relative flex items-center justify-center w-8 h-8 rounded-full border-2 
                                 ${getStatusButtonStyle(option, isActive, isPassed)} transition-all duration-300`}
                             >
-                                {option.icon}
+                                <div className="w-4 h-4 flex items-center justify-center">
+                                    {option.icon}
+                                </div>
 
                                 {/* Status Label */}
                                 <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                                    <span className={`text-xs font-medium ${isActive
-                                        ? option.colors.label
-                                        : 'text-gray-500'
+                                    <span className={`text-xs font-medium ${isActive ? option.colors.active.replace('border-', 'text-').split(' ')[0] : 'text-gray-500'
                                         }`}>
                                         {option.label}
                                     </span>
@@ -67,7 +67,7 @@ export function BookingStatusProgress({
                             {/* Loading Overlay */}
                             {isLoading && isActive && (
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className={`animate-spin rounded-full h-8 w-8 border-2 border-current border-t-transparent`}></div>
+                                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-current border-t-transparent"></div>
                                 </div>
                             )}
                         </button>
