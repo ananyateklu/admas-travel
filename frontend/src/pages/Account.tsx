@@ -157,6 +157,8 @@ export default function Account() {
     };
 
     const validateField = (name: string, value: string): string => {
+        if (!value) return '';
+
         switch (name) {
             case 'phone':
                 return /^\+?[\d\s-]{10,}$/.test(value) ? '' : 'Invalid phone number format';
@@ -165,11 +167,13 @@ export default function Account() {
             case 'passportNumber':
                 return value.length >= 6 ? '' : 'Passport number must be at least 6 characters';
             case 'dateOfBirth': {
+                if (!value) return '';
                 const date = new Date(value);
                 const now = new Date();
-                return date < now ? '' : 'Date of birth cannot be in the future';
+                return date <= now ? '' : 'Date of birth cannot be in the future';
             }
             case 'passportExpiry': {
+                if (!value) return '';
                 const expiryDate = new Date(value);
                 const today = new Date();
                 return expiryDate > today ? '' : 'Passport expiry date must be in the future';
@@ -215,10 +219,15 @@ export default function Account() {
         }
 
         const error = validateField(name.split('.').pop()!, value);
-        setValidationErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+        setValidationErrors(prev => {
+            const newErrors = { ...prev };
+            if (error) {
+                newErrors[name] = error;
+            } else {
+                delete newErrors[name];
+            }
+            return newErrors;
+        });
 
         setFormData(newFormData);
         setFormChanges(prev => ({
