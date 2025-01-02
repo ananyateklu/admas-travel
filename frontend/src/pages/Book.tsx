@@ -206,7 +206,7 @@ Number of Passengers: ${bookingData.adults + bookingData.children}
 Contact Information: ${bookingData.contactName} (${bookingData.contactPhone})
 
 Special Requests:
-${bookingData.specialRequests || 'None'}
+${bookingData.specialRequests ?? 'None'}
 
 Passenger Details:
 ${bookingData.passengers.map((p, i) => `
