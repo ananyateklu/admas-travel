@@ -27,6 +27,12 @@ export interface BookingData {
         passportExpiry: string;
         nationality: string;
     }>;
+    rating?: {
+        score: number;
+        comment: string;
+        createdAt: string | { toDate: () => Date };
+        updatedAt?: string | { toDate: () => Date };
+    };
 }
 
 export const ADMIN_EMAILS = ['ananya.meseret@gmail.com'];

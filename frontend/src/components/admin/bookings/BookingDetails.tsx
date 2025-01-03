@@ -2,6 +2,7 @@ import { BookingData } from '../types';
 import { getStatusStyle } from '../utils';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { RatingComponent } from '../../booking/RatingComponent';
 
 interface BookingDetailsProps {
     booking: BookingData;
@@ -11,6 +12,8 @@ interface BookingDetailsProps {
     isEditing?: boolean;
     onEdit?: (bookingId: string, updates: Partial<BookingData>) => Promise<void>;
     onEditComplete?: () => void;
+    onRatingSubmit?: (bookingId: string, rating: number, comment: string) => Promise<void>;
+    isSubmittingRating?: boolean;
 }
 
 const formatCreatedAt = (createdAt: string | { toDate: () => Date }) => {
@@ -35,7 +38,9 @@ export function BookingDetails({
     canDelete,
     isEditing = false,
     onEdit,
-    onEditComplete
+    onEditComplete,
+    onRatingSubmit,
+    isSubmittingRating = false
 }: BookingDetailsProps) {
     const [editForm, setEditForm] = useState<Partial<BookingData>>({
         departureDate: booking.departureDate,
@@ -78,6 +83,24 @@ export function BookingDetails({
                         <span className="text-gray-600">Reference</span>
                         <span className="font-medium text-gray-900">{booking.bookingReference}</span>
                     </div>
+                    {booking.rating && (
+                        <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
+                            <span className="text-gray-600">Rating</span>
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
+                                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" stroke="none" viewBox="0 0 24 24">
+                                        <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                    </svg>
+                                    <span className="font-medium text-gray-900">{booking.rating.score.toFixed(1)}</span>
+                                </div>
+                                {booking.rating.comment && (
+                                    <span className="text-gray-500 truncate max-w-[150px]" title={booking.rating.comment}>
+                                        "{booking.rating.comment}"
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    )}
                     <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
                         <span className="text-gray-600">Trip Type • Class</span>
                         <div className="flex items-center gap-2">
@@ -369,6 +392,23 @@ export function BookingDetails({
                     )}
                 </div>
             </div>
+
+            {/* Add Rating Section */}
+            {booking.status === 'completed' && (
+                <div className="lg:col-span-3">
+                    <RatingComponent
+                        currentRating={booking.rating?.score}
+                        currentComment={booking.rating?.comment}
+                        onSubmitRating={async (rating, comment) => {
+                            if (onRatingSubmit) {
+                                await onRatingSubmit(booking.bookingId, rating, comment);
+                            }
+                        }}
+                        isSubmitting={isSubmittingRating}
+                        readonly={!onRatingSubmit}
+                    />
+                </div>
+            )}
         </div>
     );
 } 

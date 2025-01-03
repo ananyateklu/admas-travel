@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../lib/firebase/useAuth';
-import { collection, query, orderBy, deleteDoc, doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { collection, query, orderBy, deleteDoc, doc, onSnapshot, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase/firebase';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -145,6 +145,7 @@ export function Bookings() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
+    const [isSubmittingRating, setIsSubmittingRating] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) {
@@ -243,6 +244,38 @@ export function Bookings() {
         } catch (err) {
             console.error('Error updating booking:', err);
             toast.error('Failed to update booking. Please try again.');
+        }
+    };
+
+    const handleRatingSubmit = async (bookingId: string, rating: number, comment: string) => {
+        if (!user) return;
+
+        setIsSubmittingRating(bookingId);
+        try {
+            const bookingRef = doc(db, 'bookings', bookingId);
+            const userBookingRef = doc(db, 'users', user.uid, 'bookings', bookingId);
+
+            const ratingData = {
+                rating: {
+                    score: rating,
+                    comment: comment,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                }
+            };
+
+            // Update both the main booking and user's booking copy
+            await Promise.all([
+                updateDoc(bookingRef, ratingData),
+                updateDoc(userBookingRef, ratingData)
+            ]);
+
+            toast.success('Rating submitted successfully!');
+        } catch (error) {
+            console.error('Error submitting rating:', error);
+            toast.error('Failed to submit rating. Please try again.');
+        } finally {
+            setIsSubmittingRating(null);
         }
     };
 
@@ -425,6 +458,8 @@ export function Bookings() {
                                             isDeleting={isDeleting === booking.bookingId}
                                             currentUserId={user?.uid}
                                             onEdit={handleEdit}
+                                            onRatingSubmit={handleRatingSubmit}
+                                            isSubmittingRating={isSubmittingRating === booking.bookingId}
                                         />
                                     ))}
 

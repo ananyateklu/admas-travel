@@ -34,6 +34,14 @@ interface AnalyticsData {
         pending: number;
     };
     popularDestinations: [string, number][];
+    ratings: {
+        average: number;
+        monthlyAverage: number;
+        previousMonthAverage: number;
+        trend: number;
+        totalRatings: number;
+        monthlyRatings: number;
+    };
 }
 
 export function useAnalytics(bookings: BookingData[]): AnalyticsData {
@@ -195,9 +203,61 @@ export function useAnalytics(bookings: BookingData[]): AnalyticsData {
             .slice(0, 5);
     }, [bookings]);
 
+    const ratings = useMemo(() => {
+        const now = new Date();
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+
+        // Get all bookings with ratings
+        const bookingsWithRatings = bookings.filter(b => b.rating?.score);
+
+        // Get current month's rated bookings
+        const currentMonthRatings = bookingsWithRatings.filter(b => {
+            const ratingDate = b.rating?.createdAt ? parseDate(b.rating.createdAt) : null;
+            return ratingDate ? ratingDate > lastMonth : false;
+        });
+
+        // Calculate averages
+        const totalAverage = bookingsWithRatings.length > 0
+            ? bookingsWithRatings.reduce((sum, b) => sum + (b.rating?.score ?? 0), 0) / bookingsWithRatings.length
+            : 0;
+
+        const monthlyAverage = currentMonthRatings.length > 0
+            ? currentMonthRatings.reduce((sum, b) => sum + (b.rating?.score ?? 0), 0) / currentMonthRatings.length
+            : 0;
+
+        // Calculate previous month's average for trend
+        const previousMonthStart = new Date(lastMonth.getFullYear(), lastMonth.getMonth() - 1, lastMonth.getDate());
+        const previousMonthRatings = bookingsWithRatings.filter(b => {
+            const ratingDate = b.rating?.createdAt ? parseDate(b.rating.createdAt) : null;
+            return ratingDate ? ratingDate > previousMonthStart && ratingDate <= lastMonth : false;
+        });
+
+        const previousMonthAverage = previousMonthRatings.length > 0
+            ? previousMonthRatings.reduce((sum, b) => sum + (b.rating?.score ?? 0), 0) / previousMonthRatings.length
+            : 0;
+
+        // Calculate trend (difference from previous month)
+        let trend = 0;
+        if (previousMonthAverage > 0) {
+            trend = ((monthlyAverage - previousMonthAverage) / previousMonthAverage) * 100;
+        } else if (monthlyAverage > 0) {
+            trend = 100;
+        }
+
+        return {
+            average: totalAverage,
+            monthlyAverage,
+            previousMonthAverage,
+            trend,
+            totalRatings: bookingsWithRatings.length,
+            monthlyRatings: currentMonthRatings.length
+        };
+    }, [bookings]);
+
     return {
         revenue,
         trends,
-        popularDestinations
+        popularDestinations,
+        ratings
     };
 } 

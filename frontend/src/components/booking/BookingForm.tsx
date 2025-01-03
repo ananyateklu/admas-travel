@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TripTypeSelector } from './TripTypeSelector';
 import { FlightDetails } from './FlightDetails';
@@ -44,8 +44,7 @@ interface BookingFormProps {
 }
 
 const FORM_STEPS = [
-    { id: 'trip', title: 'Trip Type', description: 'Select your journey type' },
-    { id: 'flight', title: 'Flight Details', description: 'Choose your travel dates' },
+    { id: 'trip', title: 'Flight Details', description: 'Select your journey details' },
     { id: 'passengers', title: 'Passengers', description: 'Add passenger information' },
     { id: 'contact', title: 'Contact', description: 'Your contact details' },
     { id: 'review', title: 'Review', description: 'Review your booking' }
@@ -61,9 +60,45 @@ export function BookingForm({
     onAutoFillContact,
     showAutoFill = false
 }: BookingFormProps) {
-    const [formData, setFormData] = React.useState<BookingFormData>(initialData);
-    const [currentStep, setCurrentStep] = React.useState<FormStep>('trip');
-    const [validationErrors, setValidationErrors] = React.useState<Record<string, string>>({});
+    const [currentStep, setCurrentStep] = useState<FormStep>('trip');
+    const [formData, setFormData] = useState<BookingFormData>(initialData);
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+    // Auto-populate data when form loads
+    useEffect(() => {
+        if (showAutoFill) {
+            // Auto-fill contact information
+            if (onAutoFillContact) {
+                const name = onAutoFillContact('name');
+                const email = onAutoFillContact('email');
+                const phone = onAutoFillContact('phone');
+
+                updateFormData({
+                    contactName: name || formData.contactName,
+                    contactEmail: email || formData.contactEmail,
+                    contactPhone: phone || formData.contactPhone
+                });
+            }
+
+            // Auto-fill first passenger information (assuming it's the user)
+            if (onAutoFillPassenger && formData.passengers.length > 0) {
+                const passengerData = onAutoFillPassenger(0);
+                if (passengerData) {
+                    const newPassengers = [...formData.passengers];
+                    newPassengers[0] = {
+                        ...newPassengers[0],
+                        fullName: passengerData.fullName,
+                        dateOfBirth: passengerData.dateOfBirth,
+                        passportNumber: passengerData.passportNumber,
+                        passportExpiry: passengerData.passportExpiry,
+                        nationality: passengerData.nationality,
+                        type: newPassengers[0].type
+                    };
+                    updateFormData({ passengers: newPassengers });
+                }
+            }
+        }
+    }, [showAutoFill, onAutoFillPassenger, onAutoFillContact]);
 
     const updateFormData = (updates: Partial<BookingFormData>) => {
         setFormData(prev => ({ ...prev, ...updates }));
@@ -98,10 +133,17 @@ export function BookingForm({
     };
 
     const handleAutoFillPassenger = (index: number) => {
-        if (!onAutoFillPassenger) return;
+        if (!onAutoFillPassenger) {
+            console.log('onAutoFillPassenger is not provided');
+            return;
+        }
 
         const autoFilledData = onAutoFillPassenger(index);
-        if (!autoFilledData) return;
+        console.log('Auto-filled passenger data:', autoFilledData);
+        if (!autoFilledData) {
+            console.log('No auto-fill data returned');
+            return;
+        }
 
         const newPassengers = [...formData.passengers];
         newPassengers[index] = {
@@ -113,14 +155,22 @@ export function BookingForm({
             nationality: autoFilledData.nationality,
             type: newPassengers[index].type // Preserve the original passenger type
         };
+        console.log('Updating passengers with:', newPassengers);
         updateFormData({ passengers: newPassengers });
     };
 
     const handleAutoFillContact = (field: 'name' | 'email' | 'phone') => {
-        if (!onAutoFillContact) return;
+        if (!onAutoFillContact) {
+            console.log('onAutoFillContact is not provided');
+            return;
+        }
 
         const value = onAutoFillContact(field);
-        if (typeof value !== 'string') return;
+        console.log('Auto-filled contact value:', { field, value });
+        if (typeof value !== 'string') {
+            console.log('Invalid auto-fill value returned');
+            return;
+        }
 
         switch (field) {
             case 'name':
@@ -147,24 +197,27 @@ export function BookingForm({
 
     function getStepValidationErrors(step: FormStep, data: BookingFormData): Record<string, string> {
         switch (step) {
-            case 'flight':
-                return validateFlightStep(data);
+            case 'trip':
+                return validateTripStep(data);
             case 'passengers':
                 return validatePassengersStep(data);
             case 'contact':
                 return validateContactStep(data);
+            case 'review':
+                return validateReviewStep();
             default:
                 return {};
         }
     }
 
-    function validateFlightStep(data: BookingFormData): Record<string, string> {
+    function validateTripStep(data: BookingFormData): Record<string, string> {
         const errors: Record<string, string> = {};
-        if (!data.from) errors.from = 'Please select departure airport';
-        if (!data.to) errors.to = 'Please select arrival airport';
-        if (!data.departureDate) errors.departureDate = 'Please select departure date';
+        if (!data.tripType) errors.tripType = 'Trip type is required';
+        if (!data.from) errors.from = 'Departure airport is required';
+        if (!data.to) errors.to = 'Arrival airport is required';
+        if (!data.departureDate) errors.departureDate = 'Departure date is required';
         if (data.tripType === 'roundtrip' && !data.returnDate) {
-            errors.returnDate = 'Please select return date';
+            errors.returnDate = 'Return date is required';
         }
         return errors;
     }
@@ -187,6 +240,10 @@ export function BookingForm({
         if (!data.contactEmail) errors.contactEmail = 'Email is required';
         if (!data.contactPhone) errors.contactPhone = 'Phone number is required';
         return errors;
+    }
+
+    function validateReviewStep(): Record<string, string> {
+        return {};
     }
 
     const handleNext = () => {
@@ -264,25 +321,24 @@ export function BookingForm({
                         transition={{ duration: 0.2 }}
                     >
                         {currentStep === 'trip' && (
-                            <TripTypeSelector
-                                value={formData.tripType}
-                                onChange={(value) => updateFormData({ tripType: value })}
-                            />
-                        )}
-
-                        {currentStep === 'flight' && (
-                            <FlightDetails
-                                from={formData.from}
-                                to={formData.to}
-                                departureDate={formData.departureDate}
-                                returnDate={formData.returnDate}
-                                isRoundTrip={formData.tripType === 'roundtrip'}
-                                onFromChange={(airport) => updateFormData({ from: airport })}
-                                onToChange={(airport) => updateFormData({ to: airport })}
-                                onDepartureDateChange={(date) => updateFormData({ departureDate: date })}
-                                onReturnDateChange={(date) => updateFormData({ returnDate: date })}
-                                errors={validationErrors}
-                            />
+                            <>
+                                <TripTypeSelector
+                                    value={formData.tripType}
+                                    onChange={(value) => updateFormData({ tripType: value })}
+                                />
+                                <FlightDetails
+                                    from={formData.from}
+                                    to={formData.to}
+                                    departureDate={formData.departureDate}
+                                    returnDate={formData.returnDate}
+                                    isRoundTrip={formData.tripType === 'roundtrip'}
+                                    onFromChange={(airport) => updateFormData({ from: airport })}
+                                    onToChange={(airport) => updateFormData({ to: airport })}
+                                    onDepartureDateChange={(date) => updateFormData({ departureDate: date })}
+                                    onReturnDateChange={(date) => updateFormData({ returnDate: date })}
+                                    errors={validationErrors}
+                                />
+                            </>
                         )}
 
                         {currentStep === 'passengers' && (
