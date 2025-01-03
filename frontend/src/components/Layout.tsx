@@ -208,15 +208,37 @@ export default function Layout() {
                                             >
                                                 <div className="flex items-center gap-3">
                                                     {user.photoURL ? (
-                                                        <img
+                                                        <motion.img
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            initial={{ opacity: 0, scale: 0.5 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                                                             src={user.photoURL}
                                                             alt={user.displayName ?? 'User'}
-                                                            className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                                                            className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                                            onError={(e) => {
+                                                                const target = e.target as HTMLImageElement;
+                                                                target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName ?? 'User')}&background=D4AF37&color=fff&size=40`;
+                                                            }}
                                                         />
                                                     ) : (
-                                                        <div className="w-10 h-10 rounded-full bg-gold text-white flex items-center justify-center text-lg font-medium">
-                                                            {user.displayName?.charAt(0) ?? user.email?.charAt(0) ?? 'U'}
-                                                        </div>
+                                                        <motion.div
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            initial={{ opacity: 0, scale: 0.5 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                                                            className="w-10 h-10 rounded-full bg-gold text-white flex items-center justify-center text-lg font-medium ring-2 ring-white shadow-sm"
+                                                        >
+                                                            <motion.span
+                                                                initial={{ opacity: 0, scale: 0.5 }}
+                                                                animate={{ opacity: 1, scale: 1 }}
+                                                                transition={{ delay: 0.1 }}
+                                                            >
+                                                                {user.displayName?.[0] ?? user.email?.[0] ?? 'U'}
+                                                            </motion.span>
+                                                        </motion.div>
                                                     )}
                                                     <div className="hidden md:block text-left">
                                                         <div className="text-sm font-medium text-gray-900">

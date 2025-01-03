@@ -192,6 +192,70 @@ export default function Admin() {
         return totalBookings > 0 ? Math.round((completedBookings / totalBookings) * 100) : 0;
     };
 
+    // Calculate revenue growth
+    const getRevenueStats = () => {
+        const today = new Date();
+        const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const twoMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 2, 1);
+
+        const TICKET_PRICE = 40; // Fixed ticket price as used in analytics
+
+        const calculateMonthRevenue = (startDate: Date, endDate: Date) => {
+            return bookings
+                .filter(b => {
+                    const bookingDate = typeof b.createdAt === 'string'
+                        ? new Date(b.createdAt)
+                        : b.createdAt.toDate();
+                    return bookingDate >= startDate && bookingDate < endDate;
+                })
+                .reduce((total, booking) => {
+                    const amount = TICKET_PRICE * (Array.isArray(booking.passengers) ? booking.passengers.length : 0);
+                    return total + amount;
+                }, 0);
+        };
+
+        const currentMonthRevenue = calculateMonthRevenue(currentMonth, today);
+        const lastMonthRevenue = calculateMonthRevenue(lastMonth, currentMonth);
+        const twoMonthsAgoRevenue = calculateMonthRevenue(twoMonthsAgo, lastMonth);
+
+        // Calculate month-over-month growth
+        const monthOverMonthGrowth = lastMonthRevenue > 0
+            ? ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+            : 0;
+
+        // Calculate previous month's growth for comparison
+        const previousMonthGrowth = twoMonthsAgoRevenue > 0
+            ? ((lastMonthRevenue - twoMonthsAgoRevenue) / twoMonthsAgoRevenue) * 100
+            : 0;
+
+        // Determine if the trend is improving
+        const trendUp = monthOverMonthGrowth >= previousMonthGrowth;
+
+        // Format trend message
+        const getTrendMessage = () => {
+            const growthAbs = Math.abs(monthOverMonthGrowth);
+            if (growthAbs === 0) return 'No change vs last month';
+            return `${monthOverMonthGrowth > 0 ? '+' : '-'}${growthAbs.toFixed(1)}% vs last month`;
+        };
+
+        return {
+            value: currentMonthRevenue.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }),
+            trend: getTrendMessage(),
+            trendUp,
+            details: {
+                currentMonth: currentMonthRevenue,
+                lastMonth: lastMonthRevenue,
+                twoMonthsAgo: twoMonthsAgoRevenue,
+                growthRate: monthOverMonthGrowth
+            }
+        };
+    };
+
     // Format last active time
     const getLastActiveTime = () => {
         if (!user?.metadata.lastSignInTime) return '';
@@ -298,10 +362,19 @@ export default function Admin() {
                                     {user?.photoURL ? (
                                         <div className="relative">
                                             <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300" />
-                                            <img
+                                            <motion.img
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                initial={{ opacity: 0, scale: 0.5 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                                                 src={user.photoURL}
                                                 alt={user.displayName ?? 'Admin'}
-                                                className="w-28 h-28 rounded-full object-cover border-4 border-white/20 shadow-xl relative z-10"
+                                                className="w-28 h-28 rounded-full object-cover ring-4 ring-white/20 shadow-xl relative z-10"
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName ?? 'Admin')}&background=D4AF37&color=fff&size=112`;
+                                                }}
                                             />
                                             <motion.div
                                                 className="absolute -bottom-2 -right-2 w-7 h-7 bg-green-500 rounded-full border-4 border-white z-20"
@@ -310,7 +383,7 @@ export default function Admin() {
                                                 transition={{ delay: 0.5, type: "spring" }}
                                             />
                                             <motion.div
-                                                className="absolute -bottom-2 -left-2 bg-gold text-white text-xs px-2 py-1 rounded-full shadow-lg z-20"
+                                                className="absolute -bottom-2 -left-2 bg-forest-400 text-white text-xs px-2 py-1 rounded-full shadow-lg z-20"
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.6 }}
@@ -321,9 +394,22 @@ export default function Admin() {
                                     ) : (
                                         <div className="relative">
                                             <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300" />
-                                            <div className="w-28 h-28 rounded-full bg-gold text-white flex items-center justify-center text-4xl font-medium border-4 border-white/20 shadow-xl relative z-10">
-                                                {user?.displayName?.charAt(0) ?? user?.email?.charAt(0) ?? 'A'}
-                                            </div>
+                                            <motion.div
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                initial={{ opacity: 0, scale: 0.5 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                                                className="w-28 h-28 rounded-full bg-gold text-white flex items-center justify-center text-4xl font-medium ring-4 ring-white/20 shadow-xl relative z-10"
+                                            >
+                                                <motion.span
+                                                    initial={{ opacity: 0, scale: 0.5 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    transition={{ delay: 0.1 }}
+                                                >
+                                                    {user?.displayName?.[0] ?? user?.email?.[0] ?? 'A'}
+                                                </motion.span>
+                                            </motion.div>
                                             <motion.div
                                                 className="absolute -bottom-2 -right-2 w-7 h-7 bg-green-500 rounded-full border-4 border-white z-20"
                                                 initial={{ scale: 0 }}
@@ -331,7 +417,7 @@ export default function Admin() {
                                                 transition={{ delay: 0.5, type: "spring" }}
                                             />
                                             <motion.div
-                                                className="absolute -bottom-2 -left-2 bg-gold text-white text-xs px-2 py-1 rounded-full shadow-lg z-20"
+                                                className="absolute -bottom-2 -left-2 bg-forest-400 text-white text-xs px-2 py-1 rounded-full shadow-lg z-20"
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.6 }}
@@ -346,127 +432,208 @@ export default function Admin() {
                                         initial={{ y: -20, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
                                         transition={{ duration: 0.5, delay: 0.2 }}
+                                        className="bg-white/10 backdrop-blur-md rounded-2xl px-8 py-6 border border-white/20 shadow-xl"
                                     >
-                                        <span className="text-gold text-xl mb-2 block font-medium tracking-wide">{getGreeting()},</span>
-                                        <h1 className="text-4xl md:text-6xl font-serif text-white mb-2 tracking-tight">
-                                            {user?.displayName ?? 'Admin'}
+                                        <span className="font-serif text-2xl mb-3 block tracking-[0.05em] text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-300 to-gold-400 uppercase font-medium [text-shadow:_0_1px_2px_rgba(212,175,55,0.3)]">{getGreeting()}</span>
+                                        <h1 className="text-4xl md:text-6xl font-serif text-white mb-2 tracking-tight relative">
+                                            <span className="absolute -inset-2 bg-forest-300/20 blur-2xl rounded-full"></span>
+                                            <span className="relative bg-gradient-to-br from-forest-200 to-forest-300 text-transparent bg-clip-text [text-shadow:_0_1px_12px_rgb(127_167_123_/_30%)] font-medium">
+                                                {user?.displayName ?? 'Admin'}
+                                            </span>
                                         </h1>
-                                    </motion.div>
-                                    <motion.div
-                                        className="flex items-center justify-center gap-4 flex-wrap"
-                                        initial={{ y: -20, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        transition={{ duration: 0.5, delay: 0.3 }}
-                                    >
-                                        <div className="flex items-center text-white/60">
-                                            <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-                                            {getLastActiveTime()}
-                                        </div>
-                                        <div className="text-white/60">•</div>
-                                        <div className="text-white/60 hover:text-white transition-colors">{user?.email}</div>
-                                        <div className="text-white/60">•</div>
-                                        <div className="text-white/60">Last login: {new Date(user?.metadata.lastSignInTime ?? '').toLocaleDateString()}</div>
+                                        <motion.div
+                                            className="flex items-center justify-center gap-4 flex-wrap"
+                                            initial={{ y: -20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            transition={{ duration: 0.5, delay: 0.3 }}
+                                        >
+                                            <div className="flex items-center text-white/60">
+                                                <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                                                {getLastActiveTime()}
+                                            </div>
+                                            <div className="text-white/60">•</div>
+                                            <div className="text-white/60 hover:text-white transition-colors">{user?.email}</div>
+                                            <div className="text-white/60">•</div>
+                                            <div className="text-white/60">Last login: {new Date(user?.metadata.lastSignInTime ?? '').toLocaleDateString()}</div>
+                                        </motion.div>
                                     </motion.div>
                                 </div>
                             </div>
 
                             <motion.p
-                                className="text-xl text-white/80 text-center mx-auto max-w-2xl mb-16"
+                                className="text-xl text-white/80 text-center mx-auto max-w-2xl mb-16 font-sans tracking-[-0.01em] leading-relaxed"
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ duration: 0.5, delay: 0.4 }}
                             >
-                                Welcome to your command center. Monitor bookings, manage flights, and keep your travel operations running smoothly.
+                                <span className="bg-gradient-to-r from-white/90 via-white/80 to-white/90 text-transparent bg-clip-text font-light">
+                                    Welcome to your command center. Monitor bookings, manage flights, and keep your travel operations running smoothly.
+                                </span>
                             </motion.p>
 
                             {/* Quick stats */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mt-8 mb-12">
-                                {[
-                                    {
-                                        value: bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length,
-                                        label: 'Active Bookings',
-                                        icon: (
-                                            <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        ),
-                                        trend: '+12% from last week',
-                                        trendUp: true
-                                    },
-                                    {
-                                        value: bookings.filter(b => {
-                                            const today = new Date();
-                                            const bookingDate = new Date(b.departureDate);
-                                            return bookingDate.toDateString() === today.toDateString();
-                                        }).length,
-                                        label: "Today's Flights",
-                                        icon: (
-                                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                            </svg>
-                                        ),
-                                        trend: 'On schedule',
-                                        trendUp: true
-                                    },
-                                    {
-                                        value: `${getCompletionRate()}%`,
-                                        label: 'Completion Rate',
-                                        icon: (
-                                            <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                            </svg>
-                                        ),
-                                        trend: '+5% this month',
-                                        trendUp: true
-                                    },
-                                    {
-                                        value: bookings.filter(b => {
-                                            const today = new Date();
-                                            const bookingDate = typeof b.createdAt === 'string'
-                                                ? new Date(b.createdAt)
-                                                : b.createdAt.toDate();
-                                            return bookingDate.toDateString() === today.toDateString();
-                                        }).length,
-                                        label: 'New Bookings',
-                                        icon: (
-                                            <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        ),
-                                        trend: '3 in last hour',
-                                        trendUp: true
-                                    }
-                                ].map((stat, index) => (
-                                    <motion.div
-                                        key={stat.label}
-                                        className="bg-white/90 backdrop-blur-lg rounded-xl px-6 py-4 border border-white/20 hover:bg-white/95 transition-all duration-300 group hover:shadow-lg hover:-translate-y-1"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 + 0.5 }}
-                                    >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="p-2 rounded-lg bg-gray-50 group-hover:scale-110 transition-transform duration-300">
-                                                {stat.icon}
+                            <div className="w-[80%] max-w-[2000px] mx-auto">
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-10 mb-12">
+                                    {[
+                                        {
+                                            value: bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length,
+                                            label: 'Active Bookings',
+                                            icon: (
+                                                <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            ),
+                                            trend: '+12% from last week',
+                                            trendUp: true
+                                        },
+                                        {
+                                            value: getRevenueStats().value,
+                                            label: 'Monthly Revenue',
+                                            icon: (
+                                                <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            ),
+                                            trend: getRevenueStats().trend,
+                                            trendUp: getRevenueStats().trendUp
+                                        },
+                                        {
+                                            value: `${getCompletionRate()}%`,
+                                            label: 'Completion Rate',
+                                            icon: (
+                                                <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                </svg>
+                                            ),
+                                            trend: '+5% this month',
+                                            trendUp: true
+                                        },
+                                        {
+                                            value: bookings.filter(b => {
+                                                const today = new Date();
+                                                const bookingDate = typeof b.createdAt === 'string'
+                                                    ? new Date(b.createdAt)
+                                                    : b.createdAt.toDate();
+                                                return bookingDate.toDateString() === today.toDateString();
+                                            }).length,
+                                            label: 'New Bookings',
+                                            icon: (
+                                                <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            ),
+                                            trend: '3 in last hour',
+                                            trendUp: true
+                                        },
+                                        {
+                                            value: '4.8',
+                                            label: 'Customer Rating',
+                                            icon: (
+                                                <svg className="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                                </svg>
+                                            ),
+                                            trend: '+0.2 this month',
+                                            trendUp: true
+                                        }
+                                    ].map((stat, index) => (
+                                        <motion.div
+                                            key={stat.label}
+                                            className="bg-white/95 backdrop-blur-lg rounded-2xl px-4 py-3 border border-white/40 hover:bg-white/90 transition-all duration-300 group relative overflow-hidden"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.1 + 0.5 }}
+                                            whileHover={{
+                                                scale: 1.04,
+                                                transition: {
+                                                    duration: 0.2,
+                                                    ease: [0.23, 1, 0.32, 1]
+                                                }
+                                            }}
+                                        >
+                                            {/* Animated gradient background */}
+                                            <motion.div
+                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                                                initial={{ x: '-100%' }}
+                                                animate={{ x: '200%' }}
+                                                transition={{
+                                                    repeat: Infinity,
+                                                    duration: 2,
+                                                    ease: "linear",
+                                                    delay: index * 0.1
+                                                }}
+                                            />
+
+                                            {/* Content container with glass effect */}
+                                            <div className="relative z-10">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <motion.div
+                                                        className="p-2.5 rounded-xl bg-gray-50/80 transition-all duration-300"
+                                                        whileHover={{ scale: 1.1, rotate: 5 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                    >
+                                                        {stat.icon}
+                                                    </motion.div>
+                                                    <motion.div
+                                                        className={`text-xs font-medium ${stat.trendUp ? 'text-forest-400' : 'text-red-500'} flex items-center gap-1.5 bg-gray-50/50 px-3 py-1.5 rounded-full`}
+                                                        initial={{ scale: 0.8, opacity: 0 }}
+                                                        animate={{ scale: 1, opacity: 1 }}
+                                                        transition={{ delay: index * 0.1 + 0.3 }}
+                                                    >
+                                                        <motion.div
+                                                            animate={{
+                                                                y: [0, -2, 0],
+                                                                transition: {
+                                                                    repeat: Infinity,
+                                                                    duration: 2,
+                                                                    ease: "easeInOut"
+                                                                }
+                                                            }}
+                                                        >
+                                                            {stat.trendUp ? (
+                                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+                                                                </svg>
+                                                            )}
+                                                        </motion.div>
+                                                        {stat.trend}
+                                                    </motion.div>
+                                                </div>
+                                                <motion.div
+                                                    className="text-xl font-bold text-gray-800 mb-1 transition-colors relative group-hover:text-gold"
+                                                    initial={{ scale: 0.9, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    transition={{ delay: index * 0.1 + 0.2 }}
+                                                >
+                                                    {stat.value}
+                                                    <div className="absolute -inset-1 bg-gold/10 rounded-lg blur-lg group-hover:blur-xl transition-all duration-300 opacity-0 group-hover:opacity-100" />
+                                                </motion.div>
+                                                <motion.div
+                                                    className="text-sm text-gray-600 font-medium"
+                                                    initial={{ x: -10, opacity: 0 }}
+                                                    animate={{ x: 0, opacity: 1 }}
+                                                    transition={{ delay: index * 0.1 + 0.4 }}
+                                                >
+                                                    {stat.label}
+                                                </motion.div>
                                             </div>
-                                            <div className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'} flex items-center gap-1`}>
-                                                {stat.trendUp ? (
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                                    </svg>
-                                                ) : (
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
-                                                    </svg>
-                                                )}
-                                                {stat.trend}
-                                            </div>
-                                        </div>
-                                        <div className="text-2xl font-bold text-gray-800 mb-1 group-hover:text-gold transition-colors">
-                                            {stat.value}
-                                        </div>
-                                        <div className="text-sm text-gray-600">{stat.label}</div>
-                                    </motion.div>
-                                ))}
+
+                                            {/* Hover effect overlay */}
+                                            <motion.div
+                                                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                                style={{
+                                                    background: 'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.1) 0%, transparent 100%)'
+                                                }}
+                                                initial={false}
+                                                whileHover={{ scale: 1.02 }}
+                                            />
+                                        </motion.div>
+                                    ))}
+                                </div>
                             </div>
 
                             {/* Navigation Tabs */}
@@ -521,14 +688,14 @@ export default function Admin() {
                                                         onClick={() => setActiveTab(tab.id)}
                                                         className={`group relative flex-1 sm:flex-initial min-w-[140px] px-6 py-4 text-sm font-medium rounded-xl flex items-center justify-center gap-3 transition-all duration-500
                                                             ${activeTab === tab.id
-                                                                ? 'bg-gradient-to-r from-gold via-gold/90 to-gold text-white shadow-lg shadow-gold/20 scale-[1.02] hover:shadow-xl hover:shadow-gold/25'
+                                                                ? 'bg-gradient-to-r from-forest-400 via-forest-400/90 to-forest-400 text-white shadow-lg shadow-forest-400/20 scale-[1.02] hover:shadow-xl hover:shadow-forest-400/25'
                                                                 : 'text-gray-500 hover:text-gray-700 hover:bg-black/5'
                                                             }`}
                                                         aria-current={activeTab === tab.id ? 'page' : undefined}
                                                     >
                                                         {/* Background glow effect */}
                                                         {activeTab === tab.id && (
-                                                            <div className="absolute inset-0 rounded-xl bg-gold/20 blur-xl transition-opacity duration-500" />
+                                                            <div className="absolute inset-0 rounded-xl bg-forest-400/20 blur-xl transition-opacity duration-500" />
                                                         )}
 
                                                         {/* Icon with hover animation */}
