@@ -156,31 +156,26 @@ export default function Account() {
         return Math.round((completedFields.length / requiredFields.length) * 100);
     };
 
+    const validateDate = (date: Date, shouldBeInFuture: boolean): string => {
+        const now = new Date();
+        if (shouldBeInFuture) {
+            return date > now ? '' : 'Date must be in the future';
+        }
+        return date <= now ? '' : 'Date cannot be in the future';
+    };
+
     const validateField = (name: string, value: string): string => {
         if (!value) return '';
 
-        switch (name) {
-            case 'phone':
-                return /^\+?[\d\s-]{10,}$/.test(value) ? '' : 'Invalid phone number format';
-            case 'email':
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? '' : 'Invalid email format';
-            case 'passportNumber':
-                return value.length >= 6 ? '' : 'Passport number must be at least 6 characters';
-            case 'dateOfBirth': {
-                if (!value) return '';
-                const date = new Date(value);
-                const now = new Date();
-                return date <= now ? '' : 'Date of birth cannot be in the future';
-            }
-            case 'passportExpiry': {
-                if (!value) return '';
-                const expiryDate = new Date(value);
-                const today = new Date();
-                return expiryDate > today ? '' : 'Passport expiry date must be in the future';
-            }
-            default:
-                return '';
-        }
+        const validations: Record<string, (val: string) => string> = {
+            phone: val => /^\+?[\d\s-]{10,}$/.test(val) ? '' : 'Invalid phone number format',
+            email: val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) ? '' : 'Invalid email format',
+            passportNumber: val => val.length >= 6 ? '' : 'Passport number must be at least 6 characters',
+            dateOfBirth: val => validateDate(new Date(val), false),
+            passportExpiry: val => validateDate(new Date(val), true)
+        };
+
+        return validations[name]?.(value) ?? '';
     };
 
     const getInputClassName = (fieldName: string) => {
