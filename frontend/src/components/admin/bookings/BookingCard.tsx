@@ -80,17 +80,17 @@ interface BookingCardProps {
 const JourneyDetails = ({ booking }: { booking: BookingData }) => {
     return (
         <motion.div
-            className="flex items-center gap-3 bg-gray-50/80 rounded-lg p-2 relative overflow-hidden group/journey min-w-[600px] w-full"
+            className="flex items-center gap-2 bg-gray-50/80 rounded-lg p-1.5 relative overflow-hidden group/journey min-w-[500px] w-full"
             whileHover={{
                 backgroundColor: "rgba(249, 250, 251, 0.9)",
                 transition: { duration: 0.2 }
             }}
         >
             {/* Departure */}
-            <div className="flex-1 min-w-[160px]">
-                <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+            <div className="flex-1 min-w-[140px]">
+                <div className="flex items-baseline gap-1 whitespace-nowrap">
                     <div className="flex items-baseline">
-                        <p className="text-lg font-bold text-gray-900 tracking-tight">
+                        <p className="text-base font-bold text-gray-900 tracking-tight">
                             {booking.departureTime ?
                                 new Date(`2000-01-01T${booking.departureTime}`).toLocaleTimeString(undefined, {
                                     hour: 'numeric',
@@ -99,7 +99,7 @@ const JourneyDetails = ({ booking }: { booking: BookingData }) => {
                                 }).split(' ')[0]
                                 : '00:00'}
                         </p>
-                        <p className="text-xs font-medium text-gray-500 ml-1">
+                        <p className="text-[10px] font-medium text-gray-500 ml-1">
                             {booking.departureTime ?
                                 new Date(`2000-01-01T${booking.departureTime}`).toLocaleTimeString(undefined, {
                                     hour: 'numeric',
@@ -109,7 +109,7 @@ const JourneyDetails = ({ booking }: { booking: BookingData }) => {
                                 : 'AM'}
                         </p>
                     </div>
-                    <p className="text-xs font-medium text-gray-500">
+                    <p className="text-[10px] font-medium text-gray-500">
                         {new Date(booking.departureDate).toLocaleDateString(undefined, {
                             month: 'short',
                             day: 'numeric'
@@ -117,14 +117,14 @@ const JourneyDetails = ({ booking }: { booking: BookingData }) => {
                     </p>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                    <p className="text-sm font-medium text-gray-800 truncate max-w-[150px]">
+                    <p className="text-xs font-medium text-gray-800 truncate max-w-[140px]">
                         {(booking.from && typeof booking.from === 'object' ? booking.from.city : booking.from) ?? 'Unknown'}
                         {(booking.from && typeof booking.from === 'object' && 'airportCode' in booking.from) && (
                             <span className="text-forest-400 font-medium"> ({booking.from.airportCode})</span>
                         )}
                     </p>
                     <div className="flex items-center gap-1">
-                        <p className="text-xs text-gray-500 truncate max-w-[150px]">
+                        <p className="text-[10px] text-gray-500 truncate max-w-[140px]">
                             {(booking.from && typeof booking.from === 'object' ? booking.from.country : '')}
                         </p>
                     </div>
@@ -132,17 +132,17 @@ const JourneyDetails = ({ booking }: { booking: BookingData }) => {
             </div>
 
             {/* Duration and Path */}
-            <div className="flex-none flex flex-col items-center relative px-3 min-w-[140px]">
+            <div className="flex-none flex flex-col items-center relative px-2 min-w-[120px]">
                 <div className="absolute top-[30%] left-0 right-0">
                     <div className="w-full h-[2px] bg-gray-200" />
                 </div>
-                <div className="bg-white rounded-full px-3 py-1 shadow-sm border border-gray-200 z-10 mb-1">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-gray-900 whitespace-nowrap">
+                <div className="bg-white rounded-full px-2 py-0.5 shadow-sm border border-gray-200 z-10 mb-1">
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold text-gray-900 whitespace-nowrap">
                             {booking.class}
                         </span>
-                        <span className="h-3 w-px bg-gray-200" />
-                        <span className="text-xs font-medium text-gray-500 whitespace-nowrap">
+                        <span className="h-2 w-px bg-gray-200" />
+                        <span className="text-[10px] font-medium text-gray-500 whitespace-nowrap">
                             {booking.returnDate ? 'Round Trip' : 'One Way'}
                         </span>
                     </div>
@@ -150,10 +150,10 @@ const JourneyDetails = ({ booking }: { booking: BookingData }) => {
             </div>
 
             {/* Arrival */}
-            <div className="flex-1 min-w-[160px]">
-                <div className="flex items-baseline gap-1.5 justify-end whitespace-nowrap">
+            <div className="flex-1 min-w-[140px]">
+                <div className="flex items-baseline gap-1 justify-end whitespace-nowrap">
                     <div className="flex items-baseline">
-                        <p className="text-lg font-bold text-gray-900 tracking-tight">
+                        <p className="text-base font-bold text-gray-900 tracking-tight">
                             {booking.returnTime ?
                                 new Date(`2000-01-01T${booking.returnTime}`).toLocaleTimeString(undefined, {
                                     hour: 'numeric',
@@ -162,7 +162,7 @@ const JourneyDetails = ({ booking }: { booking: BookingData }) => {
                                 }).split(' ')[0]
                                 : '00:00'}
                         </p>
-                        <p className="text-xs font-medium text-gray-500 ml-1">
+                        <p className="text-[10px] font-medium text-gray-500 ml-1">
                             {booking.returnTime ?
                                 new Date(`2000-01-01T${booking.returnTime}`).toLocaleTimeString(undefined, {
                                     hour: 'numeric',
@@ -172,7 +172,7 @@ const JourneyDetails = ({ booking }: { booking: BookingData }) => {
                                 : 'AM'}
                         </p>
                     </div>
-                    <p className="text-xs font-medium text-gray-500">
+                    <p className="text-[10px] font-medium text-gray-500">
                         {booking.returnDate ? new Date(booking.returnDate).toLocaleDateString(undefined, {
                             month: 'short',
                             day: 'numeric'
@@ -180,14 +180,14 @@ const JourneyDetails = ({ booking }: { booking: BookingData }) => {
                     </p>
                 </div>
                 <div className="flex flex-col items-end gap-0.5">
-                    <p className="text-sm font-medium text-gray-800 truncate max-w-[150px]">
+                    <p className="text-xs font-medium text-gray-800 truncate max-w-[140px]">
                         {(booking.to && typeof booking.to === 'object' ? booking.to.city : booking.to) ?? 'Unknown'}
                         {(booking.to && typeof booking.to === 'object' && 'airportCode' in booking.to) && (
                             <span className="text-forest-400 font-medium"> ({booking.to.airportCode})</span>
                         )}
                     </p>
                     <div className="flex items-center gap-1">
-                        <p className="text-xs text-gray-500 truncate max-w-[150px]">
+                        <p className="text-[10px] text-gray-500 truncate max-w-[140px]">
                             {(booking.to && typeof booking.to === 'object' ? booking.to.country : '')}
                         </p>
                     </div>
@@ -316,7 +316,7 @@ export function BookingCard({
             initial="hidden"
             animate="visible"
             whileHover="hover"
-            className="bg-white/95 rounded-xl shadow-xl border border-gray-100/50 backdrop-blur-sm backdrop-saturate-150 ring-1 ring-black/[0.02]"
+            className="bg-white/95 rounded-xl shadow-[0_-2px_8px_-4px_rgba(0,0,0,0.05),0_4px_12px_-2px_rgba(0,0,0,0.05)] border border-gray-100/50 backdrop-blur-sm backdrop-saturate-150 ring-1 ring-black/[0.02]"
         >
             <div className="px-3 py-2 lg:px-4 lg:py-3 overflow-visible">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 overflow-visible">
@@ -514,7 +514,7 @@ export function BookingCard({
                         <div className="px-4 py-3 lg:px-6 lg:py-4 bg-gradient-to-b from-gray-50/30 to-white">
                             {/* Quick Actions Bar */}
                             <motion.div
-                                className="flex items-center justify-between mb-4 bg-white/95 rounded-xl p-2 shadow-sm border border-gray-100/50 ring-1 ring-black/[0.02]"
+                                className="flex items-center justify-between mb-4 bg-white/95 rounded-xl p-2 shadow-[0_-1px_4px_-2px_rgba(0,0,0,0.05),0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-gray-100/50 ring-1 ring-black/[0.02]"
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
@@ -629,22 +629,6 @@ export function BookingCard({
                                         </svg>
                                         <span className="whitespace-nowrap font-medium tracking-wide">Share</span>
                                     </motion.button>
-                                    {canEdit && (
-                                        <motion.button
-                                            onClick={handleEditToggle}
-                                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50/80 rounded-xl transition-colors group"
-                                            variants={buttonVariants}
-                                            whileHover="hover"
-                                            whileTap="tap"
-                                        >
-                                            <svg className="w-4 h-4 text-gold/90 group-hover:text-gold/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                            <span className="whitespace-nowrap font-medium tracking-wide">
-                                                {isEditing ? 'Cancel Edit' : 'Edit Booking'}
-                                            </span>
-                                        </motion.button>
-                                    )}
                                 </div>
                                 <motion.div
                                     className="flex items-center gap-2"
@@ -662,35 +646,61 @@ export function BookingCard({
 
                             {/* Tabs Navigation */}
                             <motion.div
-                                className="bg-white/95 rounded-xl shadow-sm mb-4 border border-gray-100/50 ring-1 ring-black/[0.02]"
+                                className="bg-white/95 rounded-xl shadow-[0_-1px_4px_-2px_rgba(0,0,0,0.05),0_4px_6px_-1px_rgba(0,0,0,0.05)] mb-4 border border-gray-100/50 ring-1 ring-black/[0.02]"
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
                             >
                                 <div className="border-b border-gray-100/80">
-                                    <nav className="flex space-x-8 px-6" aria-label="Booking Information">
-                                        {['details', 'passengers', 'contact'].map((tab) => (
+                                    <nav className="flex justify-between items-center px-6" aria-label="Booking Information">
+                                        <div className="flex space-x-8">
+                                            {['details', 'passengers', 'contact'].map((tab) => (
+                                                <motion.button
+                                                    key={tab}
+                                                    onClick={() => setActiveTab(tab as TabType)}
+                                                    className={`py-3 px-2 border-b-2 font-medium text-sm tracking-wide whitespace-nowrap relative ${activeTab === tab
+                                                        ? 'border-forest-400 text-forest-500'
+                                                        : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200'
+                                                        }`}
+                                                    variants={buttonVariants}
+                                                    whileHover="hover"
+                                                    whileTap="tap"
+                                                >
+                                                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                                                    {activeTab === tab && (
+                                                        <motion.div
+                                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-forest-300 via-forest-400 to-forest-300"
+                                                            layoutId="activeTab"
+                                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                                        />
+                                                    )}
+                                                </motion.button>
+                                            ))}
+                                        </div>
+                                        {activeTab === 'details' && canEdit && (
                                             <motion.button
-                                                key={tab}
-                                                onClick={() => setActiveTab(tab as TabType)}
-                                                className={`py-3 px-2 border-b-2 font-medium text-sm tracking-wide whitespace-nowrap relative ${activeTab === tab
-                                                    ? 'border-gold text-gold'
-                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                                onClick={handleEditToggle}
+                                                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isEditing
+                                                    ? 'text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                                    : 'text-forest-700 bg-forest-50 hover:bg-forest-100 border border-forest-200 hover:border-forest-300'
                                                     }`}
                                                 variants={buttonVariants}
                                                 whileHover="hover"
                                                 whileTap="tap"
                                             >
-                                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                                                {activeTab === tab && (
-                                                    <motion.div
-                                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-gold via-gold/90 to-gold/80"
-                                                        layoutId="activeTab"
-                                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                                    />
-                                                )}
+                                                <svg
+                                                    className={`w-4 h-4 ${isEditing ? 'text-gray-500' : 'text-forest-600'}`}
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                                <span className="whitespace-nowrap tracking-wide">
+                                                    {isEditing ? 'Cancel Edit' : 'Edit Booking'}
+                                                </span>
                                             </motion.button>
-                                        ))}
+                                        )}
                                     </nav>
                                 </div>
                             </motion.div>
