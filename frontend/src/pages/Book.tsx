@@ -26,7 +26,9 @@ interface BookingFormData {
     from: Airport | null;
     to: Airport | null;
     departureDate: string;
+    departureTime: string;
     returnDate?: string;
+    returnTime?: string;
     adults: number;
     children: number;
     class: 'economy' | 'business' | 'first';
@@ -54,6 +56,16 @@ export function Book() {
     const [accountData, setAccountData] = useState<AccountData | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const preferences = location.state?.preferences as TravelPreference | undefined;
+
+    // Add function to generate booking reference
+    const generateBookingReference = () => {
+        const prefix = 'ADMAS'; // Full company name prefix
+        const year = new Date().getFullYear().toString().slice(-2); // Last 2 digits of year
+        const month = (new Date().getMonth() + 1).toString().padStart(2, '0'); // Current month
+        const random = Math.random().toString(36).substring(2, 5).toUpperCase(); // 3 random chars
+        const sequence = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // 3 digit sequence
+        return `${prefix}-${year}${month}-${random}${sequence}`;
+    };
 
     const getDurationDays = (duration?: string) => {
         switch (duration) {
@@ -89,7 +101,9 @@ export function Book() {
             from: null,
             to: null,
             departureDate: formatDate(suggestedDeparture),
+            departureTime: '09:00', // Default departure time to 9 AM
             returnDate: formatDate(suggestedReturn),
+            returnTime: '09:00', // Default return time to 9 AM
             adults: 1,
             children: 0,
             class: getTravelClass(preferences?.travelStyle),
@@ -250,6 +264,9 @@ Passenger ${i + 1}:
         try {
             setIsSubmitting(true);
 
+            // Generate booking reference
+            const bookingReference = generateBookingReference();
+
             // Prepare the booking data with airport strings instead of objects
             const bookingData = {
                 ...formData,
@@ -257,7 +274,9 @@ Passenger ${i + 1}:
                 to: formData.to,
                 preferences: preferences ?? null,
                 status: 'pending',
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                bookingReference, // Add the booking reference
+                totalPassengers: formData.adults + formData.children // Add total passengers count
             };
 
             // Save user profile data

@@ -5,12 +5,16 @@ interface FlightDetailsProps {
     from: Airport | null;
     to: Airport | null;
     departureDate: string;
+    departureTime: string;
     returnDate?: string;
+    returnTime?: string;
     isRoundTrip: boolean;
     onFromChange: (airport: Airport | null) => void;
     onToChange: (airport: Airport | null) => void;
     onDepartureDateChange: (date: string) => void;
+    onDepartureTimeChange: (time: string) => void;
     onReturnDateChange: (date: string) => void;
+    onReturnTimeChange: (time: string) => void;
     errors?: Record<string, string>;
 }
 
@@ -18,12 +22,16 @@ export function FlightDetails({
     from,
     to,
     departureDate,
+    departureTime,
     returnDate,
+    returnTime,
     isRoundTrip,
     onFromChange,
     onToChange,
     onDepartureDateChange,
+    onDepartureTimeChange,
     onReturnDateChange,
+    onReturnTimeChange,
     errors = {}
 }: FlightDetailsProps) {
     // Get minimum date (today)
@@ -79,45 +87,87 @@ export function FlightDetails({
                     )}
                 </div>
             </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Departure
-                </label>
-                <label className="block text-xs text-gray-400 mb-0.5">Travel Date</label>
-                <div className="relative">
-                    <input
-                        type="date"
-                        value={departureDate}
-                        onChange={(e) => onDepartureDateChange(e.target.value)}
-                        min={getMinDate()}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
-                            ${errors.departureDate ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-                        required
-                    />
-                    {errors.departureDate && (
-                        <p className="mt-1 text-xs text-red-600">{errors.departureDate}</p>
-                    )}
-                </div>
-            </div>
-            {isRoundTrip && (
+            <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Return
+                        Departure Date
                     </label>
                     <label className="block text-xs text-gray-400 mb-0.5">Travel Date</label>
                     <div className="relative">
                         <input
                             type="date"
-                            value={returnDate}
-                            onChange={(e) => onReturnDateChange(e.target.value)}
-                            min={getMinReturnDate()}
+                            value={departureDate}
+                            onChange={(e) => onDepartureDateChange(e.target.value)}
+                            min={getMinDate()}
                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
-                                ${errors.returnDate ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                                ${errors.departureDate ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
                             required
                         />
-                        {errors.returnDate && (
-                            <p className="mt-1 text-xs text-red-600">{errors.returnDate}</p>
+                        {errors.departureDate && (
+                            <p className="mt-1 text-xs text-red-600">{errors.departureDate}</p>
                         )}
+                    </div>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Departure Time
+                    </label>
+                    <label className="block text-xs text-gray-400 mb-0.5">Preferred Time</label>
+                    <div className="relative">
+                        <input
+                            type="time"
+                            value={departureTime}
+                            onChange={(e) => onDepartureTimeChange(e.target.value)}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                ${errors.departureTime ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                            required
+                        />
+                        {errors.departureTime && (
+                            <p className="mt-1 text-xs text-red-600">{errors.departureTime}</p>
+                        )}
+                    </div>
+                </div>
+            </div>
+            {isRoundTrip && (
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Return Date
+                        </label>
+                        <label className="block text-xs text-gray-400 mb-0.5">Travel Date</label>
+                        <div className="relative">
+                            <input
+                                type="date"
+                                value={returnDate}
+                                onChange={(e) => onReturnDateChange(e.target.value)}
+                                min={getMinReturnDate()}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                    ${errors.returnDate ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                                required
+                            />
+                            {errors.returnDate && (
+                                <p className="mt-1 text-xs text-red-600">{errors.returnDate}</p>
+                            )}
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Return Time
+                        </label>
+                        <label className="block text-xs text-gray-400 mb-0.5">Preferred Time</label>
+                        <div className="relative">
+                            <input
+                                type="time"
+                                value={returnTime}
+                                onChange={(e) => onReturnTimeChange(e.target.value)}
+                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent
+                                    ${errors.returnTime ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                                required
+                            />
+                            {errors.returnTime && (
+                                <p className="mt-1 text-xs text-red-600">{errors.returnTime}</p>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

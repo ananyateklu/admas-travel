@@ -23,7 +23,9 @@ interface BookingFormData {
     from: Airport | null;
     to: Airport | null;
     departureDate: string;
+    departureTime: string;
     returnDate?: string;
+    returnTime?: string;
     adults: number;
     children: number;
     class: 'economy' | 'business' | 'first';
@@ -61,7 +63,11 @@ export function BookingForm({
     showAutoFill = false
 }: BookingFormProps) {
     const [currentStep, setCurrentStep] = useState<FormStep>('trip');
-    const [formData, setFormData] = useState<BookingFormData>(initialData);
+    const [formData, setFormData] = useState<BookingFormData>({
+        ...initialData,
+        departureTime: initialData.departureTime ?? '09:00', // Default to 9 AM
+        returnTime: initialData.returnTime ?? '09:00' // Default to 9 AM
+    });
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
     // Auto-populate data when form loads
@@ -330,12 +336,16 @@ export function BookingForm({
                                     from={formData.from}
                                     to={formData.to}
                                     departureDate={formData.departureDate}
+                                    departureTime={formData.departureTime}
                                     returnDate={formData.returnDate}
+                                    returnTime={formData.returnTime}
                                     isRoundTrip={formData.tripType === 'roundtrip'}
                                     onFromChange={(airport) => updateFormData({ from: airport })}
                                     onToChange={(airport) => updateFormData({ to: airport })}
                                     onDepartureDateChange={(date) => updateFormData({ departureDate: date })}
+                                    onDepartureTimeChange={(time) => updateFormData({ departureTime: time })}
                                     onReturnDateChange={(date) => updateFormData({ returnDate: date })}
+                                    onReturnTimeChange={(time) => updateFormData({ returnTime: time })}
                                     errors={validationErrors}
                                 />
                             </>

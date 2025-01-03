@@ -1,7 +1,7 @@
 import { BookingData } from '../types';
+import { useState } from 'react';
 import { getStatusStyle } from '../utils';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import { RatingComponent } from '../../booking/RatingComponent';
 
 interface BookingDetailsProps {
@@ -14,6 +14,156 @@ interface BookingDetailsProps {
     onEditComplete?: () => void;
     onRatingSubmit?: (bookingId: string, rating: number, comment: string) => Promise<void>;
     isSubmittingRating?: boolean;
+}
+
+interface AirportType {
+    city: string;
+    country?: string;
+    airportCode?: string;
+}
+
+interface RouteDetailsProps {
+    booking: BookingData;
+    editForm: Partial<BookingData>;
+    isEditing: boolean;
+    onInputChange: (field: keyof BookingData, value: string | AirportType | null) => void;
+}
+
+function RouteDetails({ booking, editForm, isEditing, onInputChange }: RouteDetailsProps) {
+    return (
+        <div className="flex items-center gap-2">
+            {/* Departure */}
+            <div className="flex-1">
+                <div className="flex items-center gap-1.5">
+                    <div className="p-1 bg-gold/10 rounded-full">
+                        <svg className="w-3 h-3 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                    </div>
+                    <div>
+                        {isEditing ? (
+                            <div>
+                                <input
+                                    type="text"
+                                    value={editForm.from?.city ?? ''}
+                                    onChange={(e) => onInputChange('from', { ...editForm.from, city: e.target.value })}
+                                    className="w-full px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                    placeholder="Departure City"
+                                />
+                                <div className="flex gap-2 mt-1">
+                                    <input
+                                        type="date"
+                                        value={editForm.departureDate}
+                                        onChange={(e) => onInputChange('departureDate', e.target.value)}
+                                        className="flex-1 px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                    />
+                                    <input
+                                        type="time"
+                                        value={editForm.departureTime}
+                                        onChange={(e) => onInputChange('departureTime', e.target.value)}
+                                        className="w-24 px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="text-sm font-medium text-gray-800">
+                                    {booking.from && typeof booking.from === 'object' ? (
+                                        <>
+                                            {booking.from.city}
+                                            <span className="text-[11px] font-normal text-gray-500 ml-1">
+                                                ({booking.from.airportCode})
+                                            </span>
+                                        </>
+                                    ) : booking.from}
+                                </div>
+                                <div className="text-[11px] text-gray-500">
+                                    {new Date(booking.departureDate).toLocaleDateString(undefined, {
+                                        weekday: 'short',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    })} • {booking.departureTime ? new Date(`2000-01-01T${booking.departureTime}`).toLocaleTimeString(undefined, {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    }) : '00:00'}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Journey Arrow */}
+            <div className="flex-shrink-0 flex flex-col items-center px-2">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+            </div>
+
+            {/* Arrival */}
+            <div className="flex-1">
+                <div className="flex items-center gap-1.5">
+                    <div className="p-1 bg-emerald-100 rounded-full">
+                        <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                    </div>
+                    <div>
+                        {isEditing ? (
+                            <div>
+                                <input
+                                    type="text"
+                                    value={editForm.to?.city ?? ''}
+                                    onChange={(e) => onInputChange('to', { ...editForm.to, city: e.target.value })}
+                                    className="w-full px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                    placeholder="Arrival City"
+                                />
+                                {editForm.tripType === 'roundtrip' && (
+                                    <div className="flex gap-2 mt-1">
+                                        <input
+                                            type="date"
+                                            value={editForm.returnDate}
+                                            onChange={(e) => onInputChange('returnDate', e.target.value)}
+                                            className="flex-1 px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                        />
+                                        <input
+                                            type="time"
+                                            value={editForm.returnTime}
+                                            onChange={(e) => onInputChange('returnTime', e.target.value)}
+                                            className="w-24 px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <div className="text-sm font-medium text-gray-800">
+                                    {booking.to && typeof booking.to === 'object' ? (
+                                        <>
+                                            {booking.to.city}
+                                            <span className="text-[11px] font-normal text-gray-500 ml-1">
+                                                ({booking.to.airportCode})
+                                            </span>
+                                        </>
+                                    ) : booking.to}
+                                </div>
+                                <div className="text-[11px] text-gray-500">
+                                    {new Date(booking.returnDate ?? booking.departureDate).toLocaleDateString(undefined, {
+                                        weekday: 'short',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    })} • {(booking.returnTime ?? booking.departureTime) ? new Date(`2000-01-01T${booking.returnTime ?? booking.departureTime}`).toLocaleTimeString(undefined, {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    }) : '00:00'}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 const formatCreatedAt = (createdAt: string | { toDate: () => Date }) => {
@@ -44,12 +194,17 @@ export function BookingDetails({
 }: BookingDetailsProps) {
     const [editForm, setEditForm] = useState<Partial<BookingData>>({
         departureDate: booking.departureDate,
+        departureTime: booking.departureTime,
         returnDate: booking.returnDate,
+        returnTime: booking.returnTime,
         class: booking.class,
+        tripType: booking.tripType,
+        from: booking.from,
+        to: booking.to,
         specialRequests: booking.specialRequests
     });
 
-    const handleInputChange = (field: keyof BookingData, value: string) => {
+    const handleInputChange = (field: keyof BookingData, value: string | AirportType | null) => {
         setEditForm(prev => ({
             ...prev,
             [field]: value
@@ -64,9 +219,9 @@ export function BookingDetails({
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
             {/* Trip Details */}
-            <div className="bg-white rounded-lg p-3 shadow-[0_2px_4px_-2px_rgba(0,0,0,0.1),0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-gray-100">
+            <div className="lg:col-span-7 bg-white rounded-lg p-3 shadow-[0_2px_4px_-2px_rgba(0,0,0,0.1),0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-gray-100">
                 <div className="flex items-center gap-2 mb-2">
                     <div className="p-1.5 bg-gold/10 rounded-lg">
                         <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,136 +258,69 @@ export function BookingDetails({
                     )}
                     <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
                         <span className="text-gray-600">Trip Type • Class</span>
-                        <div className="flex items-center gap-2">
-                            <span className="font-medium text-gray-900 capitalize">{booking.tripType}</span>
-                            <span className="text-gray-400">•</span>
-                            <span className="font-medium text-gray-900 capitalize">{booking.class}</span>
-                        </div>
+                        {isEditing ? (
+                            <div className="flex items-center gap-2">
+                                <select
+                                    value={editForm.tripType}
+                                    onChange={(e) => handleInputChange('tripType', e.target.value)}
+                                    className="px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                >
+                                    <option value="roundtrip">Round Trip</option>
+                                    <option value="oneway">One Way</option>
+                                </select>
+                                <select
+                                    value={editForm.class}
+                                    onChange={(e) => handleInputChange('class', e.target.value)}
+                                    className="px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                >
+                                    <option value="economy">Economy</option>
+                                    <option value="business">Business</option>
+                                    <option value="first">First</option>
+                                </select>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium text-gray-900 capitalize">{booking.tripType}</span>
+                                <span className="text-gray-400">•</span>
+                                <span className="font-medium text-gray-900 capitalize">{booking.class}</span>
+                            </div>
+                        )}
                     </div>
                     <div className="p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
                         <div className="flex items-center justify-between mb-1">
                             <span className="text-gray-600">Route Details</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            {/* Departure */}
-                            <div className="flex-1">
-                                <div className="flex items-center gap-1.5">
-                                    <div className="p-1 bg-gold/10 rounded-full">
-                                        <svg className="w-3 h-3 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <div className="text-sm font-medium text-gray-800">
-                                            {booking.from && typeof booking.from === 'object' ? (
-                                                <>
-                                                    {booking.from.city}
-                                                    <span className="text-[11px] font-normal text-gray-500 ml-1">
-                                                        ({booking.from.airportCode})
-                                                    </span>
-                                                </>
-                                            ) : booking.from}
-                                        </div>
-                                        <div className="text-[11px] text-gray-500">
-                                            {new Date(booking.departureDate).toLocaleDateString(undefined, {
-                                                weekday: 'short',
-                                                month: 'short',
-                                                day: 'numeric'
-                                            })} • {new Date(booking.departureDate).toLocaleTimeString(undefined, {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Journey Arrow */}
-                            <div className="flex-shrink-0 flex flex-col items-center px-2">
-                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                </svg>
-                            </div>
-
-                            {/* Arrival */}
-                            <div className="flex-1">
-                                <div className="flex items-center gap-1.5">
-                                    <div className="p-1 bg-emerald-500/10 rounded-full">
-                                        <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <div className="text-sm font-medium text-gray-800">
-                                            {booking.to && typeof booking.to === 'object' ? (
-                                                <>
-                                                    {booking.to.city}
-                                                    <span className="text-[11px] font-normal text-gray-500 ml-1">
-                                                        ({booking.to.airportCode})
-                                                    </span>
-                                                </>
-                                            ) : booking.to}
-                                        </div>
-                                        <div className="text-[11px] text-gray-500">
-                                            {new Date(booking.departureDate).toLocaleDateString(undefined, {
-                                                weekday: 'short',
-                                                month: 'short',
-                                                day: 'numeric'
-                                            })} • {new Date(booking.departureDate).toLocaleTimeString(undefined, {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Flight Info */}
-                        <div className="mt-2 flex items-center justify-center text-[11px] text-gray-500 gap-3">
-                            <div className="flex items-center gap-1">
-                                <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>Direct Flight</span>
-                            </div>
-                            <span className="text-gray-300">|</span>
-                            <div className="flex items-center gap-1">
-                                <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                </svg>
-                                <span>Non-stop</span>
-                            </div>
-                        </div>
+                        <RouteDetails
+                            booking={booking}
+                            editForm={editForm}
+                            isEditing={isEditing}
+                            onInputChange={handleInputChange}
+                        />
                     </div>
-
-                    {isEditing ? (
-                        <div className="space-y-4">
-                            <div className="form-group">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                                <select
-                                    value={editForm.class}
-                                    onChange={(e) => handleInputChange('class', e.target.value)}
-                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
-                                >
-                                    <option value="economy">Economy</option>
-                                    <option value="business">Business</option>
-                                    <option value="first">First Class</option>
-                                </select>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex items-center justify-between p-1.5 hover:bg-gray-50 rounded-lg transition-colors">
-                            <span className="text-gray-600">Class</span>
-                            <span className="font-medium text-gray-900 capitalize">{booking.class}</span>
-                        </div>
-                    )}
                 </div>
+
+                {isEditing && (
+                    <div className="flex justify-end gap-2 mt-4">
+                        <button
+                            type="button"
+                            onClick={onEditComplete}
+                            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleSave}
+                            className="px-4 py-2 text-sm text-white bg-gold hover:bg-gold/90 rounded-lg"
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Travel Dates */}
-            <div className="bg-white rounded-lg p-3 shadow-[0_2px_4px_-2px_rgba(0,0,0,0.1),0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-gray-100">
+            <div className="lg:col-span-2 bg-white rounded-lg p-3 shadow-[0_2px_4px_-2px_rgba(0,0,0,0.1),0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-gray-100">
                 <div className="flex items-center gap-2 mb-2">
                     <div className="p-1.5 bg-gold/10 rounded-lg">
                         <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -297,8 +385,8 @@ export function BookingDetails({
                 </div>
             </div>
 
-            {/* Additional Details */}
-            <div className="bg-white rounded-lg p-3 shadow-[0_2px_4px_-2px_rgba(0,0,0,0.1),0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-gray-100">
+            {/* Additional Info */}
+            <div className="lg:col-span-3 bg-white rounded-lg p-3 shadow-[0_2px_4px_-2px_rgba(0,0,0,0.1),0_4px_6px_-1px_rgba(0,0,0,0.05)] border border-gray-100">
                 <div className="flex items-center gap-2 mb-2">
                     <div className="p-1.5 bg-gold/10 rounded-lg">
                         <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">

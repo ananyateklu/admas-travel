@@ -6,7 +6,9 @@ export interface BookingData {
     bookingReference: string;
     destination: string;
     departureDate: string;
+    departureTime?: string;
     returnDate?: string;
+    returnTime?: string;
     status: string;
     previousStatus?: string;
     totalPassengers: number;

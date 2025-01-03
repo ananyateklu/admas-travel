@@ -15,7 +15,9 @@ interface BookingFormData {
     from: Airport | null;
     to: Airport | null;
     departureDate: string;
+    departureTime: string;
     returnDate?: string;
+    returnTime?: string;
     adults: number;
     children: number;
     class: 'economy' | 'business' | 'first';
@@ -41,8 +43,10 @@ export function BookingReview({ formData }: BookingReviewProps) {
         });
     };
 
-    const formatTime = (dateString: string) => {
-        const date = new Date(dateString);
+    const formatTime = (time: string) => {
+        const [hours, minutes] = time.split(':');
+        const date = new Date();
+        date.setHours(parseInt(hours), parseInt(minutes));
         return date.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit'
@@ -70,7 +74,7 @@ export function BookingReview({ formData }: BookingReviewProps) {
                     <div className="space-y-6">
                         <div className="relative flex items-center gap-4">
                             <div className="w-16 flex-shrink-0 text-xs text-gray-500">
-                                {formatTime(formData.departureDate)}
+                                {formatTime(formData.departureTime)}
                             </div>
                             <div className="w-4 h-4 rounded-full bg-gold flex-shrink-0 relative z-10"></div>
                             <div className="flex-1 bg-gold/5 rounded-lg p-3">
@@ -88,7 +92,7 @@ export function BookingReview({ formData }: BookingReviewProps) {
 
                         <div className="relative flex items-center gap-4">
                             <div className="w-16 flex-shrink-0 text-xs text-gray-500">
-                                {formatTime(formData.departureDate)}
+                                {formatTime(formData.departureTime)}
                             </div>
                             <div className="w-4 h-4 rounded-full bg-emerald-500 flex-shrink-0 relative z-10"></div>
                             <div className="flex-1 bg-emerald-50 rounded-lg p-3">
@@ -104,11 +108,11 @@ export function BookingReview({ formData }: BookingReviewProps) {
                             </div>
                         </div>
 
-                        {formData.tripType === 'roundtrip' && formData.returnDate && (
+                        {formData.tripType === 'roundtrip' && formData.returnDate && formData.returnTime && (
                             <>
                                 <div className="relative flex items-center gap-4">
                                     <div className="w-16 flex-shrink-0 text-xs text-gray-500">
-                                        {formatTime(formData.returnDate)}
+                                        {formatTime(formData.returnTime)}
                                     </div>
                                     <div className="w-4 h-4 rounded-full bg-blue-500 flex-shrink-0 relative z-10"></div>
                                     <div className="flex-1 bg-blue-50 rounded-lg p-3">
@@ -126,7 +130,7 @@ export function BookingReview({ formData }: BookingReviewProps) {
 
                                 <div className="relative flex items-center gap-4">
                                     <div className="w-16 flex-shrink-0 text-xs text-gray-500">
-                                        {formatTime(formData.returnDate)}
+                                        {formatTime(formData.returnTime)}
                                     </div>
                                     <div className="w-4 h-4 rounded-full bg-indigo-500 flex-shrink-0 relative z-10"></div>
                                     <div className="flex-1 bg-indigo-50 rounded-lg p-3">
