@@ -350,7 +350,7 @@ export function Bookings() {
         <div className="min-h-screen">
             {/* Hero Section */}
             <motion.div
-                className="relative h-[45vh] bg-gray-900"
+                className="relative h-[40vh] bg-gray-900"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6 }}
@@ -363,7 +363,7 @@ export function Bookings() {
                     />
                     <div className="absolute inset-0 bg-black/50" />
                 </div>
-                <div className="relative h-full flex items-center justify-center text-center pt-[112px]">
+                <div className="relative h-full flex items-center justify-center text-center pt-16">
                     <div className="max-w-4xl mx-auto px-4">
                         <h1 className="text-4xl md:text-5xl font-serif text-white mb-4">Your Travel Journey</h1>
                         <p className="text-xl text-white/90">Track and manage your upcoming adventures</p>

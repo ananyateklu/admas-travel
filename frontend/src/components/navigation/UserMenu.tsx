@@ -64,7 +64,7 @@ export function UserMenu({ user, onSignOut }: UserMenuProps) {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsSignInOpen(!isSignInOpen)}
-                        className="px-8 py-6 bg-[#1A1A1A] text-white rounded-[1.2rem] shadow-[0_4px_16px_rgba(0,0,0,0.24)] text-base font-light hover:bg-black transition-all hover:shadow-[0_6px_20px_rgba(0,0,0,0.32)] hover:scale-[1.02]"
+                        className="px-9 py-5 bg-[#1A1A1A] text-white rounded-[1.5rem] shadow-[0_4px_16px_rgba(0,0,0,0.24)] text-base font-light hover:bg-black transition-all hover:shadow-[0_6px_20px_rgba(0,0,0,0.32)] hover:scale-[1.02]"
                     >
                         Sign In
                     </motion.button>

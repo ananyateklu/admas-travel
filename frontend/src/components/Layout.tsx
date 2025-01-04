@@ -54,21 +54,21 @@ export default function Layout() {
                         }}
                         className="mx-auto rounded-[2rem] shadow-[0_4px_16px_rgba(0,0,0,0.08)] border border-gray-200/50 backdrop-blur-xl"
                     >
-                        <nav className={`h-24 pl-6 pr-3 flex items-center transition-all duration-300`}>
-                            <div className="flex items-center justify-between gap-8 w-full">
+                        <nav className={`h-20 pl-6 pr-3 flex items-center transition-all duration-300`}>
+                            <div className="flex items-center justify-between gap-6 w-full">
                                 {/* Left section */}
-                                <div className="flex items-center gap-8">
+                                <div className="flex items-center gap-6">
                                     <motion.button
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                        className="flex items-center gap-2 text-base font-light hover:text-gold transition-colors"
+                                        className="flex items-center gap-2 text-sm font-light hover:text-gold transition-colors"
                                     >
                                         <motion.div
                                             animate={{ rotate: isMenuOpen ? 90 : 0 }}
                                             transition={{ duration: 0.2 }}
                                         >
-                                            <MenuIcon className="w-8 h-8" />
+                                            <MenuIcon className="w-6 h-6" />
                                         </motion.div>
                                     </motion.button>
                                     <Link to="/">
@@ -77,7 +77,7 @@ export default function Layout() {
                                             whileTap={{ scale: 0.98 }}
                                             src={admasLogo}
                                             alt="Admas Travel"
-                                            className={`transition-all duration-300 ${isScrolled ? 'h-16' : 'h-20'} filter hover:brightness-110`}
+                                            className={`transition-all duration-300 ${isScrolled ? 'h-12' : 'h-16'} filter hover:brightness-110`}
                                         />
                                     </Link>
                                 </div>
@@ -87,7 +87,8 @@ export default function Layout() {
                                     <NavLinks
                                         hoveredLink={hoveredLink}
                                         onHover={setHoveredLink}
-                                        className="ml-32"
+                                        onLinkClick={() => setIsMenuOpen(false)}
+                                        user={user}
                                     />
                                 </div>
 
@@ -97,13 +98,13 @@ export default function Layout() {
                                         href="tel:+16127437243"
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="hidden md:flex items-center gap-2 text-base font-light hover:text-gold transition-colors relative group"
+                                        className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-forest/20 text-forest hover:bg-forest/30 border border-forest-400/10 shadow-[0_4px_16px_rgba(45,90,39,0.08)] hover:shadow-[0_6px_20px_rgba(45,90,39,0.16)] transition-all duration-200"
                                     >
-                                        <svg className="w-5 h-5 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 text-forest/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                         </svg>
-                                        <span className="relative">
-                                            +1 (612) 743-7243<span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gold transform scale-x-0 transition-transform group-hover:scale-x-100"></span>
+                                        <span className="text-sm font-medium text-forest">
+                                            +1 (612) 743-7243
                                         </span>
                                     </motion.a>
                                     <UserMenu user={user} onSignOut={handleSignOut} />

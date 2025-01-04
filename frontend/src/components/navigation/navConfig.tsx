@@ -1,4 +1,4 @@
-import { HomeIcon, BookIcon, ContactIcon } from '../common/icons';
+import { HomeIcon, BookIcon, ContactIcon, InfoIcon, BookingsIcon } from '../common/icons';
 
 export interface NavLink {
     path: string;
@@ -15,10 +15,22 @@ export const navLinks = [
         description: 'Return to homepage'
     },
     {
+        path: '/about-us',
+        label: 'About',
+        icon: InfoIcon({ className: "w-5 h-5" }),
+        description: 'Learn about us'
+    },
+    {
         path: '/book',
-        label: 'Book',
+        label: 'Book Flight',
         icon: BookIcon({ className: "w-5 h-5" }),
-        description: 'Book your trip'
+        description: 'Book a new flight'
+    },
+    {
+        path: '/bookings',
+        label: 'My Trips',
+        icon: BookingsIcon({ className: "w-5 h-5" }),
+        description: 'View your booked trips'
     },
     {
         path: '/contact',

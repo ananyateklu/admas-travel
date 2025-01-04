@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import lalibela from '../assets/beyaynet-food.jpeg';
-import mountains from '../assets/forest.png';
+import banner2 from '../assets/banner2.png';
 import bale from '../assets/tibs.jpeg';
 import lalibelaChurch from '../assets/lalibela.jpeg';
 import tanaLake from '../assets/tana-lake.jpeg';
@@ -154,11 +154,11 @@ export default function AboutUs() {
             {/* Hero Section */}
             <motion.div
                 ref={heroRef}
-                className="relative h-[70vh] bg-gray-900 overflow-hidden"
+                className="relative h-[40vh] bg-gray-900 overflow-hidden"
             >
                 <motion.img
-                    src={mountains}
-                    alt="Ethiopian Mountains"
+                    src={banner2}
+                    alt="Scenic Travel Destination"
                     className="absolute inset-0 w-full h-full object-cover"
                     style={{ y }}
                     initial={{ scale: 1.1 }}
@@ -170,7 +170,7 @@ export default function AboutUs() {
                     style={{ opacity }}
                 >
                     <motion.div
-                        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center"
+                        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center pt-16"
                         initial="hidden"
                         animate={isHeroInView ? "visible" : "hidden"}
                         variants={containerVariants}
@@ -185,7 +185,7 @@ export default function AboutUs() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.8, delay: 0.2 }}
                             >
-                                Discover Ethiopia with Us
+                                Your Journey Begins Here
                             </motion.h1>
                             <motion.p
                                 className="text-xl text-white/90"
@@ -193,7 +193,7 @@ export default function AboutUs() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.8, delay: 0.4 }}
                             >
-                                Your gateway to authentic Ethiopian experiences, crafted with passion and expertise.
+                                Crafting unforgettable travel experiences with passion and expertise.
                             </motion.p>
                         </motion.div>
                     </motion.div>

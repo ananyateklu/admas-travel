@@ -183,7 +183,7 @@ export default function Contact() {
             {/* Hero Section */}
             <motion.div
                 ref={heroRef}
-                className="relative h-[70vh] bg-gray-900"
+                className="relative h-[40vh] bg-gray-900"
                 initial="hidden"
                 animate={isHeroInView ? "visible" : "hidden"}
                 variants={containerVariants}

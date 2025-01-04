@@ -270,7 +270,7 @@ export function BookingForm({
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg">
             {/* Progress Bar */}
             <div className="border-b border-gray-200">
-                <div className="px-8 py-4">
+                <div className="px-6 py-3">
                     <div className="flex items-center justify-between relative">
                         {FORM_STEPS.map((step, index) => {
                             const stepIndex = FORM_STEPS.findIndex(s => s.id === currentStep);
@@ -279,17 +279,17 @@ export function BookingForm({
 
                             return (
                                 <React.Fragment key={step.id}>
-                                    <div className="flex flex-col items-center">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${getStepClassName(isActive, isCompleted)}`}>
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${getStepClassName(isActive, isCompleted)}`}>
                                             {isCompleted ? (
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                 </svg>
                                             ) : (
-                                                <span className="text-sm font-medium">{index + 1}</span>
+                                                <span className="text-xs font-medium">{index + 1}</span>
                                             )}
                                         </div>
-                                        <div className="mt-2 text-center">
+                                        <div>
                                             <div className={`text-sm font-medium ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>
                                                 {step.title}
                                             </div>
@@ -299,7 +299,7 @@ export function BookingForm({
                                         </div>
                                     </div>
                                     {index < FORM_STEPS.length - 1 && (
-                                        <div className="flex-1 h-0.5 bg-gray-200 relative">
+                                        <div className="flex-1 h-0.5 bg-gray-200 relative mx-4">
                                             <div
                                                 className="absolute inset-0 bg-gold transition-all duration-300"
                                                 style={{
@@ -317,7 +317,7 @@ export function BookingForm({
             </div>
 
             {/* Form Content */}
-            <div className="p-8">
+            <div className="p-6">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentStep}
@@ -325,75 +325,86 @@ export function BookingForm({
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.2 }}
+                        className="space-y-4"
                     >
                         {currentStep === 'trip' && (
-                            <>
-                                <TripTypeSelector
-                                    value={formData.tripType}
-                                    onChange={(value) => updateFormData({ tripType: value })}
-                                />
-                                <FlightDetails
-                                    from={formData.from}
-                                    to={formData.to}
-                                    departureDate={formData.departureDate}
-                                    departureTime={formData.departureTime}
-                                    returnDate={formData.returnDate}
-                                    returnTime={formData.returnTime}
-                                    isRoundTrip={formData.tripType === 'roundtrip'}
-                                    onFromChange={(airport) => updateFormData({ from: airport })}
-                                    onToChange={(airport) => updateFormData({ to: airport })}
-                                    onDepartureDateChange={(date) => updateFormData({ departureDate: date })}
-                                    onDepartureTimeChange={(time) => updateFormData({ departureTime: time })}
-                                    onReturnDateChange={(date) => updateFormData({ returnDate: date })}
-                                    onReturnTimeChange={(time) => updateFormData({ returnTime: time })}
-                                    errors={validationErrors}
-                                />
-                            </>
+                            <div className="grid grid-cols-12 gap-6">
+                                <div className="col-span-12 lg:col-span-3">
+                                    <TripTypeSelector
+                                        value={formData.tripType}
+                                        onChange={(value) => updateFormData({ tripType: value })}
+                                    />
+                                </div>
+                                <div className="col-span-12 lg:col-span-9">
+                                    <FlightDetails
+                                        from={formData.from}
+                                        to={formData.to}
+                                        departureDate={formData.departureDate}
+                                        departureTime={formData.departureTime}
+                                        returnDate={formData.returnDate}
+                                        returnTime={formData.returnTime}
+                                        isRoundTrip={formData.tripType === 'roundtrip'}
+                                        onFromChange={(airport) => updateFormData({ from: airport })}
+                                        onToChange={(airport) => updateFormData({ to: airport })}
+                                        onDepartureDateChange={(date) => updateFormData({ departureDate: date })}
+                                        onDepartureTimeChange={(time) => updateFormData({ departureTime: time })}
+                                        onReturnDateChange={(date) => updateFormData({ returnDate: date })}
+                                        onReturnTimeChange={(time) => updateFormData({ returnTime: time })}
+                                        errors={validationErrors}
+                                    />
+                                </div>
+                            </div>
                         )}
 
                         {currentStep === 'passengers' && (
-                            <>
-                                <PassengerCount
-                                    adults={formData.adults}
-                                    childCount={formData.children}
-                                    onAdultsChange={(count) => {
-                                        const newPassengers: PassengerInfo[] = Array(count).fill(null).map((_, i) => ({
-                                            type: 'adult',
-                                            fullName: formData.passengers[i]?.fullName || '',
-                                            dateOfBirth: formData.passengers[i]?.dateOfBirth || '',
-                                            passportNumber: formData.passengers[i]?.passportNumber || '',
-                                            passportExpiry: formData.passengers[i]?.passportExpiry || '',
-                                            nationality: formData.passengers[i]?.nationality || ''
-                                        }));
-                                        updateFormData({ adults: count, passengers: [...newPassengers, ...formData.passengers.slice(count).filter(p => p.type === 'child')] });
-                                    }}
-                                    onChildrenChange={(count) => {
-                                        const adultPassengers = formData.passengers.filter(p => p.type === 'adult');
-                                        const newChildPassengers: PassengerInfo[] = Array(count).fill(null).map((_, i) => ({
-                                            type: 'child',
-                                            fullName: formData.passengers[i + adultPassengers.length]?.fullName || '',
-                                            dateOfBirth: formData.passengers[i + adultPassengers.length]?.dateOfBirth || '',
-                                            passportNumber: formData.passengers[i + adultPassengers.length]?.passportNumber || '',
-                                            passportExpiry: formData.passengers[i + adultPassengers.length]?.passportExpiry || '',
-                                            nationality: formData.passengers[i + adultPassengers.length]?.nationality || ''
-                                        }));
-                                        updateFormData({ children: count, passengers: [...adultPassengers, ...newChildPassengers] });
-                                    }}
-                                    cabinClass={formData.class}
-                                    onCabinClassChange={(value) => updateFormData({ class: value })}
-                                />
-                                <PassengerInformation
-                                    passengers={formData.passengers}
-                                    onPassengerChange={handlePassengerChange}
-                                    onAutoFill={handleAutoFillPassenger}
-                                    showAutoFill={showAutoFill}
-                                    errors={validationErrors}
-                                />
-                            </>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-12 gap-4">
+                                    <div className="col-span-12 lg:col-span-4">
+                                        <PassengerCount
+                                            adults={formData.adults}
+                                            childCount={formData.children}
+                                            onAdultsChange={(count) => {
+                                                const newPassengers: PassengerInfo[] = Array(count).fill(null).map((_, i) => ({
+                                                    type: 'adult',
+                                                    fullName: formData.passengers[i]?.fullName || '',
+                                                    dateOfBirth: formData.passengers[i]?.dateOfBirth || '',
+                                                    passportNumber: formData.passengers[i]?.passportNumber || '',
+                                                    passportExpiry: formData.passengers[i]?.passportExpiry || '',
+                                                    nationality: formData.passengers[i]?.nationality || ''
+                                                }));
+                                                updateFormData({ adults: count, passengers: [...newPassengers, ...formData.passengers.slice(count).filter(p => p.type === 'child')] });
+                                            }}
+                                            onChildrenChange={(count) => {
+                                                const adultPassengers = formData.passengers.filter(p => p.type === 'adult');
+                                                const newChildPassengers: PassengerInfo[] = Array(count).fill(null).map((_, i) => ({
+                                                    type: 'child',
+                                                    fullName: formData.passengers[i + adultPassengers.length]?.fullName || '',
+                                                    dateOfBirth: formData.passengers[i + adultPassengers.length]?.dateOfBirth || '',
+                                                    passportNumber: formData.passengers[i + adultPassengers.length]?.passportNumber || '',
+                                                    passportExpiry: formData.passengers[i + adultPassengers.length]?.passportExpiry || '',
+                                                    nationality: formData.passengers[i + adultPassengers.length]?.nationality || ''
+                                                }));
+                                                updateFormData({ children: count, passengers: [...adultPassengers, ...newChildPassengers] });
+                                            }}
+                                            cabinClass={formData.class}
+                                            onCabinClassChange={(value) => updateFormData({ class: value })}
+                                        />
+                                    </div>
+                                    <div className="col-span-12 lg:col-span-8">
+                                        <PassengerInformation
+                                            passengers={formData.passengers}
+                                            onPassengerChange={handlePassengerChange}
+                                            onAutoFill={handleAutoFillPassenger}
+                                            showAutoFill={showAutoFill}
+                                            errors={validationErrors}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         )}
 
                         {currentStep === 'contact' && (
-                            <>
+                            <div className="space-y-4">
                                 <ContactInformation
                                     contactName={formData.contactName}
                                     contactEmail={formData.contactEmail}
@@ -407,11 +418,11 @@ export function BookingForm({
                                     value={formData.specialRequests ?? ''}
                                     onChange={(value) => updateFormData({ specialRequests: value })}
                                 />
-                            </>
+                            </div>
                         )}
 
                         {currentStep === 'review' && (
-                            <div className="space-y-8">
+                            <div className="space-y-6">
                                 <BookingReview formData={formData} />
                             </div>
                         )}
@@ -420,16 +431,16 @@ export function BookingForm({
             </div>
 
             {/* Navigation Buttons */}
-            <div className="px-8 py-4 border-t border-gray-200 flex justify-between items-center">
+            <div className="px-6 py-3 border-t border-gray-200 flex justify-between items-center">
                 <motion.button
                     type="button"
                     onClick={handleBack}
-                    className={`px-6 py-2 text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2
+                    className={`px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2
                         ${currentStep === 'trip' ? 'invisible' : ''}`}
                     whileHover={{ x: -4 }}
                     whileTap={{ scale: 0.95 }}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                     Back
@@ -439,13 +450,13 @@ export function BookingForm({
                     type="button"
                     onClick={currentStep === 'review' ? handleConfirmBooking : handleNext}
                     disabled={isSubmitting}
-                    className="px-8 py-3 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-6 py-2 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     whileHover={{ x: currentStep === 'review' ? 0 : 4 }}
                     whileTap={{ scale: 0.95 }}
                 >
                     {isSubmitting ? (
                         <>
-                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                                 <circle
                                     className="opacity-25"
                                     cx="12"

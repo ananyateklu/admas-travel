@@ -28,7 +28,7 @@ export function HeroSection() {
     });
 
     const handleStartJourney = useCallback(() => {
-        navigate('/get-started');
+        navigate('/get-started', { replace: true });
     }, [navigate]);
 
     const handleNavigate = useCallback((wonderId: string) => {
@@ -44,6 +44,7 @@ export function HeroSection() {
 
         setTimeout(() => {
             setIsChanging(false);
+            setIsLoading(false);
         }, 300);
     }, [isChanging, currentWonder]);
 
@@ -95,61 +96,77 @@ export function HeroSection() {
                         loading="eager"
                     />
                     <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"
+                        className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-transparent"
                         style={{ opacity }}
                     />
                 </motion.div>
             </AnimatePresence>
 
-            <div className="absolute left-12 top-24 z-10">
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="text-primary-400 text-xs font-medium tracking-[0.2em] mb-3"
-                >
-                    DISCOVER ETHIOPIA
-                </motion.p>
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                    className="text-white text-4xl font-serif leading-tight max-w-md"
-                >
-                    Ancient Wonders<br />& Natural Beauty
-                </motion.h1>
-                <motion.div
-                    initial={{ opacity: 0, scaleX: 0 }}
-                    animate={{ opacity: 1, scaleX: 1 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                    className="h-1 w-24 bg-gradient-to-r from-primary-400 to-gold mt-4 rounded-full"
-                />
-            </div>
+            <div className="absolute inset-0 flex">
+                {/* Left side with title and navigation */}
+                <div className="w-[450px] flex flex-col pt-12 relative">
+                    {/* Title Section */}
+                    <div className="px-12">
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="text-yellow-400 text-sm font-medium tracking-[0.2em] mb-6"
+                        >
+                            DISCOVER ETHIOPIA
+                        </motion.p>
+                        <motion.div className="mb-1">
+                            <motion.h1
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.4 }}
+                                className="text-white text-5xl font-serif leading-[1.2] drop-shadow-lg"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <span className="text-white">Ancient</span>
+                                    <span className="text-white">Wonders</span>
+                                </div>
+                                <div className="flex items-center gap-3 mt-2">
+                                    <span className="text-4xl text-white">&</span>
+                                    <span className="text-white">Natural</span>
+                                    <span className="text-white">Beauty</span>
+                                </div>
+                            </motion.h1>
+                            <motion.div
+                                initial={{ opacity: 0, scaleX: 0 }}
+                                animate={{ opacity: 1, scaleX: 1 }}
+                                transition={{ duration: 0.8, delay: 0.6 }}
+                                className="h-1 w-36 bg-yellow-400 mt-8 rounded-full"
+                            />
+                        </motion.div>
+                    </div>
 
-            <NavigationIndicator
-                wonders={wonders}
-                currentWonder={currentWonder}
-                onNavigate={handleNavigate}
-            />
-
-            <motion.div
-                ref={contentRef}
-                className="relative min-h-screen flex flex-col"
-                style={{
-                    transform: 'translate3d(0,0,0)',
-                    backfaceVisibility: 'hidden'
-                }}
-            >
-                <div className="flex-1 flex items-center">
-                    <div className="max-w-7xl mx-auto px-8 w-full">
-                        <ContentPanels
+                    {/* Navigation */}
+                    <div className="flex-1 relative">
+                        <NavigationIndicator
+                            wonders={wonders}
                             currentWonder={currentWonder}
-                            isInView={isInView}
-                            onStartJourney={handleStartJourney}
+                            onNavigate={handleNavigate}
                         />
                     </div>
                 </div>
-            </motion.div>
+
+                {/* Right side - Content */}
+                <motion.div
+                    ref={contentRef}
+                    className="flex-1 flex flex-col justify-center pr-8"
+                    style={{
+                        transform: 'translate3d(0,0,0)',
+                        backfaceVisibility: 'hidden'
+                    }}
+                >
+                    <ContentPanels
+                        currentWonder={currentWonder}
+                        isInView={isInView}
+                        onStartJourney={handleStartJourney}
+                    />
+                </motion.div>
+            </div>
 
             <motion.div
                 className="absolute inset-0 bg-gradient-to-br from-black/80 via-primary-900/30 to-black/70"

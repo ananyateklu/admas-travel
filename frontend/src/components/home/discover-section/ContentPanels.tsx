@@ -129,13 +129,15 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                     variants={itemVariants}
                     className="mt-6"
                 >
-                    <button
+                    <motion.button
                         onClick={onStartJourney}
-                        className="group px-8 py-3 bg-yellow-400 text-black rounded-full hover:bg-yellow-300 transition-all hover:px-10 text-sm"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="group px-8 py-3 bg-yellow-400 text-black rounded-full hover:bg-yellow-300 transition-all hover:px-10 text-sm cursor-pointer"
                     >
                         <span className="font-medium tracking-wide">Start Your Journey</span>
                         <span className="inline-block ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
-                    </button>
+                    </motion.button>
                 </motion.div>
             </motion.div>
 

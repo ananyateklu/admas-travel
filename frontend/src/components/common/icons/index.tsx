@@ -26,4 +26,8 @@ export const UserIcon = createIcon("M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 
 
 export const TrendUpIcon = createIcon("M13 7h8m0 0v8m0-8l-8 8-4-4-6 6");
 
-export const TrendDownIcon = createIcon("M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"); 
+export const TrendDownIcon = createIcon("M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6");
+
+export const InfoIcon = createIcon("M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z");
+
+export const BookingsIcon = createIcon("M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z"); 
