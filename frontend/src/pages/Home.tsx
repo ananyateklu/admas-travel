@@ -27,7 +27,7 @@ function SectionLoader() {
 export default function Home() {
     return (
         <div
-            className="min-h-screen bg-white"
+            className="min-h-screen bg-white overflow-x-hidden"
             style={{
                 transform: 'translate3d(0,0,0)',
                 backfaceVisibility: 'hidden',

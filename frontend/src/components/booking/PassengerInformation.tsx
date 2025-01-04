@@ -29,7 +29,7 @@ export function PassengerInformation({
     };
 
     const inputClassName = (error: string | undefined) => `
-        w-full px-3 py-2 text-sm border rounded-lg
+        w-full px-2 py-1.5 text-xs border rounded-lg
         ${error ? 'border-red-300' : 'border-gray-300'}
         hover:border-gray-400
         focus:outline-none focus:ring-1 focus:ring-gold/30 focus:border-gold
@@ -46,12 +46,12 @@ export function PassengerInformation({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
         >
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-300">
-                <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center">
-                        <span className="text-xs font-medium text-gold">{index + 1}</span>
+            <div className="flex items-center justify-between px-3 py-2 border-b border-gray-300">
+                <div className="flex items-center gap-1.5">
+                    <div className="w-5 h-5 rounded-full bg-gold/10 flex items-center justify-center">
+                        <span className="text-[10px] font-medium text-gold">{index + 1}</span>
                     </div>
-                    <h4 className="text-sm font-medium text-gray-700">
+                    <h4 className="text-xs font-medium text-gray-700">
                         {passenger.type === 'adult' ? 'Adult' : 'Child'} Passenger
                     </h4>
                 </div>
@@ -59,11 +59,11 @@ export function PassengerInformation({
                     <motion.button
                         type="button"
                         onClick={() => onAutoFill(index)}
-                        className="text-xs text-gold hover:text-gold/80 transition-colors flex items-center gap-1 group"
+                        className="text-[10px] text-gold hover:text-gold/80 transition-colors flex items-center gap-1 group"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                     >
-                        <svg className="w-3 h-3 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-2.5 h-2.5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         Use My Information
@@ -71,9 +71,9 @@ export function PassengerInformation({
                 )}
             </div>
 
-            <div className="p-4 grid grid-cols-2 gap-4">
+            <div className="p-3 grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
                         Full Name
                     </label>
                     <input
@@ -84,12 +84,12 @@ export function PassengerInformation({
                         placeholder="As shown on passport"
                     />
                     {getError(index, 'Name') && (
-                        <p className="mt-1.5 text-xs text-red-500">{getError(index, 'Name')}</p>
+                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Name')}</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
                         Date of Birth
                     </label>
                     <input
@@ -100,12 +100,12 @@ export function PassengerInformation({
                         max={new Date().toISOString().split('T')[0]}
                     />
                     {getError(index, 'Birth') && (
-                        <p className="mt-1.5 text-xs text-red-500">{getError(index, 'Birth')}</p>
+                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Birth')}</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
                         Nationality
                     </label>
                     <input
@@ -116,12 +116,12 @@ export function PassengerInformation({
                         placeholder="Country of citizenship"
                     />
                     {getError(index, 'Nationality') && (
-                        <p className="mt-1.5 text-xs text-red-500">{getError(index, 'Nationality')}</p>
+                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Nationality')}</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
                         Passport Number
                     </label>
                     <input
@@ -132,12 +132,12 @@ export function PassengerInformation({
                         placeholder="Valid passport number"
                     />
                     {getError(index, 'Passport') && (
-                        <p className="mt-1.5 text-xs text-red-500">{getError(index, 'Passport')}</p>
+                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Passport')}</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
                         Passport Expiry Date
                     </label>
                     <input
@@ -148,7 +148,7 @@ export function PassengerInformation({
                         min={new Date().toISOString().split('T')[0]}
                     />
                     {getError(index, 'Expiry') && (
-                        <p className="mt-1.5 text-xs text-red-500">{getError(index, 'Expiry')}</p>
+                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Expiry')}</p>
                     )}
                 </div>
             </div>
@@ -156,7 +156,7 @@ export function PassengerInformation({
     );
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3">
             {passengers.map((passenger, index) => renderPassengerForm(passenger, index))}
         </div>
     );

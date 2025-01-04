@@ -48,9 +48,9 @@ export function Highlights({ highlights }: HighlightsProps) {
     };
 
     return (
-        <section className="py-24 bg-gradient-to-br from-dark-100 to-dark-300 mx-4 rounded-[3rem] relative overflow-hidden">
+        <section className="py-12 bg-gradient-to-br from-dark-100 to-dark-300 mx-4 rounded-2xl relative overflow-hidden">
             <motion.div
-                className="absolute inset-0 opacity-30"
+                className="absolute inset-0 opacity-20"
                 animate={{
                     background: [
                         'radial-gradient(circle at 0% 0%, #D4AF37 0%, transparent 50%)',
@@ -65,25 +65,25 @@ export function Highlights({ highlights }: HighlightsProps) {
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
                 variants={containerVariants}
-                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative"
+                className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative"
             >
                 <motion.div
                     variants={textVariants}
-                    className="text-center mb-16"
+                    className="text-center mb-8"
                 >
-                    <span className="text-primary-400 text-sm font-medium tracking-wider uppercase mb-4 block">Our Highlights</span>
-                    <h2 className="font-serif text-4xl mb-4 text-white">Experience Ethiopia with Us</h2>
-                    <p className="text-gray-400">Curated experiences that showcase the best of Ethiopian culture, history, and nature</p>
+                    <span className="text-primary-400 text-xs font-medium tracking-wider uppercase mb-1 block">Our Highlights</span>
+                    <h2 className="font-serif text-2xl mb-2 text-white">Experience Ethiopia with Us</h2>
+                    <p className="text-gray-400 text-sm">Curated experiences that showcase the best of Ethiopian culture, history, and nature</p>
                 </motion.div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {highlights.map((highlight) => (
                         <motion.div
                             key={highlight.id}
                             variants={itemVariants}
-                            className="rounded-3xl overflow-hidden aspect-[3/4] relative group"
+                            className="rounded-xl overflow-hidden aspect-[3/4] relative group"
                         >
                             <motion.div
-                                whileHover={{ scale: 1.05 }}
+                                whileHover={{ scale: 1.03 }}
                                 transition={{ duration: 0.4 }}
                                 className="w-full h-full"
                             >
@@ -98,23 +98,23 @@ export function Highlights({ highlights }: HighlightsProps) {
                                     transition={{ duration: 0.3 }}
                                     className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-8 flex flex-col justify-end">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 flex flex-col justify-end">
                                     <motion.div
-                                        className="flex items-center gap-2 mb-2"
+                                        className="flex items-center gap-1.5 mb-1"
                                         variants={textVariants}
                                     >
-                                        <span className="h-0.5 w-6 bg-primary rounded-full" />
-                                        <span className="text-primary-300 text-sm">{highlight.category}</span>
+                                        <span className="h-0.5 w-4 bg-primary rounded-full" />
+                                        <span className="text-primary-300 text-xs">{highlight.category}</span>
                                     </motion.div>
                                     <motion.h3
                                         variants={textVariants}
-                                        className="text-2xl font-serif mb-2 text-white group-hover:text-gold transition-colors"
+                                        className="text-lg font-serif mb-1 text-white group-hover:text-gold transition-colors"
                                     >
                                         {highlight.title}
                                     </motion.h3>
                                     <motion.p
                                         variants={textVariants}
-                                        className="text-white/80"
+                                        className="text-white/80 text-xs line-clamp-2"
                                     >
                                         {highlight.description}
                                     </motion.p>

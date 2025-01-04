@@ -55,7 +55,7 @@ export function HeroSection() {
     return (
         <motion.section
             ref={containerRef}
-            className="relative min-h-screen bg-black overflow-hidden will-change-transform"
+            className="relative h-[70vh] bg-black overflow-hidden will-change-transform"
             style={{
                 transform: 'translate3d(0,0,0)',
                 backfaceVisibility: 'hidden'
@@ -104,14 +104,14 @@ export function HeroSection() {
 
             <div className="absolute inset-0 flex">
                 {/* Left side with title and navigation */}
-                <div className="w-[450px] flex flex-col pt-12 relative">
+                <div className="w-[350px] flex flex-col pt-8 relative">
                     {/* Title Section */}
-                    <div className="px-12">
+                    <div className="px-8">
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.2 }}
-                            className="text-yellow-400 text-sm font-medium tracking-[0.2em] mb-6"
+                            className="text-yellow-400 text-xs font-medium tracking-[0.2em] mb-4"
                         >
                             DISCOVER ETHIOPIA
                         </motion.p>
@@ -120,14 +120,14 @@ export function HeroSection() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.8, delay: 0.4 }}
-                                className="text-white text-5xl font-serif leading-[1.2] drop-shadow-lg"
+                                className="text-white text-4xl font-serif leading-[1.2] drop-shadow-lg"
                             >
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2">
                                     <span className="text-white">Ancient</span>
                                     <span className="text-white">Wonders</span>
                                 </div>
-                                <div className="flex items-center gap-3 mt-2">
-                                    <span className="text-4xl text-white">&</span>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-2xl text-white">&</span>
                                     <span className="text-white">Natural</span>
                                     <span className="text-white">Beauty</span>
                                 </div>
@@ -136,7 +136,7 @@ export function HeroSection() {
                                 initial={{ opacity: 0, scaleX: 0 }}
                                 animate={{ opacity: 1, scaleX: 1 }}
                                 transition={{ duration: 0.8, delay: 0.6 }}
-                                className="h-1 w-36 bg-yellow-400 mt-8 rounded-full"
+                                className="h-0.5 w-24 bg-yellow-400 mt-4 rounded-full"
                             />
                         </motion.div>
                     </div>
@@ -154,7 +154,7 @@ export function HeroSection() {
                 {/* Right side - Content */}
                 <motion.div
                     ref={contentRef}
-                    className="flex-1 flex flex-col justify-center pr-8"
+                    className="flex-1 flex flex-col justify-center pr-6"
                     style={{
                         transform: 'translate3d(0,0,0)',
                         backfaceVisibility: 'hidden'
@@ -169,7 +169,7 @@ export function HeroSection() {
             </div>
 
             <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-black/80 via-primary-900/30 to-black/70"
+                className="absolute inset-0 bg-gradient-to-br from-black/30 via-primary-900/30 to-black/70"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1 }}

@@ -28,7 +28,7 @@ export function NavLinks({ onLinkClick, hoveredLink, onHover, className = '', us
                 <Link
                     key={link.path}
                     to={link.path}
-                    className={`relative group py-2 px-4 rounded-xl transition-all duration-200 ${hoveredLink === link.path || location.pathname === link.path
+                    className={`relative group py-1.5 px-3.5 rounded-lg transition-all duration-200 ${hoveredLink === link.path || location.pathname === link.path
                         ? 'bg-forest/20 shadow-[0_4px_16px_rgba(45,90,39,0.08)]'
                         : 'hover:bg-forest/10'
                         }`}
@@ -36,7 +36,7 @@ export function NavLinks({ onLinkClick, hoveredLink, onHover, className = '', us
                     onMouseEnter={() => onHover(link.path)}
                     onMouseLeave={() => onHover(null)}
                 >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{
@@ -48,7 +48,7 @@ export function NavLinks({ onLinkClick, hoveredLink, onHover, className = '', us
                         >
                             {link.icon}
                         </motion.div>
-                        <span className={`text-sm transition-colors ${hoveredLink === link.path || location.pathname === link.path
+                        <span className={`text-xs transition-colors ${hoveredLink === link.path || location.pathname === link.path
                             ? 'text-forest font-medium'
                             : 'text-gray-900'
                             }`}>

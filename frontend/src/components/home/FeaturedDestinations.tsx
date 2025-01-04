@@ -147,44 +147,44 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
     };
 
     return (
-        <section className="relative py-24 bg-gray-50" aria-label="Featured Destinations">
+        <section className="relative py-12 bg-gray-50" aria-label="Featured Destinations">
             <div className="relative">
                 <motion.div
                     ref={sectionRef}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
                     variants={containerVariants}
-                    className="relative max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8"
+                    className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8"
                 >
                     <motion.div
                         variants={itemVariants}
-                        className="relative text-center mb-12"
+                        className="relative text-center mb-8"
                     >
-                        <span className="text-primary-400 text-sm font-medium tracking-wider uppercase mb-4 block">Explore With Us</span>
+                        <span className="text-primary-400 text-xs font-medium tracking-wider uppercase mb-2 block">Explore With Us</span>
                         <motion.h2
                             variants={itemVariants}
-                            className="text-3xl font-serif relative"
+                            className="text-2xl font-serif relative"
                         >
                             Featured Destinations
                         </motion.h2>
                     </motion.div>
-                    <div className="relative px-20">
+                    <div className="relative px-12">
                         {/* Previous Button */}
                         <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={prevDestinations}
-                            className="absolute -left-10 top-1/2 -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-full shadow-lg transition-all z-10 border border-gray-100"
+                            className="absolute -left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-800 p-2 rounded-full shadow-md transition-all z-10 border border-gray-100"
                             aria-label="View previous destinations"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                         </motion.button>
 
                         {/* Destinations Grid */}
-                        <div className="relative overflow-hidden py-8">
-                            <div className="relative w-full" style={{ height: 'min(50vh, 450px)' }}>
+                        <div className="relative overflow-hidden py-4">
+                            <div className="relative w-full" style={{ height: 'min(35vh, 300px)' }}>
                                 <AnimatePresence mode="sync">
                                     {destinations
                                         .slice(currentDestinationIndex, currentDestinationIndex + 4)
@@ -204,19 +204,19 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                                     position: 'absolute',
                                                     width: `${100 / 4}%`,
                                                     left: `${(index * 100) / 4}%`,
-                                                    top: '2rem',
-                                                    bottom: '2rem',
-                                                    padding: '0 0.75rem'
+                                                    top: '1rem',
+                                                    bottom: '1rem',
+                                                    padding: '0 0.5rem'
                                                 }}
                                                 whileHover={{
-                                                    scale: 1.08,
+                                                    scale: 1.05,
                                                     zIndex: 20,
                                                 }}
                                                 className="origin-center group relative"
                                                 aria-label={`${destination.name} in ${destination.country}`}
                                             >
                                                 <motion.div
-                                                    className="relative h-full rounded-3xl overflow-hidden transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
+                                                    className="relative h-full rounded-lg overflow-hidden transition-all duration-500 group-hover:shadow-md"
                                                 >
                                                     <div className="absolute inset-0">
                                                         {/* Loading Skeleton */}
@@ -243,30 +243,30 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                                         />
 
                                                         {/* Content Overlay */}
-                                                        <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                                                        <div className="absolute inset-0 p-3 flex flex-col justify-end">
                                                             <motion.div
                                                                 initial={false}
                                                                 animate={{ y: 0, opacity: 1 }}
                                                                 transition={{ duration: 0.3 }}
-                                                                className="transform transition-all duration-500 group-hover:-translate-y-2"
+                                                                className="transform transition-all duration-500 group-hover:-translate-y-1"
                                                             >
                                                                 <motion.h3
-                                                                    className="text-xl font-serif mb-2 text-white/70 group-hover:text-white group-hover:text-2xl transition-all duration-300"
+                                                                    className="text-base font-serif mb-1 text-white/70 group-hover:text-white group-hover:text-lg transition-all duration-300"
                                                                     layout
                                                                 >
                                                                     {destination.name}
                                                                 </motion.h3>
                                                                 <motion.p
-                                                                    className="text-sm text-white/50 mb-1 group-hover:text-white group-hover:text-base transition-all duration-300 line-clamp-2 group-hover:line-clamp-none"
+                                                                    className="text-xs text-white/50 mb-1 group-hover:text-white group-hover:text-sm transition-all duration-300 line-clamp-2 group-hover:line-clamp-none"
                                                                     layout
                                                                 >
                                                                     {destination.description}
                                                                 </motion.p>
                                                                 <motion.div
-                                                                    className="flex items-center justify-between gap-2 mt-3"
+                                                                    className="flex items-center justify-between gap-1 mt-2"
                                                                     layout
                                                                 >
-                                                                    <span className="text-sm font-medium text-gold hover:text-gold-300 transition-colors">
+                                                                    <span className="text-xs font-medium text-gold hover:text-gold-300 transition-colors">
                                                                         {destination.country}
                                                                     </span>
                                                                     <motion.button
@@ -274,7 +274,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                                                             e.stopPropagation();
                                                                             handleBooking(destination);
                                                                         }}
-                                                                        className="px-4 py-1.5 bg-primary text-white text-sm rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary-400"
+                                                                        className="px-2 py-1 bg-primary text-white text-[10px] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary-400"
                                                                         whileHover={{ scale: 1.05 }}
                                                                         whileTap={{ scale: 0.95 }}
                                                                     >
@@ -296,16 +296,16 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={nextDestinations}
-                            className="absolute -right-10 top-[calc(50%-3rem)] -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-full shadow-lg transition-all z-10 border border-gray-100"
+                            className="absolute -right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-800 p-2 rounded-full shadow-md transition-all z-10 border border-gray-100"
                             aria-label="View next destinations"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                         </motion.button>
 
                         {/* Navigation Dots */}
-                        <nav className="flex justify-center gap-2 mt-4" aria-label="Destination pages">
+                        <nav className="flex justify-center gap-1.5 mt-4" aria-label="Destination pages">
                             {Array.from({ length: Math.ceil(destinations.length / 4) }).map((_, index) => (
                                 <motion.button
                                     key={`destination-page-${index + 1}`}
@@ -314,9 +314,9 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                         setSlideDirection(index * 4 > currentDestinationIndex ? 1 : -1);
                                         setCurrentDestinationIndex(index * 4);
                                     }}
-                                    className={`h-2 rounded-full transition-all ${Math.floor(currentDestinationIndex / 4) === index
-                                        ? 'bg-gold w-8'
-                                        : 'bg-gray-300 hover:bg-gray-400 w-2'
+                                    className={`h-1.5 rounded-full transition-all ${Math.floor(currentDestinationIndex / 4) === index
+                                        ? 'bg-gold w-6'
+                                        : 'bg-gray-300 hover:bg-gray-400 w-1.5'
                                         }`}
                                     whileHover={{ scale: 1.2 }}
                                     whileTap={{ scale: 0.9 }}

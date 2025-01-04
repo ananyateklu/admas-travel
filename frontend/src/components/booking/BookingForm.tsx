@@ -267,10 +267,10 @@ export function BookingForm({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm">
             {/* Progress Bar */}
             <div className="border-b border-gray-200">
-                <div className="px-6 py-3">
+                <div className="px-4 py-2">
                     <div className="flex items-center justify-between relative">
                         {FORM_STEPS.map((step, index) => {
                             const stepIndex = FORM_STEPS.findIndex(s => s.id === currentStep);
@@ -279,10 +279,10 @@ export function BookingForm({
 
                             return (
                                 <React.Fragment key={step.id}>
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${getStepClassName(isActive, isCompleted)}`}>
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${getStepClassName(isActive, isCompleted)}`}>
                                             {isCompleted ? (
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                 </svg>
                                             ) : (
@@ -290,16 +290,16 @@ export function BookingForm({
                                             )}
                                         </div>
                                         <div>
-                                            <div className={`text-sm font-medium ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>
+                                            <div className={`text-xs font-medium ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>
                                                 {step.title}
                                             </div>
-                                            <div className="text-xs text-gray-400 hidden md:block">
+                                            <div className="text-[10px] text-gray-400 hidden md:block">
                                                 {step.description}
                                             </div>
                                         </div>
                                     </div>
                                     {index < FORM_STEPS.length - 1 && (
-                                        <div className="flex-1 h-0.5 bg-gray-200 relative mx-4">
+                                        <div className="flex-1 h-0.5 bg-gray-200 relative mx-3">
                                             <div
                                                 className="absolute inset-0 bg-gold transition-all duration-300"
                                                 style={{
@@ -317,7 +317,7 @@ export function BookingForm({
             </div>
 
             {/* Form Content */}
-            <div className="p-6">
+            <div className="p-4">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentStep}
@@ -325,7 +325,7 @@ export function BookingForm({
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.2 }}
-                        className="space-y-4"
+                        className="space-y-3"
                     >
                         {currentStep === 'trip' && (
                             <div className="grid grid-cols-12 gap-6">
@@ -431,16 +431,16 @@ export function BookingForm({
             </div>
 
             {/* Navigation Buttons */}
-            <div className="px-6 py-3 border-t border-gray-200 flex justify-between items-center">
+            <div className="px-4 py-2 border-t border-gray-200 flex justify-between items-center">
                 <motion.button
                     type="button"
                     onClick={handleBack}
-                    className={`px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2
+                    className={`px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1.5
                         ${currentStep === 'trip' ? 'invisible' : ''}`}
                     whileHover={{ x: -4 }}
                     whileTap={{ scale: 0.95 }}
                 >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                     Back
@@ -450,13 +450,13 @@ export function BookingForm({
                     type="button"
                     onClick={currentStep === 'review' ? handleConfirmBooking : handleNext}
                     disabled={isSubmitting}
-                    className="px-6 py-2 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-4 py-1.5 bg-gold text-white text-sm rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                     whileHover={{ x: currentStep === 'review' ? 0 : 4 }}
                     whileTap={{ scale: 0.95 }}
                 >
                     {isSubmitting ? (
                         <>
-                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                            <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
                                 <circle
                                     className="opacity-25"
                                     cx="12"
@@ -486,7 +486,7 @@ function getButtonContent(step: FormStep) {
         return (
             <>
                 <span>Confirm Booking</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
             </>
@@ -495,7 +495,7 @@ function getButtonContent(step: FormStep) {
     return (
         <>
             <span>Continue</span>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
         </>

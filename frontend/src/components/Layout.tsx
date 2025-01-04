@@ -38,7 +38,7 @@ export default function Layout() {
     return (
         <div className="min-h-screen bg-white text-dark flex flex-col">
             {/* Header Container */}
-            <div className={`fixed top-4 left-0 right-0 z-50`}>
+            <div className={`fixed top-3 left-0 right-0 z-50`}>
                 <div className="mx-4">
                     {/* Header */}
                     <motion.header
@@ -52,23 +52,23 @@ export default function Layout() {
                             duration: 0.3,
                             ease: 'easeInOut'
                         }}
-                        className="mx-auto rounded-[2rem] shadow-[0_4px_16px_rgba(0,0,0,0.08)] border border-gray-200/50 backdrop-blur-xl"
+                        className="mx-auto rounded-[1.8rem] shadow-[0_4px_16px_rgba(0,0,0,0.08)] border border-gray-200/50 backdrop-blur-xl"
                     >
-                        <nav className={`h-20 pl-6 pr-3 flex items-center transition-all duration-300`}>
-                            <div className="flex items-center justify-between gap-6 w-full">
+                        <nav className={`h-[4.5rem] pl-5 pr-1.5 flex items-center transition-all duration-300`}>
+                            <div className="flex items-center justify-between gap-5 w-full">
                                 {/* Left section */}
-                                <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-5">
                                     <motion.button
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                        className="flex items-center gap-2 text-sm font-light hover:text-gold transition-colors"
+                                        className="flex items-center gap-2 text-xs font-light hover:text-gold transition-colors"
                                     >
                                         <motion.div
                                             animate={{ rotate: isMenuOpen ? 90 : 0 }}
                                             transition={{ duration: 0.2 }}
                                         >
-                                            <MenuIcon className="w-6 h-6" />
+                                            <MenuIcon className="w-5 h-5" />
                                         </motion.div>
                                     </motion.button>
                                     <Link to="/">
@@ -77,7 +77,7 @@ export default function Layout() {
                                             whileTap={{ scale: 0.98 }}
                                             src={admasLogo}
                                             alt="Admas Travel"
-                                            className={`transition-all duration-300 ${isScrolled ? 'h-12' : 'h-16'} filter hover:brightness-110`}
+                                            className={`transition-all duration-300 ${isScrolled ? 'h-10' : 'h-14'} filter hover:brightness-110`}
                                         />
                                     </Link>
                                 </div>
@@ -93,17 +93,17 @@ export default function Layout() {
                                 </div>
 
                                 {/* Right section - Phone number and Sign In/Account */}
-                                <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-5">
                                     <motion.a
                                         href="tel:+16127437243"
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-forest/20 text-forest hover:bg-forest/30 border border-forest-400/10 shadow-[0_4px_16px_rgba(45,90,39,0.08)] hover:shadow-[0_6px_20px_rgba(45,90,39,0.16)] transition-all duration-200"
+                                        className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-forest/20 text-forest hover:bg-forest/30 border border-forest-400/10 shadow-[0_4px_16px_rgba(45,90,39,0.08)] hover:shadow-[0_6px_20px_rgba(45,90,39,0.16)] transition-all duration-200"
                                     >
-                                        <svg className="w-4 h-4 text-forest/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-3.5 h-3.5 text-forest/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                         </svg>
-                                        <span className="text-sm font-medium text-forest">
+                                        <span className="text-xs font-medium text-forest">
                                             +1 (612) 743-7243
                                         </span>
                                     </motion.a>

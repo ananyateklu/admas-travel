@@ -90,10 +90,10 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             variants={containerVariants}
-            className="text-white ml-[calc(3rem+120px)] mr-8 relative z-20 flex flex-col gap-12"
+            className="text-white ml-[calc(2rem+100px)] mr-6 relative z-20 flex flex-col gap-8"
         >
             {/* Title Section */}
-            <motion.div variants={itemVariants} className="max-w-2xl">
+            <motion.div variants={itemVariants} className="max-w-xl">
                 <div className="overflow-hidden">
                     <motion.span
                         initial={{ y: 20, opacity: 0 }}
@@ -103,13 +103,13 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                             ease: [0.16, 1, 0.3, 1],
                             delay: 0.1
                         }}
-                        className="inline-block text-yellow-400 text-6xl font-serif mb-2"
+                        className="inline-block text-yellow-400 text-4xl font-serif mb-1"
                     >
                         Discover
                     </motion.span>
                 </div>
 
-                <div className="overflow-hidden h-[80px]">
+                <div className="overflow-hidden h-[60px]">
                     <AnimatePresence mode="wait" initial={false}>
                         <motion.h2
                             key={currentWonder.id}
@@ -118,7 +118,7 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                             initial="enter"
                             animate="center"
                             exit="exit"
-                            className="text-6xl font-serif leading-tight"
+                            className="text-4xl font-serif leading-tight"
                         >
                             {currentWonder.title}
                         </motion.h2>
@@ -127,13 +127,13 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
 
                 <motion.div
                     variants={itemVariants}
-                    className="mt-6"
+                    className="mt-4"
                 >
                     <motion.button
                         onClick={onStartJourney}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="group px-8 py-3 bg-yellow-400 text-black rounded-full hover:bg-yellow-300 transition-all hover:px-10 text-sm cursor-pointer"
+                        className="group px-6 py-2 bg-yellow-400 text-black rounded-full hover:bg-yellow-300 transition-all hover:px-8 text-xs cursor-pointer"
                     >
                         <span className="font-medium tracking-wide">Start Your Journey</span>
                         <span className="inline-block ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
@@ -144,7 +144,7 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
             {/* Description Box */}
             <motion.div
                 variants={descriptionBoxVariants}
-                className="max-w-xl backdrop-blur-[4px] bg-white/5 rounded-2xl p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                className="max-w-lg backdrop-blur-[4px] bg-white/5 rounded-xl p-4 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
                 style={{
                     background: 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))',
                 }}
@@ -153,23 +153,9 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                     transition: { duration: 0.3 }
                 }}
             >
-                <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"
-                    animate={{
-                        x: ['0%', '100%'],
-                        opacity: [0, 0.5, 0]
-                    }}
-                    transition={{
-                        duration: 2,
-                        ease: "easeInOut",
-                        repeat: Infinity,
-                        repeatDelay: 3
-                    }}
-                />
-
-                <motion.div variants={descriptionItemVariants} className="flex items-center gap-2 mb-3">
-                    <div className="w-0.5 h-6 bg-yellow-400/80 rounded-full" />
-                    <h3 className="text-sm font-medium uppercase tracking-wider text-yellow-400/90">About this Wonder</h3>
+                <motion.div variants={descriptionItemVariants} className="flex items-center gap-2 mb-2">
+                    <div className="w-0.5 h-4 bg-yellow-400/80 rounded-full" />
+                    <h3 className="text-xs font-medium uppercase tracking-wider text-yellow-400/90">About this Wonder</h3>
                 </motion.div>
 
                 <AnimatePresence mode="wait">
@@ -179,7 +165,7 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="text-white/90 text-base leading-relaxed pl-[10px]"
+                        className="text-white/90 text-sm leading-relaxed pl-[10px]"
                     >
                         {currentWonder.description}
                     </motion.p>
@@ -187,14 +173,14 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
 
                 <motion.div
                     variants={descriptionItemVariants}
-                    className="mt-4 pt-4 border-t border-white/10 pl-[10px]"
+                    className="mt-3 pt-3 border-t border-white/10 pl-[10px]"
                 >
                     <motion.div
                         className="flex items-center gap-1.5 text-white/70 hover:text-white/90 transition-colors"
                         whileHover={{ x: 3 }}
                         transition={{ duration: 0.2 }}
                     >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>

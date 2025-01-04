@@ -25,10 +25,14 @@ const createChatElement = (
     const chatElement = document.createElement('elevenlabs-convai');
     chatElement.setAttribute('agent-id', agentId);
     chatElement.setAttribute('position', position);
-    chatElement.style.position = 'fixed';
-    chatElement.style.bottom = '20px';
-    chatElement.style[position === 'bottom-right' ? 'right' : 'left'] = '20px';
-    chatElement.style.zIndex = '1000';
+    chatElement.style.cssText = `
+        position: fixed;
+        bottom: 16px;
+        ${position === 'bottom-right' ? 'right: 16px' : 'left: 16px'};
+        z-index: 1000;
+        transform: scale(0.85);
+        transform-origin: ${position === 'bottom-right' ? 'bottom right' : 'bottom left'};
+    `;
 
     document.body.appendChild(chatElement);
     initializedRef.current = true;
@@ -50,9 +54,8 @@ const loadScript = () => {
         };
         script.onerror = () => {
             window.convaiScriptLoaded = false;
-            const error = new Error('Failed to load Convai chat widget script');
-            console.error(error);
-            reject(error);
+            console.error('Failed to load Convai chat widget script');
+            reject(new Error('Failed to load Convai chat widget script'));
         };
         document.body.appendChild(script);
     });
@@ -64,8 +67,7 @@ const initializeChat = async (
     initializedRef: React.MutableRefObject<boolean>
 ) => {
     try {
-        const isElementDefined = customElements.get('elevenlabs-convai');
-        if (!isElementDefined) {
+        if (!customElements.get('elevenlabs-convai')) {
             await loadScript();
             await new Promise(resolve => setTimeout(resolve, 100));
         }
@@ -83,8 +85,8 @@ function ConvaiChatComponent({ agentId, position = 'bottom-right' }: ConvaiChatP
         const existingChat = document.querySelector('elevenlabs-convai');
         if (existingChat) {
             document.body.removeChild(existingChat);
+            initialized.current = false;
         }
-        initialized.current = false;
     }, []);
 
     useEffect(() => {
@@ -95,8 +97,7 @@ function ConvaiChatComponent({ agentId, position = 'bottom-right' }: ConvaiChatP
 
         if (initialized.current) return;
 
-        const isElementDefined = customElements.get('elevenlabs-convai');
-        if (window.convaiScriptLoaded && isElementDefined) {
+        if (window.convaiScriptLoaded && customElements.get('elevenlabs-convai')) {
             createChatElement(agentId, position, initialized);
             return;
         }

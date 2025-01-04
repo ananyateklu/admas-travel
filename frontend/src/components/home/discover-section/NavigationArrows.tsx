@@ -9,12 +9,12 @@ interface NavigationIndicatorProps {
 
 export function NavigationIndicator({ wonders, currentWonder, onNavigate }: NavigationIndicatorProps) {
     return (
-        <div className="h-full flex items-start pt-8">
-            <div className="flex flex-col gap-4 pl-12 relative z-20">
+        <div className="h-full flex items-start pt-6">
+            <div className="flex flex-col gap-3 pl-8 relative z-20">
                 {wonders.map((wonder) => (
                     <motion.div
                         key={wonder.id}
-                        className={`group cursor-pointer flex items-center gap-3`}
+                        className={`group cursor-pointer flex items-center gap-2`}
                         whileHover={{ x: 4 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.2 }}
@@ -22,7 +22,7 @@ export function NavigationIndicator({ wonders, currentWonder, onNavigate }: Navi
                     >
                         <motion.div className="relative flex items-center">
                             <motion.div
-                                className={`w-2 h-2 rounded-full transition-all duration-300 
+                                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 
                                     ${wonder.id === currentWonder.id
                                         ? 'bg-yellow-400'
                                         : 'bg-white/30'}`}
@@ -42,7 +42,7 @@ export function NavigationIndicator({ wonders, currentWonder, onNavigate }: Navi
                         </motion.div>
 
                         <motion.span
-                            className={`text-sm font-light whitespace-nowrap
+                            className={`text-xs font-light whitespace-nowrap
                                 ${wonder.id === currentWonder.id
                                     ? 'text-yellow-400'
                                     : 'text-white/50 group-hover:text-white/70'}`}

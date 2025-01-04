@@ -322,12 +322,12 @@ Passenger ${i + 1}:
         <div className="min-h-screen bg-white">
             <BookingHero backgroundImage={bookPic} />
 
-            <section className="py-8">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="mb-4 flex justify-end">
-                        <NotificationToggle className="bg-white shadow-sm border border-gray-300 rounded-lg px-4 py-2" />
+            <section className="py-6">
+                <div className="max-w-5xl mx-auto px-4">
+                    <div className="mb-3 flex justify-end">
+                        <NotificationToggle className="bg-white shadow-sm border border-gray-300 rounded-lg px-3 py-1.5" />
                     </div>
-                    <div className="border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-md">
+                    <div className="border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md">
                         <BookingForm
                             initialData={initialFormData}
                             onSubmit={handleSubmit}
@@ -341,36 +341,36 @@ Passenger ${i + 1}:
             </section>
 
             {/* Additional Information */}
-            <section className="py-8 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="bg-white border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-2xl shadow-sm hover:shadow-md p-6">
-                        <div className="grid grid-cols-3 gap-6">
-                            <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-6 group">
-                                <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
-                                    <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <section className="py-6 bg-gray-50">
+                <div className="max-w-5xl mx-auto px-4">
+                    <div className="bg-white border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md p-4">
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-4 group">
+                                <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
+                                    <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold mb-2 text-gray-900">Email Support</h3>
-                                <p className="text-sm text-gray-600 hover:text-gray-900 transition-colors">ananya.meseret@gmail.com</p>
+                                <h3 className="text-base font-semibold mb-1.5 text-gray-900">Email Support</h3>
+                                <p className="text-xs text-gray-600 hover:text-gray-900 transition-colors">ananya.meseret@gmail.com</p>
                             </div>
-                            <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-6 group">
-                                <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
-                                    <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-4 group">
+                                <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
+                                    <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold mb-2 text-gray-900">Phone Support</h3>
-                                <p className="text-sm text-gray-600 hover:text-gray-900 transition-colors">+1 (612) 743-7243</p>
+                                <h3 className="text-base font-semibold mb-1.5 text-gray-900">Phone Support</h3>
+                                <p className="text-xs text-gray-600 hover:text-gray-900 transition-colors">+1 (612) 743-7243</p>
                             </div>
-                            <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-6 group">
-                                <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
-                                    <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-4 group">
+                                <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
+                                    <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-semibold mb-2 text-gray-900">Business Hours</h3>
-                                <p className="text-sm text-gray-600 hover:text-gray-900 transition-colors">Mon-Fri: 9AM-6PM CST</p>
+                                <h3 className="text-base font-semibold mb-1.5 text-gray-900">Business Hours</h3>
+                                <p className="text-xs text-gray-600 hover:text-gray-900 transition-colors">Mon-Fri: 9AM-6PM CST</p>
                             </div>
                         </div>
                     </div>

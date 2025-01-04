@@ -39,44 +39,44 @@ export function NaturalWonders() {
     };
 
     return (
-        <section className="py-24 bg-gray-50">
+        <section className="py-12 bg-gray-50 relative overflow-hidden">
             <motion.div
                 ref={sectionRef}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
                 variants={containerVariants}
-                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+                className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"
                 style={{ position: 'relative' }}
             >
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
                     <motion.div variants={textVariants}>
                         <motion.h2
                             variants={textVariants}
-                            className="text-4xl font-serif mb-6"
+                            className="text-2xl font-serif mb-3"
                         >
                             Discover Natural Wonders
                         </motion.h2>
                         <motion.p
                             variants={textVariants}
-                            className="text-gray-600 mb-8"
+                            className="text-gray-600 text-sm mb-4"
                         >
                             From the otherworldly landscapes of the Danakil Depression to the lush Simien Mountains,
                             Ethiopia offers some of Africa's most spectacular natural wonders.
                         </motion.p>
                         <motion.div
                             variants={textVariants}
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.95 }}
                         >
                             <Link
                                 to="/natural-wonders"
-                                className="inline-block px-8 py-3 bg-primary text-white rounded-full hover:bg-primary-400 transition-colors group relative overflow-hidden"
+                                className="inline-block px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-400 transition-colors group relative overflow-hidden"
                             >
-                                <span className="relative z-10 flex items-center gap-2">
+                                <span className="relative z-10 flex items-center gap-1 text-xs">
                                     Explore More
                                     <motion.span
                                         className="text-gold"
-                                        animate={{ x: [0, 4, 0] }}
+                                        animate={{ x: [0, 2, 0] }}
                                         transition={{ duration: 1.5, repeat: Infinity }}
                                     >
                                         →
@@ -91,31 +91,31 @@ export function NaturalWonders() {
                             </Link>
                         </motion.div>
                     </motion.div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         <motion.div
                             variants={imageVariants}
-                            whileHover={{ y: -10, scale: 1.02 }}
+                            whileHover={{ y: -5, scale: 1.02 }}
                             transition={{ duration: 0.3 }}
                         >
                             <motion.img
                                 src={danakilImage}
                                 alt="Danakil Depression"
-                                className="rounded-2xl w-full aspect-[3/4] object-cover"
-                                whileHover={{ scale: 1.05 }}
+                                className="rounded-lg w-full aspect-[3/4] object-cover"
+                                whileHover={{ scale: 1.03 }}
                                 transition={{ duration: 0.4 }}
                             />
                         </motion.div>
                         <motion.div
                             variants={imageVariants}
-                            whileHover={{ y: -10, scale: 1.02 }}
+                            whileHover={{ y: -5, scale: 1.02 }}
                             transition={{ duration: 0.3 }}
-                            className="mt-8"
+                            className="mt-4"
                         >
                             <motion.img
                                 src={abayRiverImage}
                                 alt="Blue Nile Falls"
-                                className="rounded-2xl w-full aspect-[3/4] object-cover"
-                                whileHover={{ scale: 1.05 }}
+                                className="rounded-lg w-full aspect-[3/4] object-cover"
+                                whileHover={{ scale: 1.03 }}
                                 transition={{ duration: 0.4 }}
                             />
                         </motion.div>

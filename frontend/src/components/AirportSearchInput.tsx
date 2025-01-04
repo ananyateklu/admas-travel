@@ -90,24 +90,24 @@ export function AirportSearchInput({
         }
         if (airports.length > 0) {
             return (
-                <ul className="max-h-60 overflow-auto">
+                <ul className="max-h-48 overflow-auto">
                     {airports.map((airport) => (
                         <li key={airport.id}>
                             <button
                                 type="button"
                                 onClick={() => handleSelect(airport)}
-                                className="w-full px-4 py-2 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
+                                className="w-full px-3 py-1.5 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
                             >
-                                <div className="flex items-center">
-                                    <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-900">
+                                <div className="flex items-center justify-between gap-2">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-xs font-medium text-gray-900 truncate">
                                             {airport.name}
                                         </p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-[10px] text-gray-500 truncate">
                                             {airport.city}, {airport.country}
                                         </p>
                                     </div>
-                                    <span className="text-xs font-medium text-gold bg-gold/10 px-2 py-1 rounded-full">
+                                    <span className="flex-shrink-0 text-[10px] font-medium text-gold bg-gold/10 px-1.5 py-0.5 rounded">
                                         {airport.airportCode}
                                     </span>
                                 </div>
@@ -163,8 +163,8 @@ export function AirportSearchInput({
                         value={displayValue}
                         onChange={handleInputChange}
                         onFocus={() => setIsFocused(true)}
-                        className={`w-full pl-10 pr-24 py-2 border rounded-xl
-                            ${isFocused ? 'border-gold ring-2 ring-gold/20' : 'border-gray-300'}
+                        className={`w-full pl-10 pr-16 py-1.5 text-xs border rounded-lg
+                            ${isFocused ? 'border-gold ring-1 ring-gold/20' : 'border-gray-300'}
                             ${selectedAirport ? 'bg-gray-50' : 'bg-white'}
                             focus:outline-none transition-all duration-200 ${className}`}
                         placeholder={placeholder}
@@ -174,8 +174,8 @@ export function AirportSearchInput({
 
                     {/* Selected airport pill */}
                     {selectedAirport?.airportCode && (
-                        <div className="absolute right-10 top-1/2 -translate-y-1/2">
-                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500 text-white">
+                        <div className="absolute right-7 top-1/2 -translate-y-1/2 flex items-center">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gold/10 text-gold">
                                 {selectedAirport.airportCode}
                             </span>
                         </div>
@@ -186,9 +186,9 @@ export function AirportSearchInput({
                         <button
                             type="button"
                             onClick={handleClear}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-gray-100 transition-colors"
                         >
-                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
@@ -197,7 +197,7 @@ export function AirportSearchInput({
 
                 {/* Dropdown */}
                 {query.length >= 2 && !selectedAirport && (
-                    <div className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-200 animate-fadeIn">
+                    <div className="absolute z-10 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden transition-all duration-200 animate-fadeIn">
                         {renderDropdownContent()}
                     </div>
                 )}

@@ -17,18 +17,18 @@ const containerVariants = {
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.2,
-            delayChildren: 0.3
+            staggerChildren: 0.15,
+            delayChildren: 0.2
         }
     }
 };
 
 const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     visible: {
         opacity: 1,
         y: 0,
-        transition: { duration: 0.5 }
+        transition: { duration: 0.4 }
     }
 };
 
@@ -68,10 +68,7 @@ export default function Contact() {
         setIsSubmitting(true);
 
         try {
-            // Initialize EmailJS with your public key
             emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
-
-            // Send email using EmailJS
             await emailjs.send(
                 import.meta.env.VITE_EMAILJS_SERVICE_ID,
                 import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
@@ -81,12 +78,11 @@ export default function Contact() {
                     phone: formData.phone,
                     subject: formData.subject,
                     message: formData.message,
-                    to_email: "admastravel@gmail.com" // Your business email
+                    to_email: "admastravel@gmail.com"
                 }
             );
 
             setSubmitStatus('success');
-            // Reset form after success
             setTimeout(() => {
                 setFormData({
                     name: '',
@@ -123,7 +119,7 @@ export default function Contact() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                 >
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -141,7 +137,7 @@ export default function Contact() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                 >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     Message Sent!
@@ -158,7 +154,7 @@ export default function Contact() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                 >
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     Failed to Send
@@ -183,7 +179,7 @@ export default function Contact() {
             {/* Hero Section */}
             <motion.div
                 ref={heroRef}
-                className="relative h-[40vh] bg-gray-900"
+                className="relative h-[35vh] bg-gray-900"
                 initial="hidden"
                 animate={isHeroInView ? "visible" : "hidden"}
                 variants={containerVariants}
@@ -192,7 +188,7 @@ export default function Contact() {
                     className="absolute inset-0"
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 0.6 }}
                 >
                     <img
                         src={heroImage}
@@ -201,24 +197,24 @@ export default function Contact() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30" />
                 </motion.div>
-                <div className="relative h-full flex items-center justify-center text-center">
+                <div className="relative h-full flex items-center justify-center text-center pt-12">
                     <motion.div
                         variants={itemVariants}
-                        className="max-w-3xl px-4"
+                        className="max-w-2xl px-4"
                     >
                         <motion.h1
-                            className="text-4xl md:text-5xl font-serif text-white mb-4"
-                            initial={{ opacity: 0, y: 30 }}
+                            className="text-3xl md:text-4xl font-serif text-white mb-3 drop-shadow-[0_2px_8px_rgba(255,215,0,0.3)]"
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
                         >
                             Contact Us
                         </motion.h1>
                         <motion.p
-                            className="text-xl text-white/90"
-                            initial={{ opacity: 0, y: 30 }}
+                            className="text-lg text-white/90"
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.4 }}
+                            transition={{ duration: 0.6, delay: 0.3 }}
                         >
                             We're here to help plan your perfect journey
                         </motion.p>
@@ -229,20 +225,20 @@ export default function Contact() {
             {/* Contact Information */}
             <motion.section
                 ref={contactInfoRef}
-                className="py-16 bg-gray-50"
+                className="py-12 bg-gray-50"
                 initial="hidden"
                 animate={isContactInfoInView ? "visible" : "hidden"}
                 variants={containerVariants}
             >
                 <motion.div
-                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+                    className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"
                     variants={containerVariants}
                 >
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
                             {
                                 icon: (
-                                    <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
                                 ),
@@ -252,7 +248,7 @@ export default function Contact() {
                             },
                             {
                                 icon: (
-                                    <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                     </svg>
                                 ),
@@ -262,7 +258,7 @@ export default function Contact() {
                             },
                             {
                                 icon: (
-                                    <svg className="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
@@ -274,9 +270,9 @@ export default function Contact() {
                         ].map((item) => (
                             <motion.div
                                 key={item.title}
-                                className="text-center border border-gray-100 rounded-xl p-6 bg-white shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1),0_12px_25px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.15),0_20px_40px_-10px_rgba(0,0,0,0.1)] transition-all"
+                                className="text-center border border-gray-100 rounded-lg p-4 bg-white shadow-md hover:shadow-lg transition-all"
                                 variants={itemVariants}
-                                whileHover={{ scale: 1.05 }}
+                                whileHover={{ scale: 1.03 }}
                                 transition={{ type: "spring", stiffness: 300 }}
                             >
                                 <motion.a
@@ -285,11 +281,11 @@ export default function Contact() {
                                     target={item.action.startsWith('http') ? '_blank' : undefined}
                                     rel={item.action.startsWith('http') ? 'noopener noreferrer' : undefined}
                                 >
-                                    <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-gold/10 rounded-full group-hover:bg-gold/20 transition-colors">
+                                    <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center bg-gold/10 rounded-full group-hover:bg-gold/20 transition-colors">
                                         {item.icon}
                                     </div>
-                                    <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                                    <p className="text-gray-600 group-hover:text-gold transition-colors">{item.info}</p>
+                                    <h3 className="text-base font-semibold mb-1">{item.title}</h3>
+                                    <p className="text-sm text-gray-600 group-hover:text-gold transition-colors">{item.info}</p>
                                 </motion.a>
                             </motion.div>
                         ))}
@@ -300,25 +296,25 @@ export default function Contact() {
             {/* Contact Form Section */}
             <motion.section
                 ref={formRef}
-                className="py-16"
+                className="py-12"
                 initial="hidden"
                 animate={isFormInView ? "visible" : "hidden"}
                 variants={containerVariants}
             >
-                <div className="max-w-4xl mx-auto px-4">
+                <div className="max-w-3xl mx-auto px-4">
                     <motion.div
-                        className="text-center mb-12"
+                        className="text-center mb-8"
                         variants={itemVariants}
                     >
-                        <h2 className="text-3xl font-serif mb-4">Get in Touch</h2>
-                        <p className="text-gray-600">Have questions about our services? Fill out the form below and we'll get back to you as soon as possible.</p>
+                        <h2 className="text-2xl font-serif mb-3">Get in Touch</h2>
+                        <p className="text-sm text-gray-600">Have questions about our services? Fill out the form below and we'll get back to you as soon as possible.</p>
                     </motion.div>
                     <motion.form
                         onSubmit={handleSubmit}
-                        className="bg-white rounded-2xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1),0_12px_25px_-5px_rgba(0,0,0,0.05)] p-8 border border-gray-100"
+                        className="bg-white rounded-lg shadow-md p-6 border border-gray-100"
                         variants={containerVariants}
                     >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             {[
                                 { label: "Full Name", name: "name", type: "text" },
                                 { label: "Email", name: "email", type: "email" },
@@ -341,7 +337,7 @@ export default function Contact() {
                                     key={field.name}
                                     variants={itemVariants}
                                 >
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-medium text-gray-700 mb-1">
                                         {field.label}
                                     </label>
                                     {field.type === "select" ? (
@@ -349,7 +345,7 @@ export default function Contact() {
                                             name={field.name}
                                             value={formData[field.name as keyof ContactFormData]}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-shadow"
+                                            className="w-full px-3 py-1.5 text-sm border rounded focus:ring-1 focus:ring-gold focus:border-transparent transition-shadow"
                                             required
                                         >
                                             {field.options?.map((option) => (
@@ -364,7 +360,7 @@ export default function Contact() {
                                             name={field.name}
                                             value={formData[field.name as keyof ContactFormData]}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-shadow"
+                                            className="w-full px-3 py-1.5 text-sm border rounded focus:ring-1 focus:ring-gold focus:border-transparent transition-shadow"
                                             required={field.name !== "phone"}
                                         />
                                     )}
@@ -372,18 +368,18 @@ export default function Contact() {
                             ))}
                         </div>
                         <motion.div
-                            className="mb-6"
+                            className="mb-4"
                             variants={itemVariants}
                         >
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                                 Message
                             </label>
                             <textarea
                                 name="message"
                                 value={formData.message}
                                 onChange={handleInputChange}
-                                rows={6}
-                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent transition-shadow"
+                                rows={4}
+                                className="w-full px-3 py-1.5 text-sm border rounded focus:ring-1 focus:ring-gold focus:border-transparent transition-shadow"
                                 required
                             />
                         </motion.div>
@@ -393,9 +389,9 @@ export default function Contact() {
                         >
                             <motion.button
                                 type="submit"
-                                className="relative px-8 py-3 bg-gold text-white rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50"
+                                className="px-6 py-2 bg-gold text-white text-sm rounded hover:bg-gold/90 transition-colors disabled:opacity-50"
                                 disabled={isSubmitting}
-                                whileHover={{ scale: 1.05 }}
+                                whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.95 }}
                             >
                                 <AnimatePresence mode="wait">
@@ -410,26 +406,26 @@ export default function Contact() {
             {/* Map Section */}
             <motion.section
                 ref={mapRef}
-                className="py-16 bg-gray-50"
+                className="py-12 bg-gray-50"
                 initial="hidden"
                 animate={isMapInView ? "visible" : "hidden"}
                 variants={containerVariants}
             >
                 <motion.div
-                    className="max-w-7xl mx-auto px-4"
+                    className="max-w-5xl mx-auto px-4"
                     variants={containerVariants}
                 >
                     <motion.div
-                        className="text-center mb-12"
+                        className="text-center mb-8"
                         variants={itemVariants}
                     >
-                        <h2 className="text-3xl font-serif mb-4">Visit Our Office</h2>
-                        <p className="text-gray-600">Stop by our office to speak with our travel experts in person</p>
+                        <h2 className="text-2xl font-serif mb-3">Visit Our Office</h2>
+                        <p className="text-sm text-gray-600">Stop by our office to speak with our travel experts in person</p>
                     </motion.div>
                     <motion.div
-                        className="aspect-[16/9] rounded-2xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1),0_12px_25px_-5px_rgba(0,0,0,0.05)] border border-gray-100"
+                        className="aspect-[16/9] rounded-lg overflow-hidden shadow-md border border-gray-100"
                         variants={itemVariants}
-                        whileHover={{ scale: 1.02, boxShadow: "0 15px 35px -5px rgba(0,0,0,0.15), 0 20px 40px -10px rgba(0,0,0,0.1)" }}
+                        whileHover={{ scale: 1.02 }}
                         transition={{ type: "spring", stiffness: 300 }}
                     >
                         <iframe
@@ -448,23 +444,23 @@ export default function Contact() {
 
             {/* Business Hours */}
             <motion.section
-                className="py-16"
-                initial={{ opacity: 0, y: 20 }}
+                className="py-12"
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.4 }}
             >
                 <motion.div
-                    className="max-w-4xl mx-auto px-4"
+                    className="max-w-3xl mx-auto px-4"
                     variants={containerVariants}
                 >
                     <motion.div
-                        className="bg-white rounded-2xl shadow-[0_4px_20px_-2px_rgba(0,0,0,0.1),0_12px_25px_-5px_rgba(0,0,0,0.05)] p-8 border border-gray-100"
-                        whileHover={{ boxShadow: "0 15px 35px -5px rgba(0,0,0,0.15), 0 20px 40px -10px rgba(0,0,0,0.1)" }}
-                        transition={{ duration: 0.3 }}
+                        className="bg-white rounded-lg shadow-md p-6 border border-gray-100"
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ duration: 0.2 }}
                     >
                         <motion.h3
-                            className="text-2xl font-serif mb-6 text-center"
+                            className="text-2xl font-serif mb-4 text-center"
                             variants={itemVariants}
                         >
                             Business Hours
@@ -488,16 +484,16 @@ export default function Contact() {
                             ].map((schedule) => (
                                 <motion.div
                                     key={schedule.title}
-                                    className="text-center p-4"
+                                    className="text-center p-3"
                                     variants={itemVariants}
-                                    whileHover={{ scale: 1.05 }}
+                                    whileHover={{ scale: 1.03 }}
                                     transition={{ type: "spring", stiffness: 300 }}
                                 >
-                                    <h4 className="font-semibold mb-2">{schedule.title}</h4>
-                                    <p className="text-gray-600">{schedule.days}</p>
-                                    <p className="text-gray-600">{schedule.hours}</p>
+                                    <h4 className="text-sm font-semibold mb-2">{schedule.title}</h4>
+                                    <p className="text-xs text-gray-600">{schedule.days}</p>
+                                    <p className="text-xs text-gray-600">{schedule.hours}</p>
                                     {schedule.additional && (
-                                        <p className="text-gray-600">{schedule.additional}</p>
+                                        <p className="text-xs text-gray-600">{schedule.additional}</p>
                                     )}
                                 </motion.div>
                             ))}

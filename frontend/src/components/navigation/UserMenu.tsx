@@ -17,33 +17,33 @@ export function UserMenu({ user, onSignOut }: UserMenuProps) {
     return (
         <div className="relative">
             {user ? (
-                <div className="relative account-menu">
+                <div className="relative account-menu mr-3">
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
-                        className="flex items-center gap-3 px-4 py-2 rounded-[1.2rem] hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-[1.1rem] hover:bg-gray-50 transition-colors"
                     >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2.5">
                             <Avatar
                                 src={user.photoURL ?? undefined}
                                 alt={user.displayName ?? 'User'}
                                 fallback={user.displayName ?? user.email ?? 'User'}
-                                size="md"
-                                className="ring-2 ring-white shadow-sm"
+                                size="sm"
+                                className="ring-[1.5px] ring-white shadow-sm"
                             />
                             <div className="hidden md:block text-left">
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-xs font-medium text-gray-900">
                                     {user.displayName ?? 'User'}
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-[10px] text-gray-500">
                                     {user.email}
                                 </div>
                             </div>
                         </div>
                         <motion.svg
                             animate={{ rotate: isAccountMenuOpen ? 180 : 0 }}
-                            className="w-5 h-5 text-gray-400"
+                            className="w-4 h-4 text-gray-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -59,12 +59,12 @@ export function UserMenu({ user, onSignOut }: UserMenuProps) {
                     />
                 </div>
             ) : (
-                <div className="relative signin-dropdown">
+                <div className="relative signin-dropdown ml-3">
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsSignInOpen(!isSignInOpen)}
-                        className="px-9 py-5 bg-[#1A1A1A] text-white rounded-[1.5rem] shadow-[0_4px_16px_rgba(0,0,0,0.24)] text-base font-light hover:bg-black transition-all hover:shadow-[0_6px_20px_rgba(0,0,0,0.32)] hover:scale-[1.02]"
+                        className="px-9 py-5 bg-[#1A1A1A] text-white rounded-[1.4rem] shadow-[0_4px_16px_rgba(0,0,0,0.24)] text-sm font-light hover:bg-black transition-all hover:shadow-[0_6px_20px_rgba(0,0,0,0.32)] hover:scale-[1.02]"
                     >
                         Sign In
                     </motion.button>

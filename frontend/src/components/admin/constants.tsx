@@ -27,14 +27,14 @@ export const STATUS_OPTIONS: StatusOption[] = [
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
         ),
-        className: 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100',
+        className: 'bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100',
         step: 2,
         colors: {
-            active: 'border-emerald-500 bg-emerald-500 text-white',
-            completed: 'border-emerald-500 bg-emerald-50 text-emerald-600',
-            connector: 'bg-emerald-500',
-            inactive: 'border-gray-200 bg-white text-gray-400 hover:border-emerald-500 hover:text-emerald-500',
-            label: 'text-emerald-600'
+            active: 'border-blue-500 bg-blue-500 text-white',
+            completed: 'border-blue-500 bg-blue-50 text-blue-600',
+            connector: 'bg-blue-500',
+            inactive: 'border-gray-200 bg-white text-gray-400 hover:border-blue-500 hover:text-blue-500',
+            label: 'text-blue-600'
         }
     },
     {
@@ -45,14 +45,14 @@ export const STATUS_OPTIONS: StatusOption[] = [
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
         ),
-        className: 'bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100',
+        className: 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100',
         step: 3,
         colors: {
-            active: 'border-blue-500 bg-blue-500 text-white',
-            completed: 'border-blue-500 bg-blue-50 text-blue-600',
-            connector: 'bg-blue-500',
-            inactive: 'border-gray-200 bg-white text-gray-400 hover:border-blue-500 hover:text-blue-500',
-            label: 'text-blue-600'
+            active: 'border-emerald-500 bg-emerald-500 text-white',
+            completed: 'border-emerald-500 bg-emerald-50 text-emerald-600',
+            connector: 'bg-emerald-500',
+            inactive: 'border-gray-200 bg-white text-gray-400 hover:border-emerald-500 hover:text-emerald-500',
+            label: 'text-emerald-600'
         }
     },
     {

@@ -102,26 +102,26 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
     };
 
     return (
-        <section className="py-24 bg-gray-50">
+        <section className="py-12 bg-gray-50">
             <motion.div
                 ref={sectionRef}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
                 variants={containerVariants}
-                className="max-w-[1920px] mx-auto px-24"
+                className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8"
                 style={{ position: 'relative' }}
             >
                 <motion.div
                     variants={itemVariants}
-                    className="text-center mb-16"
+                    className="text-center mb-8"
                 >
-                    <span className="text-primary text-sm font-medium tracking-wider uppercase mb-2 block">Popular Destinations</span>
-                    <h2 className="text-3xl font-serif mb-4">Vacation Destinations</h2>
-                    <p className="text-gray-600">Need some inspiration to plan your next trip? Plan the ultimate vacation at our top popular destination spots around the world.</p>
+                    <span className="text-primary text-xs font-medium tracking-wider uppercase mb-1 block">Popular Destinations</span>
+                    <h2 className="text-2xl font-serif mb-2">Vacation Destinations</h2>
+                    <p className="text-gray-600 text-sm">Need some inspiration to plan your next trip? Plan the ultimate vacation at our top popular destination spots around the world.</p>
                 </motion.div>
 
                 {/* Region Selection */}
-                <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-12">
+                <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                     {regions.map((region) => (
                         <motion.button
                             key={region.id}
@@ -129,7 +129,7 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                             onClick={() => setSelectedRegion(region.id)}
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.97 }}
-                            className={`relative group overflow-hidden rounded-xl aspect-[3/4] w-full ${selectedRegion === region.id ? 'ring-2 ring-primary' : ''
+                            className={`relative group overflow-hidden rounded-lg aspect-[3/4] w-full ${selectedRegion === region.id ? 'ring-1 ring-primary' : ''
                                 }`}
                         >
                             {/* Background Image */}
@@ -151,15 +151,15 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                             </div>
 
                             {/* Content */}
-                            <div className="relative h-full flex flex-col justify-end p-4">
+                            <div className="relative h-full flex flex-col justify-end p-2">
                                 <motion.h3
-                                    className="font-serif text-base text-white mb-1"
+                                    className="font-serif text-sm text-white mb-0.5"
                                     whileHover={{ scale: 1.05 }}
                                 >
                                     {region.name}
                                 </motion.h3>
                                 <motion.p
-                                    className="text-white/80 text-sm mb-2 line-clamp-2"
+                                    className="text-white/80 text-xs mb-1 line-clamp-2"
                                     initial={{ opacity: 0.6 }}
                                     whileHover={{ opacity: 1 }}
                                 >
@@ -169,7 +169,7 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                     className="flex items-center"
                                     whileHover={{ scale: 1.05 }}
                                 >
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary-100">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/20 text-primary-100">
                                         {region.places}
                                     </span>
                                 </motion.div>
@@ -186,9 +186,9 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="mt-12"
+                            className="mt-8"
                         >
-                            <div className="flex flex-wrap justify-center gap-4 mb-12">
+                            <div className="flex flex-wrap justify-center gap-2 mb-8">
                                 {Object.entries(ethiopianRegions).map(([region, destinations]) => (
                                     <motion.button
                                         key={region}
@@ -196,18 +196,18 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                         onClick={() => setSelectedEthiopianRegion(region)}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        className={`px-6 py-2.5 rounded-full text-sm transition-all ${selectedEthiopianRegion === region
+                                        className={`px-4 py-1.5 rounded-full text-xs transition-all ${selectedEthiopianRegion === region
                                             ? 'bg-primary text-white'
                                             : 'bg-white hover:bg-primary-50 hover:text-primary'
                                             }`}
                                     >
                                         {region.charAt(0).toUpperCase() + region.slice(1)} Ethiopia
-                                        <span className="ml-2 opacity-80">({destinations.length})</span>
+                                        <span className="ml-1 opacity-80">({destinations.length})</span>
                                     </motion.button>
                                 ))}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <AnimatePresence mode="sync">
                                     {ethiopianRegions[selectedEthiopianRegion as keyof EthiopianRegions].map((destination, index) => (
                                         <motion.div
@@ -220,8 +220,8 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                             transition={{
                                                 delay: index * 0.1
                                             }}
-                                            whileHover={{ y: -5 }}
-                                            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all group"
+                                            whileHover={{ y: -3 }}
+                                            className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group"
                                         >
                                             <motion.div
                                                 className="aspect-[16/9] overflow-hidden relative"
@@ -235,16 +235,16 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                                             </motion.div>
-                                            <div className="p-6">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <span className="h-0.5 w-6 bg-gold rounded-full" />
-                                                    <span className="text-gold text-sm">{destination.count} Experiences</span>
+                                            <div className="p-3">
+                                                <div className="flex items-center gap-1 mb-1">
+                                                    <span className="h-0.5 w-4 bg-gold rounded-full" />
+                                                    <span className="text-gold text-xs">{destination.count} Experiences</span>
                                                 </div>
-                                                <h3 className="text-2xl font-serif mb-3 group-hover:text-primary transition-colors">{destination.name}</h3>
+                                                <h3 className="text-lg font-serif mb-2 group-hover:text-primary transition-colors">{destination.name}</h3>
                                                 <motion.button
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
-                                                    className="mt-4 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm hover:bg-primary hover:text-white transition-all"
+                                                    className="mt-2 px-3 py-1 bg-primary/10 text-primary rounded text-xs hover:bg-primary hover:text-white transition-all"
                                                 >
                                                     View Details
                                                 </motion.button>

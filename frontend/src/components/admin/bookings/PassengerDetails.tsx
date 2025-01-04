@@ -54,26 +54,29 @@ export function PassengerDetails({
     };
 
     return (
-        <div className="bg-white rounded-lg p-3 shadow-sm">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-forest-100/50">
             {/* Compact Header */}
-            <div className="flex items-center justify-between mb-3 pb-2 border-b">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-forest-100/50">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-gold/10 rounded-lg">
-                        <svg className="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-forest-400/10 rounded-lg blur-[2px]" />
+                        <div className="relative p-1.5 bg-gradient-to-br from-forest-400/20 to-forest-400/5 rounded-lg border border-forest-400/20">
+                            <svg className="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
                             <h4 className="font-medium text-gray-900">Passengers</h4>
                             <div className="flex gap-1.5">
                                 {booking.passengers.some(p => p.type === 'adult') && (
-                                    <span className="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded-full font-medium">
+                                    <span className="text-[10px] px-1.5 py-0.5 bg-forest-50 text-forest-700 rounded-full font-medium">
                                         {booking.passengers.filter(p => p.type === 'adult').length}A
                                     </span>
                                 )}
                                 {booking.passengers.some(p => p.type === 'child') && (
-                                    <span className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-full font-medium">
+                                    <span className="text-[10px] px-1.5 py-0.5 bg-forest-50/50 text-forest-600 rounded-full font-medium">
                                         {booking.passengers.filter(p => p.type === 'child').length}C
                                     </span>
                                 )}
@@ -87,24 +90,26 @@ export function PassengerDetails({
             {/* Compact Passenger Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {(isEditing ? editForm.passengers : booking.passengers).map((passenger, index) => {
+                    const passportStatus = getPassportStatus(passenger.passportExpiry);
                     return (
                         <div
                             key={`${passenger.passportNumber}-${passenger.fullName}`}
-                            className="group bg-gray-50 rounded-lg p-3 hover:shadow-sm transition-all duration-200"
+                            className="group bg-forest-50/50 backdrop-blur-sm rounded-lg p-3 hover:shadow-md transition-all duration-200 border border-forest-100/50"
                         >
                             {/* Passenger Header - More Compact */}
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
                                     <div className="relative">
-                                        <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center">
-                                            <span className="text-xs font-medium text-gold">
+                                        <div className="absolute inset-0 bg-forest-400/10 rounded-full blur-[2px]" />
+                                        <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-forest-400/20 to-forest-400/5 border border-forest-400/20 flex items-center justify-center">
+                                            <span className="text-xs font-medium text-forest-700">
                                                 {passenger.fullName.split(' ').map(n => n[0]).join('')}
                                             </span>
                                         </div>
                                         <div className="absolute -bottom-0.5 -right-0.5">
                                             <span className={`text-[9px] px-1 py-0.5 rounded-full font-medium ${passenger.type === 'adult'
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : 'bg-green-100 text-green-700'
+                                                    ? 'bg-forest-100 text-forest-700'
+                                                    : 'bg-forest-50 text-forest-600'
                                                 }`}>
                                                 {index + 1}
                                             </span>
@@ -116,7 +121,7 @@ export function PassengerDetails({
                                                 type="text"
                                                 value={passenger.fullName}
                                                 onChange={(e) => handlePassengerChange(index, 'fullName', e.target.value)}
-                                                className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                                className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                                 placeholder="Full Name"
                                             />
                                         ) : (
@@ -130,7 +135,7 @@ export function PassengerDetails({
                                                 type="text"
                                                 value={passenger.nationality}
                                                 onChange={(e) => handlePassengerChange(index, 'nationality', e.target.value)}
-                                                className="w-full px-2 py-1 mt-1 text-[11px] border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                                className="w-full px-2 py-1 mt-1 text-[11px] border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                                 placeholder="Nationality"
                                             />
                                         ) : (
@@ -142,12 +147,12 @@ export function PassengerDetails({
 
                             {/* Passenger Details - Compact Grid */}
                             <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className="col-span-2 bg-white rounded p-1.5">
+                                <div className="col-span-2 bg-white/80 backdrop-blur-sm rounded-lg p-1.5 border border-forest-100/50">
                                     <div className="flex items-center justify-between">
                                         <p className="text-[10px] text-gray-500">Passport</p>
                                         {!isEditing && (
-                                            <span className={`text-[9px] px-1.5 py-0.5 rounded-full bg-${getPassportStatus(passenger.passportExpiry).color}-50 text-${getPassportStatus(passenger.passportExpiry).color}-700`}>
-                                                {getPassportStatus(passenger.passportExpiry).status}
+                                            <span className={`text-[9px] px-1.5 py-0.5 rounded-full bg-${passportStatus.color}-50 text-${passportStatus.color}-700`}>
+                                                {passportStatus.status}
                                             </span>
                                         )}
                                     </div>
@@ -156,41 +161,41 @@ export function PassengerDetails({
                                             type="text"
                                             value={passenger.passportNumber}
                                             onChange={(e) => handlePassengerChange(index, 'passportNumber', e.target.value)}
-                                            className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                            className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                             placeholder="Passport Number"
                                         />
                                     ) : (
                                         <p className="font-medium text-gray-900 tracking-wide truncate">{passenger.passportNumber}</p>
                                     )}
                                 </div>
-                                <div className="bg-white rounded p-1.5 relative group/date">
+                                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-1.5 border border-forest-100/50 relative group/date">
                                     <p className="text-[10px] text-gray-500">Date of Birth</p>
                                     {isEditing ? (
                                         <input
                                             type="date"
                                             value={passenger.dateOfBirth}
                                             onChange={(e) => handlePassengerChange(index, 'dateOfBirth', e.target.value)}
-                                            className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                            className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                         />
                                     ) : (
                                         <p className="font-medium text-gray-900">{formatDate(passenger.dateOfBirth)}</p>
                                     )}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 to-emerald-50/0 opacity-0 group-hover/date:opacity-100 transition-opacity rounded pointer-events-none" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-forest-50 to-forest-50/0 opacity-0 group-hover/date:opacity-100 transition-opacity rounded-lg pointer-events-none" />
                                 </div>
-                                <div className="bg-white rounded p-1.5 relative group/date">
+                                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-1.5 border border-forest-100/50 relative group/date">
                                     <p className="text-[10px] text-gray-500">Passport Expiry</p>
                                     {isEditing ? (
                                         <input
                                             type="date"
                                             value={passenger.passportExpiry}
                                             onChange={(e) => handlePassengerChange(index, 'passportExpiry', e.target.value)}
-                                            className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
+                                            className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                         />
                                     ) : (
                                         <p className="font-medium text-gray-900">{formatDate(passenger.passportExpiry)}</p>
                                     )}
                                     {!isEditing && (
-                                        <div className={`absolute inset-0 bg-gradient-to-r from-${getPassportStatus(passenger.passportExpiry).color}-50 to-${getPassportStatus(passenger.passportExpiry).color}-50/0 opacity-0 group-hover/date:opacity-100 transition-opacity rounded pointer-events-none`} />
+                                        <div className={`absolute inset-0 bg-gradient-to-r from-${passportStatus.color}-50 to-${passportStatus.color}-50/0 opacity-0 group-hover/date:opacity-100 transition-opacity rounded-lg pointer-events-none`} />
                                     )}
                                 </div>
                             </div>
@@ -211,7 +216,7 @@ export function PassengerDetails({
                     <button
                         type="button"
                         onClick={handleSave}
-                        className="px-4 py-2 text-sm text-white bg-gold hover:bg-gold/90 rounded-lg"
+                        className="px-4 py-2 text-sm text-white bg-forest-500 hover:bg-forest-600 rounded-lg shadow-sm"
                     >
                         Save Changes
                     </button>

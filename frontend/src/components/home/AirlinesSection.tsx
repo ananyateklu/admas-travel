@@ -52,7 +52,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
         if (isAutoPlaying && !isTransitioning && loadedImages.has(airlines[currentAirlineIndex].image)) {
             progress.set(0);
             const controls = animate(progress, 100, {
-                duration: 4,
+                duration: 7,
                 ease: "linear",
                 onComplete: startNextTransition
             });
@@ -197,28 +197,34 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             variants={containerVariants}
-            className="h-[100vh] relative overflow-hidden bg-black"
-            style={{ position: 'relative' }}
+            className="relative h-[70vh] bg-black overflow-hidden will-change-transform"
+            style={{
+                transform: 'translate3d(0,0,0)',
+                backfaceVisibility: 'hidden'
+            }}
             onMouseDown={handleDragStart}
             onMouseUp={handleDragEnd}
             onTouchStart={handleDragStart}
             onTouchEnd={handleDragEnd}
         >
-            {/* Title Overlay */}
+            {/* Title Section - Positioned above but aligned with content */}
             <motion.div
                 variants={contentVariants}
-                className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 via-black/50 to-transparent pt-40 pb-12"
+                className="absolute top-0 left-0 right-0 z-10"
             >
-                <div className="max-w-7xl mx-auto px-8">
+                <div className="max-w-5xl mx-auto px-8 md:px-16 pt-32">
                     <motion.h2
                         variants={contentVariants}
-                        className="text-gold text-3xl font-serif drop-shadow-lg"
+                        className="text-gold text-3xl font-serif drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] mb-2 text-opacity-90"
+                        style={{
+                            textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                        }}
                     >
                         Travel the World with Leading Airlines
                     </motion.h2>
                     <motion.p
                         variants={contentVariants}
-                        className="text-white/80 mt-2 max-w-2xl text-sm"
+                        className="text-white/90 max-w-2xl text-xs drop-shadow-md"
                     >
                         Experience exceptional service and worldwide connectivity with our carefully selected airline partners
                     </motion.p>
@@ -273,11 +279,11 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                             initial="enter"
                             animate="center"
                             exit="exit"
-                            className="absolute top-1/2 left-0 right-0 px-8 md:px-16 text-white transform -translate-y-1/2"
+                            className="absolute top-[220px] left-0 right-0 px-8 md:px-16 text-white transform -translate-y-1/3"
                         >
                             <div className="max-w-4xl mx-auto">
                                 <motion.h2
-                                    className="text-4xl font-serif mb-3"
+                                    className="text-3xl font-serif mb-3"
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
@@ -373,10 +379,10 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={prevAirline}
-                className="absolute left-8 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-r from-gold/30 to-primary-400/30 hover:from-gold/60 hover:to-primary-400/60 text-white/70 hover:text-white p-3 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] transition-all group backdrop-blur-sm"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-r from-gold/30 to-primary-400/30 hover:from-gold/60 hover:to-primary-400/60 text-white/70 hover:text-white p-2 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] transition-all group backdrop-blur-sm"
                 aria-label="Previous airline"
             >
-                <svg className="w-8 h-8 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
                 </svg>
             </motion.button>
@@ -387,16 +393,16 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={nextAirline}
-                className="absolute right-8 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-l from-gold/30 to-primary-400/30 hover:from-gold/60 hover:to-primary-400/60 text-white/70 hover:text-white p-3 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] transition-all group backdrop-blur-sm"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-l from-gold/30 to-primary-400/30 hover:from-gold/60 hover:to-primary-400/60 text-white/70 hover:text-white p-2 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] transition-all group backdrop-blur-sm"
                 aria-label="Next airline"
             >
-                <svg className="w-8 h-8 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
                 </svg>
             </motion.button>
 
             {/* Progress Bar */}
-            <div className="absolute bottom-16 left-1/2 -translate-x-1/2 w-24 h-1 bg-white/20 rounded-full overflow-hidden z-20">
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-white/20 rounded-full overflow-hidden z-20">
                 <motion.div
                     className="h-full bg-primary-400 rounded-full origin-left"
                     style={{
@@ -407,7 +413,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             </div>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-20">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex justify-center gap-1.5 z-20">
                 {airlines.map((airline, index) => (
                     <motion.button
                         key={airline.id}
@@ -416,9 +422,9 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                         whileHover={{ scale: 1.2 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => handleImageTransition(index)}
-                        className={`h-2 rounded-full transition-all ${index === currentAirlineIndex
-                            ? 'bg-gold w-8'
-                            : 'bg-white/50 hover:bg-white/80 w-2'
+                        className={`h-1.5 rounded-full transition-all ${index === currentAirlineIndex
+                            ? 'bg-gold w-6'
+                            : 'bg-white/50 hover:bg-white/80 w-1.5'
                             }`}
                         aria-label={`Go to airline ${index + 1}`}
                     />
