@@ -111,7 +111,7 @@ export function JourneyDetails({ booking }: JourneyDetailsProps) {
                         </span>
                         <span className="h-2 w-px bg-gradient-to-b from-gray-200/50 to-transparent" />
                         <span className="text-[10px] font-medium text-gray-500 whitespace-nowrap">
-                            {booking.returnDate ? 'Round Trip' : 'One Way'}
+                            {booking.tripType === 'oneway' ? 'One Way' : 'Round Trip'}
                         </span>
                     </div>
                 </motion.div>

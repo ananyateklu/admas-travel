@@ -9,16 +9,15 @@ import {
     SearchFilters,
     AdminAnalytics,
     AdminFlights,
-    ADMIN_EMAILS,
-    BookingData,
-    formatDate,
     formatDateShort,
-    formatDateNumeric
+    formatDateNumeric,
+    AdvancedFilters
 } from '../components/admin';
 import { Airport } from '../services/flightService';
 import { AdminSettings } from '../components/admin/settings';
 import { motion } from 'framer-motion';
 import { useAnalytics } from '../hooks/useAnalytics';
+import { BookingData, ADMIN_EMAILS } from '../components/admin/types';
 
 // Add type guard for Airport
 const isAirport = (value: unknown): value is Airport => {
@@ -47,7 +46,7 @@ export default function Admin() {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<AdminTab>(() => {
         const savedTab = localStorage.getItem('adminActiveTab');
-        return (savedTab as AdminTab) || 'bookings';
+        return (savedTab as AdminTab) ?? 'bookings';
     });
 
     useEffect(() => {
@@ -61,12 +60,14 @@ export default function Admin() {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [updateLoading, setUpdateLoading] = useState<string | null>(null);
+    const [advancedFilters, setAdvancedFilters] = useState<Partial<AdvancedFilters>>({});
+    const [isLoading, setIsLoading] = useState(true);
 
     const { ratings } = useAnalytics(bookings);
 
     // Check admin access
     useEffect(() => {
-        if (!user || !ADMIN_EMAILS.includes(user.email || '')) {
+        if (!user || !ADMIN_EMAILS.includes(user.email ?? '')) {
             navigate('/');
         }
     }, [user, navigate]);
@@ -106,6 +107,15 @@ export default function Admin() {
         };
     }, []);
 
+    useEffect(() => {
+        // Simulate minimum loading time for smooth transition
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 800);
+
+        return () => clearTimeout(timer);
+    }, []);
+
     const handleStatusChange = async (bookingId: string, newStatus: string, userId: string) => {
         console.log('Admin - Updating status:', { bookingId, newStatus, userId });
         setUpdateLoading(bookingId);
@@ -137,43 +147,146 @@ export default function Admin() {
         }
     };
 
-    const filteredBookings = bookings.filter(booking => {
-        const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
-        const searchLower = searchTerm.toLowerCase();
+    const handleStatClick = (statType: string, bookingRef?: string) => {
+        setActiveTab('bookings');
 
-        if (!searchLower) return matchesStatus;
+        // Reset all filters first
+        setStatusFilter('all');
+        setSearchTerm('');
+        setAdvancedFilters({});
 
-        const departureDate = new Date(booking.departureDate);
-        const returnDate = booking.returnDate ? new Date(booking.returnDate) : null;
+        // If we have a specific booking reference, use that
+        if (bookingRef) {
+            setSearchTerm(bookingRef);
+            setAdvancedFilters({
+                filterName: 'Booking Reference',
+                searchValue: bookingRef
+            });
+        } else {
+            // Set specific filters based on the stat clicked
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        const departureDateFormats = [
-            formatDate(departureDate),
-            formatDateShort(departureDate),
-            formatDateNumeric(departureDate)
-        ];
+            const twentyFourHoursAgo = new Date();
+            twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
 
-        const returnDateFormats = returnDate ? [
-            formatDate(returnDate),
-            formatDateShort(returnDate),
-            formatDateNumeric(returnDate)
-        ] : [];
+            const now = new Date();
 
-        const matchesSearch =
-            booking.contactName?.toLowerCase().includes(searchLower) ||
-            booking.bookingReference?.toLowerCase().includes(searchLower) ||
-            booking.contactEmail?.toLowerCase().includes(searchLower) ||
-            departureDateFormats.some(format => format.includes(searchLower)) ||
-            returnDateFormats.some(format => format.includes(searchLower)) ||
-            getLocationSearchText(booking.from).includes(searchLower) ||
-            getLocationSearchText(booking.to).includes(searchLower) ||
-            booking.class?.toLowerCase().includes(searchLower) ||
-            booking.passengers.some(passenger =>
-                passenger.fullName.toLowerCase().includes(searchLower) ||
-                passenger.nationality.toLowerCase().includes(searchLower)
-            );
+            switch (statType) {
+                case 'Active Bookings':
+                    setStatusFilter('pending');
+                    setAdvancedFilters({
+                        status: ['pending', 'confirmed'],
+                        filterName: 'Active Bookings'
+                    });
+                    break;
+                case 'Monthly Revenue':
+                    setAdvancedFilters({
+                        dateRange: {
+                            start: formatDateNumeric(thirtyDaysAgo),
+                            end: formatDateNumeric(now)
+                        },
+                        filterName: 'Monthly Revenue',
+                        dateRangeLabel: 'Last 30 Days'
+                    });
+                    break;
+                case 'Customer Rating':
+                    setStatusFilter('completed');
+                    setAdvancedFilters({
+                        status: ['completed'],
+                        filterName: 'Customer Rating',
+                        hasRating: true
+                    });
+                    break;
+                case 'Recent Bookings':
+                    setAdvancedFilters({
+                        dateRange: {
+                            start: formatDateNumeric(twentyFourHoursAgo),
+                            end: formatDateNumeric(now)
+                        },
+                        filterName: 'Recent Bookings',
+                        dateRangeLabel: 'Last 24 Hours'
+                    });
+                    break;
+                case 'Completion Rate':
+                    setStatusFilter('completed');
+                    setAdvancedFilters({
+                        status: ['completed'],
+                        filterName: 'Completed Bookings'
+                    });
+                    break;
+            }
+        }
 
-        return matchesStatus && matchesSearch;
-    });
+        // Scroll to the bookings section
+        setTimeout(() => {
+            const bookingsSection = document.querySelector('.bg-gray-50\\/80');
+            if (bookingsSection) {
+                bookingsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 100);
+    };
+
+    const getBookingDate = (booking: BookingData): Date => {
+        if (typeof booking.createdAt === 'object' && booking.createdAt?.toDate) {
+            return booking.createdAt.toDate();
+        }
+        return new Date(booking.createdAt as string);
+    };
+
+    // Helper functions for filtering
+    const matchesStatusFilter = (booking: BookingData, filter: string) => {
+        if (filter === 'all') return true;
+        if (filter === 'pending') {
+            return booking.status === 'pending' || booking.status === 'confirmed';
+        }
+        return booking.status === filter;
+    };
+
+    const matchesSearchTerm = (booking: BookingData, term: string) => {
+        if (!term) return true;
+        const searchLower = term.toLowerCase();
+        const locationMatch = (
+            getLocationSearchText(booking.from) +
+            getLocationSearchText(booking.to)
+        ).includes(searchLower);
+
+        const detailsMatch = (
+            (booking.contactName ?? '').toLowerCase() +
+            (booking.contactEmail ?? '').toLowerCase() +
+            (booking.bookingReference ?? '').toLowerCase()
+        ).includes(searchLower);
+
+        return locationMatch || detailsMatch;
+    };
+
+    const matchesAdvancedFilters = (booking: BookingData, filters: Partial<AdvancedFilters>) => {
+        if (Object.keys(filters).length === 0) return true;
+
+        if (filters.dateRange) {
+            const bookingDate = getBookingDate(booking);
+            const startDate = new Date(filters.dateRange.start);
+            const endDate = new Date(filters.dateRange.end);
+            if (bookingDate < startDate || bookingDate > endDate) return false;
+        }
+
+        if (filters.class && booking.class !== filters.class) return false;
+        if (filters.tripType && booking.tripType !== filters.tripType) return false;
+
+        if (filters.passengerCount) {
+            const count = booking.totalPassengers;
+            if (count < filters.passengerCount.min || count > filters.passengerCount.max) return false;
+        }
+
+        return true;
+    };
+
+    // Update the filteredBookings logic
+    const filteredBookings = bookings.filter(booking =>
+        matchesStatusFilter(booking, statusFilter) &&
+        matchesSearchTerm(booking, searchTerm) &&
+        matchesAdvancedFilters(booking, advancedFilters)
+    );
 
     // Calculate pending bookings count
     const pendingBookingsCount = useMemo(() =>
@@ -289,6 +402,7 @@ export default function Admin() {
                             onSearchChange={setSearchTerm}
                             statusFilter={statusFilter}
                             onStatusFilterChange={setStatusFilter}
+                            onAdvancedFiltersChange={setAdvancedFilters}
                         />
                         <div className="space-y-4">
                             {filteredBookings.map(booking => (
@@ -331,6 +445,133 @@ export default function Admin() {
         }
     };
 
+    const STAT_SKELETONS = ['revenue', 'bookings', 'completion', 'new', 'rating'];
+    const BOOKING_SKELETONS = ['recent1', 'recent2', 'recent3'];
+    const TAB_SKELETONS = ['bookings', 'flights', 'analytics', 'settings'];
+
+    // Add loading skeleton before the main content
+    if (isLoading) {
+        return (
+            <div className="min-h-screen">
+                <div className="relative bg-gradient-to-br from-gray-900 to-black overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/0"></div>
+                    <div className="relative">
+                        <div className="pt-[160px] px-4">
+                            <div className="w-[100%] max-w-[1800px] mx-auto">
+                                {/* Header Skeleton */}
+                                <motion.div
+                                    className="w-full flex flex-col items-center justify-center mb-12"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <div className="h-8 w-64 bg-white/10 rounded-lg animate-pulse mb-4"></div>
+                                    <div className="h-4 w-96 bg-white/5 rounded animate-pulse"></div>
+                                </motion.div>
+
+                                {/* Stats Skeleton */}
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
+                                    {STAT_SKELETONS.map((id, index) => (
+                                        <motion.div
+                                            key={id}
+                                            className="bg-white/20 backdrop-blur-md border border-white/20 rounded-xl p-4 relative overflow-hidden"
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{
+                                                duration: 0.3,
+                                                delay: index * 0.05,
+                                                ease: [0.25, 0.1, 0.25, 1]
+                                            }}
+                                        >
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="h-10 w-10 bg-white/30 rounded-lg animate-pulse"></div>
+                                                <div className="h-4 w-20 bg-white/30 rounded animate-pulse"></div>
+                                            </div>
+                                            <div className="h-6 w-16 bg-white/30 rounded mb-2 animate-pulse"></div>
+                                            <div className="h-4 w-24 bg-white/30 rounded animate-pulse"></div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+
+                                {/* Recent Bookings Skeleton */}
+                                <motion.div
+                                    className="w-[100%] max-w-[1800px] mx-auto mb-8"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3, delay: 0.2 }}
+                                >
+                                    <div className="bg-white/20 backdrop-blur-md border border-white/20 rounded-xl p-4">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-10 w-10 bg-white/30 rounded-lg animate-pulse"></div>
+                                                <div className="h-6 w-32 bg-white/30 rounded animate-pulse"></div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            {BOOKING_SKELETONS.map((id, index) => (
+                                                <motion.div
+                                                    key={id}
+                                                    className="flex items-center justify-between p-3 bg-white/10 rounded-lg"
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{
+                                                        duration: 0.3,
+                                                        delay: 0.3 + index * 0.05,
+                                                        ease: [0.25, 0.1, 0.25, 1]
+                                                    }}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="h-8 w-8 bg-white/30 rounded-full animate-pulse"></div>
+                                                        <div>
+                                                            <div className="h-4 w-24 bg-white/30 rounded mb-2 animate-pulse"></div>
+                                                            <div className="h-3 w-20 bg-white/30 rounded animate-pulse"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="text-right">
+                                                            <div className="h-4 w-32 bg-white/30 rounded mb-2 animate-pulse"></div>
+                                                            <div className="h-3 w-24 bg-white/30 rounded animate-pulse"></div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </motion.div>
+
+                                {/* Tabs Skeleton */}
+                                <motion.div
+                                    className="w-[100%] max-w-[1800px] mx-auto mb-10"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3, delay: 0.4 }}
+                                >
+                                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-2">
+                                        <div className="flex justify-center gap-2">
+                                            {TAB_SKELETONS.map((id, index) => (
+                                                <motion.div
+                                                    key={id}
+                                                    className="h-10 w-32 bg-white/30 rounded-lg animate-pulse"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    transition={{
+                                                        duration: 0.3,
+                                                        delay: 0.5 + index * 0.05,
+                                                        ease: [0.25, 0.1, 0.25, 1]
+                                                    }}
+                                                ></motion.div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen">
             {/* Hero Section */}
@@ -351,12 +592,12 @@ export default function Admin() {
                         <div className="absolute w-2 h-2 bg-white rounded-full top-1/2 left-3/4 animate-float" style={{ animationDelay: '1.5s' }} />
                     </div>
                 </div>
-                <div className="relative flex flex-col justify-center pt-[200px]">
-                    <div className="w-full max-w-[2000px] mx-auto px-8">
-                        <div className="w-[80%] max-w-[2000px] mx-auto">
-                            <div className="flex flex-col items-center text-center mb-12">
+                <div className="relative flex flex-col justify-center pt-[160px]">
+                    <div className="w-full max-w-[1800px] mx-auto px-5">
+                        <div className="w-[72%] max-w-[1800px] mx-auto">
+                            <div className="flex flex-col items-center text-center mb-8">
                                 <motion.div
-                                    className="flex-shrink-0 mb-6 relative group"
+                                    className="flex-shrink-0 mb-4 relative group"
                                     initial={{ scale: 0.5, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     transition={{ duration: 0.5 }}
@@ -364,7 +605,7 @@ export default function Admin() {
                                 >
                                     {user?.photoURL ? (
                                         <div className="relative">
-                                            <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300" />
+                                            <div className="absolute inset-0 bg-gold/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-300" />
                                             <motion.img
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
@@ -373,20 +614,20 @@ export default function Admin() {
                                                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                                                 src={user.photoURL}
                                                 alt={user.displayName ?? 'Admin'}
-                                                className="w-28 h-28 rounded-full object-cover ring-4 ring-white/20 shadow-xl relative z-10"
+                                                className="w-16 h-16 rounded-full object-cover ring-2 ring-white/20 shadow-xl relative z-10"
                                                 onError={(e) => {
                                                     const target = e.target as HTMLImageElement;
-                                                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName ?? 'Admin')}&background=D4AF37&color=fff&size=112`;
+                                                    target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName ?? 'Admin')}&background=D4AF37&color=fff&size=80`;
                                                 }}
                                             />
                                             <motion.div
-                                                className="absolute -bottom-2 -right-2 w-7 h-7 bg-green-500 rounded-full border-4 border-white z-20"
+                                                className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white z-20"
                                                 initial={{ scale: 0 }}
                                                 animate={{ scale: 1 }}
                                                 transition={{ delay: 0.5, type: "spring" }}
                                             />
                                             <motion.div
-                                                className="absolute -bottom-2 -left-2 bg-forest-400 text-white text-xs px-2 py-1 rounded-full shadow-lg z-20"
+                                                className="absolute -bottom-1 -left-1 bg-forest-400 text-white text-[8px] px-1 py-0.5 rounded-full shadow-lg z-20"
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.6 }}
@@ -396,14 +637,14 @@ export default function Admin() {
                                         </div>
                                     ) : (
                                         <div className="relative">
-                                            <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300" />
+                                            <div className="absolute inset-0 bg-gold/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-300" />
                                             <motion.div
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 initial={{ opacity: 0, scale: 0.5 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                                                className="w-28 h-28 rounded-full bg-gold text-white flex items-center justify-center text-4xl font-medium ring-4 ring-white/20 shadow-xl relative z-10"
+                                                className="w-16 h-16 rounded-full bg-gold text-white flex items-center justify-center text-2xl font-medium ring-2 ring-white/20 shadow-xl relative z-10"
                                             >
                                                 <motion.span
                                                     initial={{ opacity: 0, scale: 0.5 }}
@@ -414,13 +655,13 @@ export default function Admin() {
                                                 </motion.span>
                                             </motion.div>
                                             <motion.div
-                                                className="absolute -bottom-2 -right-2 w-7 h-7 bg-green-500 rounded-full border-4 border-white z-20"
+                                                className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white z-20"
                                                 initial={{ scale: 0 }}
                                                 animate={{ scale: 1 }}
                                                 transition={{ delay: 0.5, type: "spring" }}
                                             />
                                             <motion.div
-                                                className="absolute -bottom-2 -left-2 bg-forest-400 text-white text-xs px-2 py-1 rounded-full shadow-lg z-20"
+                                                className="absolute -bottom-1 -left-1 bg-forest-400 text-white text-[8px] px-1 py-0.5 rounded-full shadow-lg z-20"
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ delay: 0.6 }}
@@ -435,36 +676,36 @@ export default function Admin() {
                                         initial={{ y: -20, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
                                         transition={{ duration: 0.5, delay: 0.2 }}
-                                        className="bg-white/10 backdrop-blur-md rounded-2xl px-8 py-6 border border-white/20 shadow-xl"
+                                        className="bg-white/10 backdrop-blur-md rounded-lg px-6 py-4 border border-white/20 shadow-xl"
                                     >
-                                        <span className="font-serif text-2xl mb-3 block tracking-[0.05em] text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-300 to-gold-400 uppercase font-medium [text-shadow:_0_1px_2px_rgba(212,175,55,0.3)]">{getGreeting()}</span>
-                                        <h1 className="text-4xl md:text-6xl font-serif text-white mb-2 tracking-tight relative">
-                                            <span className="absolute -inset-2 bg-forest-300/20 blur-2xl rounded-full"></span>
-                                            <span className="relative bg-gradient-to-br from-forest-200 to-forest-300 text-transparent bg-clip-text [text-shadow:_0_1px_12px_rgb(127_167_123_/_30%)] font-medium">
+                                        <span className="font-serif text-lg mb-2 block tracking-[0.03em] text-transparent bg-clip-text bg-gradient-to-r from-gold-200 via-gold-300 to-gold-400 uppercase font-medium [text-shadow:_0_1px_1px_rgba(212,175,55,0.3)]">{getGreeting()}</span>
+                                        <h1 className="text-2xl md:text-3xl font-serif text-white mb-1.5 tracking-tight relative">
+                                            <span className="absolute -inset-1 bg-forest-300/20 blur-xl rounded-full"></span>
+                                            <span className="relative bg-gradient-to-br from-forest-200 to-forest-300 text-transparent bg-clip-text [text-shadow:_0_1px_8px_rgb(127_167_123_/_30%)] font-medium">
                                                 {user?.displayName ?? 'Admin'}
                                             </span>
                                         </h1>
                                         <motion.div
-                                            className="flex items-center justify-center gap-4 flex-wrap"
+                                            className="flex items-center justify-center gap-2 flex-wrap"
                                             initial={{ y: -20, opacity: 0 }}
                                             animate={{ y: 0, opacity: 1 }}
                                             transition={{ duration: 0.5, delay: 0.3 }}
                                         >
-                                            <div className="flex items-center text-white/60">
-                                                <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                                            <div className="flex items-center text-white/60 text-xs">
+                                                <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></span>
                                                 {getLastActiveTime()}
                                             </div>
-                                            <div className="text-white/60">•</div>
-                                            <div className="text-white/60 hover:text-white transition-colors">{user?.email}</div>
-                                            <div className="text-white/60">•</div>
-                                            <div className="text-white/60">Last login: {new Date(user?.metadata.lastSignInTime ?? '').toLocaleDateString()}</div>
+                                            <div className="text-white/60 text-xs">•</div>
+                                            <div className="text-white/60 hover:text-white transition-colors text-xs">{user?.email}</div>
+                                            <div className="text-white/60 text-xs">•</div>
+                                            <div className="text-white/60 text-xs">Last login: {new Date(user?.metadata.lastSignInTime ?? '').toLocaleDateString()}</div>
                                         </motion.div>
                                     </motion.div>
                                 </div>
                             </div>
 
                             <motion.p
-                                className="text-xl text-white/80 text-center mx-auto max-w-2xl mb-16 font-sans tracking-[-0.01em] leading-relaxed"
+                                className="text-sm text-white/80 text-center mx-auto max-w-xl mb-6 font-sans tracking-[-0.01em] leading-relaxed"
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ duration: 0.5, delay: 0.4 }}
@@ -475,14 +716,19 @@ export default function Admin() {
                             </motion.p>
 
                             {/* Quick stats */}
-                            <div className="w-[80%] max-w-[2000px] mx-auto">
-                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-10 mb-12">
+                            <motion.div
+                                className="w-[100%] max-w-[1800px] mx-auto"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.4 }}
+                            >
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
                                     {[
                                         {
                                             value: bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length,
                                             label: 'Active Bookings',
                                             icon: (
-                                                <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-5 h-5 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             ),
@@ -493,7 +739,7 @@ export default function Admin() {
                                             value: getRevenueStats().value,
                                             label: 'Monthly Revenue',
                                             icon: (
-                                                <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             ),
@@ -504,7 +750,7 @@ export default function Admin() {
                                             value: `${getCompletionRate()}%`,
                                             label: 'Completion Rate',
                                             icon: (
-                                                <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                                 </svg>
                                             ),
@@ -521,7 +767,7 @@ export default function Admin() {
                                             }).length,
                                             label: 'New Bookings',
                                             icon: (
-                                                <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             ),
@@ -532,7 +778,7 @@ export default function Admin() {
                                             value: ratings.average.toFixed(1),
                                             label: 'Customer Rating',
                                             icon: (
-                                                <svg className="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                                 </svg>
                                             ),
@@ -542,109 +788,217 @@ export default function Admin() {
                                     ].map((stat, index) => (
                                         <motion.div
                                             key={stat.label}
-                                            className="bg-white/95 backdrop-blur-lg rounded-2xl px-4 py-3 border border-white/40 hover:bg-white/90 transition-all duration-300 group relative overflow-hidden"
-                                            initial={{ opacity: 0, y: 20 }}
+                                            className="bg-white/20 backdrop-blur-md border border-white/20 rounded-md p-2 relative group hover:shadow-lg hover:bg-white/30 transition-all duration-200 cursor-pointer"
+                                            initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: index * 0.1 + 0.5 }}
-                                            whileHover={{
-                                                scale: 1.04,
-                                                transition: {
-                                                    duration: 0.2,
-                                                    ease: [0.23, 1, 0.32, 1]
-                                                }
+                                            transition={{
+                                                duration: 0.4,
+                                                delay: index * 0.05,
+                                                ease: [0.25, 0.1, 0.25, 1]
                                             }}
+                                            whileHover={{
+                                                scale: 1.01,
+                                                transition: { duration: 0.2 }
+                                            }}
+                                            onClick={() => handleStatClick(stat.label)}
                                         >
-                                            {/* Animated gradient background */}
-                                            <motion.div
-                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                                                initial={{ x: '-100%' }}
-                                                animate={{ x: '200%' }}
-                                                transition={{
-                                                    repeat: Infinity,
-                                                    duration: 2,
-                                                    ease: "linear",
-                                                    delay: index * 0.1
-                                                }}
-                                            />
-
-                                            {/* Content container with glass effect */}
-                                            <div className="relative z-10">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <motion.div
-                                                        className="p-2.5 rounded-xl bg-gray-50/80 transition-all duration-300"
-                                                        whileHover={{ scale: 1.1, rotate: 5 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                    >
-                                                        {stat.icon}
-                                                    </motion.div>
-                                                    <motion.div
-                                                        className={`text-xs font-medium ${stat.trendUp ? 'text-forest-400' : 'text-red-500'} flex items-center gap-1.5 bg-gray-50/50 px-3 py-1.5 rounded-full`}
-                                                        initial={{ scale: 0.8, opacity: 0 }}
-                                                        animate={{ scale: 1, opacity: 1 }}
-                                                        transition={{ delay: index * 0.1 + 0.3 }}
-                                                    >
+                                            <div className="flex items-start justify-between mb-1.5">
+                                                <motion.div
+                                                    className="p-1.5 bg-white/30 backdrop-blur-sm rounded-md"
+                                                    whileHover={{ scale: 1.05 }}
+                                                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        {stat.icon.props.children}
+                                                    </svg>
+                                                </motion.div>
+                                                <motion.div
+                                                    className="flex items-center text-[9px] font-medium ml-1"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    transition={{ duration: 0.3, delay: index * 0.05 + 0.1 }}
+                                                >
+                                                    <span className={`${stat.trendUp ? 'text-forest-300' : 'text-forest-400'} flex items-center gap-0.5`}>
                                                         <motion.div
                                                             animate={{
                                                                 y: [0, -2, 0],
-                                                                transition: {
-                                                                    repeat: Infinity,
-                                                                    duration: 2,
-                                                                    ease: "easeInOut"
-                                                                }
+                                                            }}
+                                                            transition={{
+                                                                repeat: Infinity,
+                                                                duration: 2.5,
+                                                                ease: "easeInOut",
+                                                                delay: index * 0.1
                                                             }}
                                                         >
                                                             {stat.trendUp ? (
-                                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                                                 </svg>
                                                             ) : (
-                                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
                                                                 </svg>
                                                             )}
                                                         </motion.div>
                                                         {stat.trend}
-                                                    </motion.div>
-                                                </div>
-                                                <motion.div
-                                                    className="text-xl font-bold text-gray-800 mb-1 transition-colors relative group-hover:text-gold"
-                                                    initial={{ scale: 0.9, opacity: 0 }}
-                                                    animate={{ scale: 1, opacity: 1 }}
-                                                    transition={{ delay: index * 0.1 + 0.2 }}
-                                                >
-                                                    {stat.value}
-                                                    <div className="absolute -inset-1 bg-gold/10 rounded-lg blur-lg group-hover:blur-xl transition-all duration-300 opacity-0 group-hover:opacity-100" />
-                                                </motion.div>
-                                                <motion.div
-                                                    className="text-sm text-gray-600 font-medium"
-                                                    initial={{ x: -10, opacity: 0 }}
-                                                    animate={{ x: 0, opacity: 1 }}
-                                                    transition={{ delay: index * 0.1 + 0.4 }}
-                                                >
-                                                    {stat.label}
+                                                    </span>
                                                 </motion.div>
                                             </div>
-
-                                            {/* Hover effect overlay */}
                                             <motion.div
-                                                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                                style={{
-                                                    background: 'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.1) 0%, transparent 100%)'
-                                                }}
-                                                initial={false}
-                                                whileHover={{ scale: 1.02 }}
-                                            />
+                                                className="text-base font-bold text-white mb-0.5"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ duration: 0.3, delay: index * 0.05 + 0.2 }}
+                                            >
+                                                {typeof stat.value === 'number' && stat.label.includes('Revenue')
+                                                    ? `$${stat.value.toLocaleString()}`
+                                                    : stat.value}
+                                            </motion.div>
+                                            <motion.div
+                                                className="text-[9px] text-white/70"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                transition={{ duration: 0.3, delay: index * 0.05 + 0.3 }}
+                                            >
+                                                {stat.label}
+                                            </motion.div>
                                         </motion.div>
                                     ))}
                                 </div>
-                            </div>
+                            </motion.div>
+
+                            {/* Recent Bookings */}
+                            <motion.div
+                                className="w-[100%] max-w-[1800px] mx-auto mb-8"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.4, delay: 0.2 }}
+                            >
+                                <motion.div
+                                    className="bg-white/20 backdrop-blur-md border border-white/20 rounded-xl p-4 cursor-pointer"
+                                    whileHover={{ boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)", scale: 1.01 }}
+                                    transition={{ duration: 0.2 }}
+                                    onClick={() => handleStatClick('Recent Bookings')}
+                                >
+                                    <motion.div
+                                        className="flex items-center justify-between mb-2"
+                                        initial={{ y: -10, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ duration: 0.3, delay: 0.6 }}
+                                    >
+                                        <div className="flex items-center gap-1.5">
+                                            <motion.div
+                                                className="p-1.5 bg-white/30 backdrop-blur-sm rounded-md"
+                                                whileHover={{ scale: 1.05 }}
+                                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                            >
+                                                <svg className="w-4 h-4 text-forest-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </motion.div>
+                                            <h3 className="text-sm font-semibold text-white">Recent Bookings</h3>
+                                        </div>
+                                        <span className="text-forest-300 text-xs">Last 24 hours</span>
+                                    </motion.div>
+                                    <div className="space-y-2">
+                                        {bookings
+                                            .filter(booking => booking.status === 'confirmed')
+                                            .slice(0, 3)
+                                            .map((booking, index) => (
+                                                <motion.div
+                                                    key={booking.bookingId}
+                                                    className="flex items-center justify-between p-2 bg-white/10 rounded-md hover:bg-white/15 transition-colors"
+                                                    initial={{ x: -20, opacity: 0 }}
+                                                    animate={{ x: 0, opacity: 1 }}
+                                                    transition={{
+                                                        duration: 0.3,
+                                                        delay: 0.7 + (index * 0.1),
+                                                        type: "spring",
+                                                        damping: 15
+                                                    }}
+                                                    whileHover={{
+                                                        scale: 1.02,
+                                                        transition: { duration: 0.2 }
+                                                    }}
+                                                    onClick={() => handleStatClick('Recent Bookings', booking.bookingReference)}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <motion.div
+                                                            className="w-6 h-6 bg-forest-400/20 rounded-full flex items-center justify-center"
+                                                            whileHover={{ scale: 1.1 }}
+                                                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                                        >
+                                                            <span className="text-forest-300 text-sm font-semibold">
+                                                                {booking.contactName?.charAt(0) ?? '?'}
+                                                            </span>
+                                                        </motion.div>
+                                                        <div>
+                                                            <div className="text-white text-xs font-medium">
+                                                                {booking.contactName ?? 'Anonymous'}
+                                                            </div>
+                                                            <div className="text-white/70 text-[10px]">
+                                                                {booking.contactPhone ?? 'No phone'}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="text-right">
+                                                            <div className="text-white text-xs font-medium flex items-center gap-1.5">
+                                                                <span>{booking.from?.city ?? 'Unknown'}</span>
+                                                                <motion.svg
+                                                                    className="w-3 h-3 text-forest-300"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    viewBox="0 0 24 24"
+                                                                    animate={{ x: [0, 4, 0] }}
+                                                                    transition={{
+                                                                        duration: 2,
+                                                                        repeat: Infinity,
+                                                                        ease: "easeInOut"
+                                                                    }}
+                                                                >
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                                                </motion.svg>
+                                                                <span>{booking.to?.city ?? 'Unknown'}</span>
+                                                            </div>
+                                                            <div className="text-white/70 text-[10px]">
+                                                                {formatDateShort(new Date(booking.departureDate))}
+                                                            </div>
+                                                        </div>
+                                                        <motion.div
+                                                            className="flex items-center gap-1.5 text-forest-300"
+                                                            whileHover={{ scale: 1.05 }}
+                                                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                                                        >
+                                                            <span className="text-[10px] font-medium">
+                                                                {booking.totalPassengers} passengers
+                                                            </span>
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </motion.div>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                    </div>
+                                </motion.div>
+                            </motion.div>
 
                             {/* Navigation Tabs */}
-                            <div className="w-[80%] max-w-[2000px] mx-auto mb-16">
-                                <div className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg shadow-black/5 motion-safe:animate-fade-in-up animation-delay-100">
+                            <motion.div
+                                className="w-[100%] max-w-[1800px] mx-auto mb-10"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.4, delay: 0.3 }}
+                            >
+                                <motion.div
+                                    className="bg-white/10 backdrop-blur-md rounded-lg border border-white/20"
+                                    whileHover={{ boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)" }}
+                                    transition={{ duration: 0.2 }}
+                                >
                                     <nav className="flex flex-col sm:flex-row" aria-label="Admin sections">
                                         <div className="flex overflow-x-auto sm:w-full scrollbar-hide">
-                                            <div className="flex-1 flex p-3 gap-3 justify-center">
+                                            <div className="flex-1 flex p-2 gap-2.5 justify-center">
                                                 {([
                                                     {
                                                         id: 'bookings',
@@ -685,66 +1039,62 @@ export default function Admin() {
                                                             </svg>
                                                         )
                                                     }
-                                                ] as AdminTabConfig[]).map((tab) => (
-                                                    <button
+                                                ] as AdminTabConfig[]).map((tab, index) => (
+                                                    <motion.button
                                                         key={tab.id}
                                                         onClick={() => setActiveTab(tab.id)}
-                                                        className={`group relative flex-1 sm:flex-initial min-w-[140px] px-6 py-4 text-sm font-medium rounded-xl flex items-center justify-center gap-3 transition-all duration-500
+                                                        className={`
+                                                            flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 
+                                                            rounded-lg font-medium text-sm transition-all duration-200
                                                             ${activeTab === tab.id
-                                                                ? 'bg-gradient-to-r from-forest-400 via-forest-400/90 to-forest-400 text-white shadow-lg shadow-forest-400/20 scale-[1.02] hover:shadow-xl hover:shadow-forest-400/25'
-                                                                : 'text-gray-500 hover:text-gray-700 hover:bg-black/5'
-                                                            }`}
-                                                        aria-current={activeTab === tab.id ? 'page' : undefined}
+                                                                ? 'bg-white/20 text-white shadow-sm backdrop-blur-sm'
+                                                                : 'text-white/70 hover:text-white hover:bg-white/10'
+                                                            }
+                                                        `}
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        transition={{
+                                                            duration: 0.3,
+                                                            delay: 0.4 + (index * 0.05),
+                                                            ease: [0.25, 0.1, 0.25, 1]
+                                                        }}
+                                                        whileHover={{ scale: 1.01 }}
+                                                        whileTap={{ scale: 0.98 }}
                                                     >
-                                                        {/* Background glow effect */}
-                                                        {activeTab === tab.id && (
-                                                            <div className="absolute inset-0 rounded-xl bg-forest-400/20 blur-xl transition-opacity duration-500" />
-                                                        )}
-
-                                                        {/* Icon with hover animation */}
-                                                        <span className={`relative transition-all duration-500 ${activeTab === tab.id ? 'scale-110' : 'group-hover:scale-110'}`}>
-                                                            {tab.icon}
-                                                        </span>
-
-                                                        {/* Label with underline effect */}
-                                                        <span className="relative">
-                                                            {tab.label}
-                                                            <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-current transform origin-left transition-transform duration-300 ${activeTab === tab.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
-                                                        </span>
-
-                                                        {/* Notification badge with pulse effect */}
+                                                        {tab.icon}
+                                                        {tab.label}
                                                         {tab.notifications && tab.notifications > 0 && (
-                                                            <span className="absolute -top-1 -right-1">
-                                                                <span className="relative flex h-5 w-5">
-                                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                                                    <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs font-bold items-center justify-center">
-                                                                        {tab.notifications}
-                                                                    </span>
-                                                                </span>
-                                                            </span>
+                                                            <motion.span
+                                                                className="bg-forest-400/80 backdrop-blur-sm text-white text-xs font-semibold px-2 py-0.5 rounded-full"
+                                                                initial={{ scale: 0 }}
+                                                                animate={{ scale: 1 }}
+                                                                transition={{
+                                                                    type: "spring",
+                                                                    stiffness: 300,
+                                                                    damping: 15,
+                                                                    delay: 0.5 + (index * 0.05)
+                                                                }}
+                                                            >
+                                                                {tab.notifications}
+                                                            </motion.span>
                                                         )}
-
-                                                        {/* Highlight indicator */}
-                                                        {tab.highlight && (
-                                                            <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                                                        )}
-                                                    </button>
+                                                    </motion.button>
                                                 ))}
                                             </div>
                                         </div>
                                     </nav>
-                                </div>
-                            </div>
+                                </motion.div>
+                            </motion.div>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="bg-gray-50/80 backdrop-blur-xl -mt-8 pt-12 relative">
-                <div className="max-w-[95%] mx-auto px-6 pb-12 relative">
+            <div className="bg-gray-50/80 backdrop-blur-xl -mt-6 pt-8 relative">
+                <div className="max-w-[85%] mx-auto px-4 pb-8 relative">
                     {error && (
-                        <div className="bg-red-50/95 backdrop-blur-xl border border-red-200 text-red-600 rounded-xl p-4 mb-6 shadow-lg animate-fade-in">
+                        <div className="bg-red-50/95 backdrop-blur-xl border border-red-200 text-red-600 rounded-lg p-3 mb-5 shadow-lg animate-fade-in text-sm">
                             {error}
                         </div>
                     )}

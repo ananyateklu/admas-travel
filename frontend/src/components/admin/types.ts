@@ -38,7 +38,7 @@ export interface BookingData {
 }
 
 export const ADMIN_EMAILS = ['ananya.meseret@gmail.com'];
-export const BOOKING_STATUSES = ['pending', 'confirmed', 'cancelled', 'completed'] as const;
+export const BOOKING_STATUSES = ['pending', 'confirmed', 'completed', 'cancelled'] as const;
 export type BookingStatus = typeof BOOKING_STATUSES[number];
 
 export interface StatusOption {
@@ -56,4 +56,23 @@ export interface StatusOption {
     };
 }
 
-export type TabType = 'details' | 'passengers' | 'contact'; 
+export type TabType = 'details' | 'passengers' | 'contact';
+
+export interface AdvancedFilters {
+    dateRange?: {
+        start: string;
+        end: string;
+    };
+    class?: string;
+    tripType?: string;
+    nationality?: string;
+    passengerCount?: {
+        min: number;
+        max: number;
+    };
+    status?: string[];
+    filterName?: string;
+    dateRangeLabel?: string;
+    hasRating?: boolean;
+    searchValue?: string;
+} 

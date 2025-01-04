@@ -80,14 +80,15 @@ export function BookingStatusProgress({
                                                 : 'bg-gradient-to-r from-gray-200/50 to-gray-200'}`}
                                         />
                                         {/* Animated progress line */}
-                                        <div className={`absolute inset-0 rounded-full transform origin-left transition-transform duration-500 ease-in-out
-                                            ${currentStatus === 'cancelled'
-                                                ? STATUS_OPTIONS.findIndex(opt => opt.value === option.value) <= STATUS_OPTIONS.findIndex(opt => opt.value === previousStatus)
-                                                    ? 'bg-gradient-to-r from-rose-300/50 to-rose-300 scale-x-100'
-                                                    : 'scale-x-0'
-                                                : isPassed
-                                                    ? 'bg-gradient-to-r from-gray-300/50 to-gray-300 scale-x-100'
-                                                    : 'scale-x-0'}`}
+                                        <div className={`absolute inset-0 rounded-full transform origin-left transition-transform duration-500 ease-in-out ${(() => {
+                                            if (currentStatus === 'cancelled') {
+                                                const optionIndex = STATUS_OPTIONS.findIndex(opt => opt.value === option.value);
+                                                const prevStatusIndex = STATUS_OPTIONS.findIndex(opt => opt.value === previousStatus);
+                                                return optionIndex <= prevStatusIndex ? 'bg-gradient-to-r from-rose-300/50 to-rose-300 scale-x-100' : 'scale-x-0';
+                                            }
+                                            return isPassed ? 'bg-gradient-to-r from-gray-300/50 to-gray-300 scale-x-100' : 'scale-x-0';
+                                        })()
+                                            }`}
                                         />
                                     </div>
                                 </div>
@@ -130,19 +131,18 @@ export function BookingStatusProgress({
 
                             {/* Status Label */}
                             <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 whitespace-nowrap pointer-events-none">
-                                <span className={`text-[10px] font-medium tracking-tight transition-colors duration-300 ease-in-out
-                                    ${currentStatus === 'cancelled'
-                                        ? option.value === 'cancelled'
-                                            ? 'text-rose-500'
-                                            : STATUS_OPTIONS.findIndex(opt => opt.value === option.value) <= STATUS_OPTIONS.findIndex(opt => opt.value === previousStatus)
-                                                ? 'text-rose-300'
-                                                : 'text-gray-300'
-                                        : isActive
-                                            ? `${STATUS_OPTIONS.find(opt => opt.value === currentStatus)?.colors.label ?? 'text-gray-500'}`
-                                            : isPassed
-                                                ? `${STATUS_OPTIONS.find(opt => opt.value === currentStatus)?.colors.label ?? 'text-gray-500'} opacity-75`
-                                                : 'text-gray-500'}`}
-                                >
+                                <span className={`text-[10px] font-medium tracking-tight transition-colors duration-300 ease-in-out ${(() => {
+                                    if (currentStatus === 'cancelled') {
+                                        if (option.value === 'cancelled') return 'text-rose-500';
+                                        const optionIndex = STATUS_OPTIONS.findIndex(opt => opt.value === option.value);
+                                        const prevStatusIndex = STATUS_OPTIONS.findIndex(opt => opt.value === previousStatus);
+                                        return optionIndex <= prevStatusIndex ? 'text-rose-300' : 'text-gray-300';
+                                    }
+                                    const currentColorLabel = STATUS_OPTIONS.find(opt => opt.value === currentStatus)?.colors.label ?? 'text-gray-500';
+                                    if (isActive) return currentColorLabel;
+                                    return isPassed ? `${currentColorLabel} opacity-75` : 'text-gray-500';
+                                })()
+                                    }`}>
                                     {option.label}
                                 </span>
                             </div>
