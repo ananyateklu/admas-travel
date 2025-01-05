@@ -2,7 +2,7 @@
 
 ## Overview
 
-Admas Travel is a modern travel booking platform built with React and TypeScript. The application provides a seamless experience for users to discover destinations, book flights, and manage their travel plans, while also offering a comprehensive admin dashboard for business operations.
+Admas Travel is a modern travel booking platform built with React and TypeScript. The application provides a seamless experience for users to discover destinations, book flights and hotels, and manage their travel plans, while also offering a comprehensive admin dashboard for business operations.
 
 ## Features
 
@@ -10,6 +10,14 @@ Admas Travel is a modern travel booking platform built with React and TypeScript
 
 - **Destination Discovery**: Browse through curated destinations with rich visuals and detailed information
 - **Flight Booking**: Easy-to-use flight search and booking system
+- **Hotel Booking**:
+  - Advanced hotel search with filters
+  - Real-time room availability
+  - Detailed hotel information and photos
+  - Room selection with amenities
+  - Guest information management
+  - Special requests handling
+  - Flexible booking options
 - **Travel Planning**: Personalized travel recommendations and itinerary planning
 - **User Accounts**: Secure user authentication and profile management
 - **AI Chat Assistant**: Integrated Convai-powered chat support for instant help
@@ -24,12 +32,19 @@ Admas Travel is a modern travel booking platform built with React and TypeScript
 - **Dashboard**: Comprehensive overview of business metrics
 - **Booking Management**: Track and manage all bookings with status tracking
 - **Flight Management**: Monitor and update flight information
+- **Hotel Management**:
+  - Property listing management
+  - Room inventory control
+  - Pricing and availability updates
+  - Booking status monitoring
 - **Analytics Dashboard**:  
   - Booking trends analysis
   - Revenue tracking
   - Popular destinations insights
   - Customer satisfaction metrics
   - Performance analytics
+  - Hotel occupancy rates
+  - Average booking value
 
 ## Tech Stack
 
@@ -55,12 +70,15 @@ Admas Travel is a modern travel booking platform built with React and TypeScript
   - Responsive grid system
   - Modern card layouts
   - Interactive forms
+  - Hotel search and filtering components
+  - Booking management components
 
 - **Integration & APIs**:
   - Convai Chat Integration
   - Firebase Authentication
   - Firestore Real-time Database
   - Custom REST APIs
+  - Hotel Booking API Integration
 
 ## Getting Started
 
@@ -114,45 +132,222 @@ yarn dev
 ```
 frontend/
 ├── src/
-│   ├── components/        # Reusable UI components
-│   │   ├── admin/        # Admin dashboard components
-│   │   ├── booking/      # Booking flow components
-│   │   ├── chat/         # Chat interface components
-│   │   ├── common/       # Shared components
-│   │   ├── home/         # Homepage components
-│   │   └── navigation/   # Navigation components
-│   ├── pages/            # Page components
-│   ├── lib/              # Utilities and services
-│   │   ├── animations/   # Animation variants
-│   │   ├── firebase/     # Firebase configuration
-│   │   └── api/         # API services
-│   ├── hooks/            # Custom React hooks
-│   ├── styles/           # Global styles and animations
-│   ├── types/            # TypeScript type definitions
-│   └── data/             # Static data and constants
+│   ├── components/           # Reusable UI components
+│   │   ├── admin/           # Admin dashboard components
+│   │   ├── chat/            # Chat interface components
+│   │   ├── common/          # Common shared components
+│   │   ├── flight-booking/  # Flight booking components
+│   │   ├── home/            # Homepage components
+│   │   ├── hotel-booking/   # Hotel booking components
+│   │   ├── layout/          # Layout components
+│   │   ├── navigation/      # Navigation components
+│   │   ├── notifications/   # Notification components
+│   │   ├── shared/          # Shared utility components
+│   │   └── travel/          # Travel-related components
+│   │   └── AirportSearchInput.tsx  # Airport search component
+│   │   └── Footer.tsx             # Global footer component
+│   │   └── Layout.tsx             # Main layout wrapper
+│   │   └── ScrollToTop.tsx        # Scroll restoration
+│   │   └── SignInDropdown.tsx     # Authentication dropdown
+│   ├── pages/               # Page components
+│   │   ├── hotels/          # Hotel booking pages
+│   │   ├── bookings/        # Booking management pages
+│   │   ├── AboutUs.tsx      # About page
+│   │   ├── Account.tsx      # User account page
+│   │   ├── Admin.tsx        # Admin dashboard
+│   │   ├── ComfortCamp.tsx  # Comfort camp page
+│   │   ├── Contact.tsx      # Contact page
+│   │   ├── FlightBook.tsx   # Flight booking page
+│   │   ├── FlightBookingConfirmation.tsx  # Booking confirmation
+│   │   ├── FlightBookingsList.tsx         # Bookings list
+│   │   ├── GetStarted.tsx   # Onboarding page
+│   │   ├── Home.tsx         # Homepage
+│   │   └── Trips.tsx        # User trips page
+│   ├── lib/                 # Core libraries and utilities
+│   │   ├── animations/      # Animation configurations
+│   │   │   └── variants.ts  # Framer Motion variants
+│   │   ├── api/            # API integrations
+│   │   │   └── hotelService.ts  # Hotel API service
+│   │   ├── firebase/       # Firebase configurations
+│   │   │   ├── useAuth.ts      # Authentication hook
+│   │   │   ├── firebase.ts     # Firebase config
+│   │   │   ├── AuthContext.tsx # Auth context provider
+│   │   │   ├── index.ts        # Firebase exports
+│   │   │   └── *.d.ts          # Firebase type definitions
+│   │   └── utils/          # Utility functions
+│   │       └── helpers.ts  # Common helper functions
+│   ├── hooks/               # Custom React hooks
+│   │   ├── useAnalytics.ts          # Analytics hook
+│   │   ├── useAdminSettings.ts      # Admin settings hook
+│   │   ├── useScrollAnimation.ts    # Scroll animation hook
+│   │   ├── useAirportSearch.ts      # Airport search hook
+│   │   └── useTravelPreferences.ts  # Travel preferences hook
+│   ├── types/               # TypeScript type definitions
+│   │   ├── hotelTypes.ts           # Hotel-related types
+│   │   ├── flightbooking.ts        # Flight booking types
+│   │   ├── flight.ts               # Flight data types
+│   │   └── *.json                  # Type definition data
+│   ├── services/           # Service layer
+│   │   └── flightService.ts # Flight-related services
+│   ├── styles/             # Global styles
+│   │   ├── globals.css    # Global CSS styles
+│   │   └── animations.css # Animation keyframes and styles
+│   ├── utils/              # Utility functions
+│   │   └── Helper functions and utilities
+│   ├── assets/             # Static assets
+│   │   └── Images, icons, and other media
+│   ├── data/               # Static data and constants
+│   │   └── Configuration and static content
+│   ├── App.tsx             # Root component
+│   ├── main.tsx           # Entry point
+│   ├── types.ts           # Global type definitions
+│   ├── index.css          # Global CSS
+│   ├── App.css            # App-specific CSS
+│   └── vite-env.d.ts      # Vite environment types
 ```
 
-## Available Scripts
+### Framer Motion Variants
+
+Located in `lib/animations/variants.ts`:
+
+- Page transition variants
+- Component animation presets
+- Hover and tap animations
+- List item animations
+- Modal animations
+
+### CSS Animations
+
+Located in `styles/animations.css`:
+
+- Keyframe animations
+- Transition effects
+- Loading animations
+- Hover effects
+
+### Global Styles
+
+Located in `styles/globals.css`:
+
+- Base styles
+- Utility classes
+- Theme variables
+- Responsive design rules
+
+## Utility Functions
+
+### Helper Functions
+
+Located in `lib/utils/helpers.ts`:
+
+- Data formatting
+- Validation functions
+- Date manipulation
+- Currency formatting
+- String utilities
+
+### Component Utils
+
+Located in `components/shared`:
+
+- Common UI utilities
+- Layout helpers
+- Form validation
+- Event handlers
+
+## Development Tools
+
+### Scripts
 
 - `npm run dev`: Start development server
 - `npm run build`: Build for production
 - `npm run preview`: Preview production build
 - `npm run lint`: Run ESLint
 - `npm run test`: Run tests
+- `npm run typecheck`: TypeScript type checking
 
-## Animation System
+### Environment Setup
 
-The application uses different animation systems combining:
+- Development mode configurations
+- Production optimizations
+- Testing environment setup
+- CI/CD pipeline configurations
 
-- Framer Motion for page transitions and complex UI animations
-- CSS animations for subtle interactions
-- Custom animation variants for consistent motion design
-- Optimized performance with hardware acceleration
+## Core Libraries
 
-## Performance Optimization
+### Firebase Integration
 
-- Lazy loading of components and images
-- Code splitting for optimal bundle size
-- Optimized animations with hardware acceleration
-- Efficient state management
-- Caching strategies for API calls
+The application uses Firebase for various features:
+
+- **firebase.ts**: Core Firebase configuration
+- **AuthContext.tsx**: Authentication context provider
+- **useAuth.ts**: Custom authentication hook
+- **Type Definitions**: Comprehensive TypeScript definitions
+
+### API Services
+
+- **hotelService.ts**: Hotel booking and management
+- **flightService.ts**: Flight booking and management
+
+These services handle:
+
+- Data fetching
+- Real-time updates
+- Error handling
+- Data transformation
+- Cache management
+
+## Custom Hooks
+
+The application uses several custom hooks to manage various functionalities:
+
+- **useAnalytics**: Track user interactions and application metrics
+- **useAdminSettings**: Manage admin panel configurations
+- **useScrollAnimation**: Handle scroll-based animations
+- **useAirportSearch**: Manage airport search functionality
+- **useTravelPreferences**: Handle user travel preferences
+
+## Type System
+
+The application uses TypeScript with comprehensive type definitions:
+
+- **hotelTypes.ts**: Definitions for hotel bookings and properties
+- **flightbooking.ts**: Flight booking related types
+- **flight.ts**: Flight data and scheduling types
+- **types.ts**: Global type definitions
+
+## Services
+
+The application's service layer handles business logic and API interactions:
+
+- **flightService.ts**: Manages flight-related operations
+  - Flight search
+  - Booking management
+  - Price calculations
+  - Schedule updates
+
+## State Management
+
+The application uses a combination of state management solutions:
+
+- React Context API for global state
+- Local component state for UI interactions
+- Custom hooks for shared logic
+- Firebase Realtime Database for persistent data
+
+## Security
+
+- Firebase Authentication for user management
+- Role-based access control
+- Secure API endpoints
+- Environment variable management
+- Data validation and sanitization
+
+## Deployment
+
+The application can be deployed using:
+
+- Vercel for frontend hosting
+- Firebase Hosting as an alternative
+- Continuous Integration/Deployment pipeline
+- Environment-specific configurations
