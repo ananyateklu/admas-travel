@@ -1,7 +1,7 @@
 // Re-export components from subdirectories
-export * from './bookings';
+export * from './flight-booking-list/FlightListBookingIndex';
 export * from './flights';
-export * from './analytics';
+export * from './analytics/AdminIndex';
 
 // Export utilities and types
 export * from './types';

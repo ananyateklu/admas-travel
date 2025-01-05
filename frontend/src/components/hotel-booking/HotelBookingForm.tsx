@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { HotelDetails } from '../../types/hotelTypes';
-import { GuestInformation } from './GuestInformation';
-import { SpecialRequests } from '../booking/SpecialRequests';
-import { HotelContactInformation } from './HotelContactInformation';
+import { GuestInformation } from './HotelBookingGuestInformation';
+import { SpecialRequests } from '../flight-booking/FlightSpecialRequests';
+import { HotelContactInformation } from './HotelBookingContactInformation';
 import { HotelBookingReview } from './HotelBookingReview';
 
 interface HotelBookingFormProps {

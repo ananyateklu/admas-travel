@@ -1,11 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookingData, BookingStatus } from '../types';
-import { BookingStatusProgress } from './BookingStatusProgress';
-import { BookingDateBadge } from './BookingDateBadge';
-import { BookingHeader } from './BookingHeader';
-import { JourneyDetails } from './JourneyDetails';
-import { PassengerAvatars } from './PassengerAvatars';
-import { BookingExpandedView } from './BookingExpandedView';
+import { BookingStatusProgress } from './FlightListBookingStatusProgress';
+import { BookingDateBadge } from './FlightListBookingDateBadge';
+import { BookingHeader } from './FlightListBookingHeader';
+import { JourneyDetails } from './FlightListJourneyDetails';
+import { PassengerAvatars } from './FlightListPassengerAvatars';
+import { BookingExpandedView } from './FlightListBookingExpandedView';
 
 const cardVariants = {
     hidden: {

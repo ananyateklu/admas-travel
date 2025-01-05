@@ -2,9 +2,9 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollAnimation } from '../../../hooks/useScrollAnimation';
-import { NavigationIndicator } from './NavigationArrows';
-import { ContentPanels } from './ContentPanels';
-import { Wonder, wonders } from './types';
+import { NavigationIndicator } from './HomeNavigationArrows';
+import { ContentPanels } from './HomeContentPanels';
+import { Wonder, wonders } from './home-types';
 
 export function HeroSection() {
     const navigate = useNavigate();

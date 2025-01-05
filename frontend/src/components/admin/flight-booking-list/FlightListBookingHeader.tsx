@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { StatusBadge } from './StatusBadge';
-import { BookingMetaBadge } from './BookingMetaBadge';
+import { StatusBadge } from './FlightListStatusBadge';
+import { BookingMetaBadge } from './FlightListBookingMetaBadge';
 
 interface BookingHeaderProps {
     contactName: string;

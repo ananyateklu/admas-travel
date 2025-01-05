@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Wonder } from './types';
+import { Wonder } from './home-types';
 
 interface LocationIndicatorsProps {
     wonders: Wonder[];

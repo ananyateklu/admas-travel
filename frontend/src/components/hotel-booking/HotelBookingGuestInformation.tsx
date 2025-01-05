@@ -1,6 +1,6 @@
 import { HotelDetails } from '../../types/hotelTypes';
 import { HotelBookingFormData, GuestInfo } from './HotelBookingForm';
-import { RoomSelection } from './RoomSelection';
+import { RoomSelection } from './HotelBookingRoomSelection';
 
 interface GuestInformationProps {
     hotel: HotelDetails;

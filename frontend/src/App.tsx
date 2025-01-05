@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
-import { Book } from './pages/Book';
+import { Book } from './pages/FlightBook';
 import Admin from './pages/Admin';
-import { Bookings } from './pages/Bookings';
-import BookingConfirmation from './pages/BookingConfirmation';
+import { Bookings } from './pages/FlightBookingsList';
+import BookingConfirmation from './pages/FlightBookingConfirmation';
 import AboutUs from './pages/AboutUs';
 import Contact from './pages/Contact';
 import GetStarted from './pages/GetStarted';

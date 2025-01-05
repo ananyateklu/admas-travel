@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookingQuickActions } from './BookingQuickActions';
-import { BookingTabs, TabType } from './BookingTabs';
-import { BookingDetails } from './BookingDetails';
-import { PassengerDetails } from './PassengerDetails';
-import { ContactDetails } from './ContactDetails';
+import { BookingQuickActions } from './FlightListBookingQuickActions';
+import { BookingTabs, TabType } from './FlightListBookingTabs';
+import { BookingDetails } from './FlightListBookingDetails';
+import { PassengerDetails } from './FlightListPassengerDetails';
+import { ContactDetails } from './FlightListContactDetails';
 import { BookingData } from '../types';
 
 interface BookingExpandedViewProps {

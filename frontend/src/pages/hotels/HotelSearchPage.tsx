@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { HotelSearch } from '../../components/hotels/HotelSearch';
-import { HotelSearchResults } from '../../components/hotels/HotelSearchResults';
+import { HotelSearch } from '../../components/hotel-booking/HotelBookingSearch';
+import { HotelSearchResults } from '../../components/hotel-booking/HotelBookingSearchResults';
 import { HotelSearchResult, HotelSearchResponse } from '../../types/hotelTypes';
 
 export default function HotelSearchPage() {

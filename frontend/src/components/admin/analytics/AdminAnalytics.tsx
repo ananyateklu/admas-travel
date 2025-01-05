@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react';
 import { BookingData } from '../types';
-import { BookingTrendsChart } from './BookingTrendsChart';
-import { StatCard } from './StatCard';
-import { PopularDestinations } from './PopularDestinations';
-import { BookingStatusOverview } from './BookingStatusOverview';
+import { BookingTrendsChart } from './AdminBookingTrendsChart';
+import { StatCard } from './AdminStatCard';
+import { PopularDestinations } from './AdminPopularDestinations';
+import { BookingStatusOverview } from './AdminBookingStatusOverview';
 import { RevenueIcon, TrendUpIcon, TrendDownIcon, CalendarIcon } from '../icons/StatIcons';
 import { useAnalytics } from '../../../hooks/useAnalytics';
 import { ErrorBoundary } from '../../../components/common/ErrorBoundary';

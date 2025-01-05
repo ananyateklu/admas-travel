@@ -1,0 +1,1000 @@
+{
+    "ufi": -603097,
+    "hotel_id": 8096963,
+    "hotel_name": "Skylight In-Terminal Hotel",
+    "url": "https://www.booking.com/hotel/et/ethiopian-skylight-in-terminal.html",
+    "hotel_name_trans": "",
+    "review_nr": 610,
+    "arrival_date": "2025-01-05",
+    "departure_date": "2025-01-06",
+    "price_transparency_mode": "none",
+    "accommodation_type_name": "Hotels",
+    "latitude": 8.989654,
+    "longitude": 38.79301,
+    "address": "Bole",
+    "address_trans": "",
+    "city": "Addis Ababa",
+    "city_trans": "Addis Ababa",
+    "city_in_trans": "in Addis Ababa",
+    "city_name_en": "Addis Ababa",
+    "district": null,
+    "countrycode": "et",
+    "distance_to_cc": 4.08510392843884,
+    "default_language": "en-gb",
+    "country_trans": "Ethiopia",
+    "currency_code": "USD",
+    "zip": "1755",
+    "timezone": "Africa/Addis_Ababa",
+    "rare_find_state": "NOT_RARE",
+    "soldout": 0,
+    "available_rooms": 3,
+    "max_rooms_in_reservation": 10,
+    "average_room_size_for_ufi_m2": "34.01",
+    "is_family_friendly": 0,
+    "is_closed": 0,
+    "is_crimea": 0,
+    "is_hotel_ctrip": 0,
+    "is_price_transparent": 0,
+    "is_genius_deal": 0,
+    "is_cash_accepted_check_enabled": 1,
+    "qualifies_for_no_cc_reservation": 0,
+    "hotel_include_breakfast": 1,
+    "cc1": "et",
+    "family_facilities": [
+        "Family rooms",
+        "Soundproof rooms"
+    ],
+    "product_price_breakdown": {
+        "gross_amount": {
+            "value": 180,
+            "amount_unrounded": "$180",
+            "amount_rounded": "$180",
+            "currency": "USD"
+        },
+        "gross_amount_per_night": {
+            "currency": "USD",
+            "amount_rounded": "$180",
+            "value": 180,
+            "amount_unrounded": "$180"
+        },
+        "gross_amount_hotel_currency": {
+            "amount_unrounded": "$180",
+            "value": 180,
+            "amount_rounded": "$180",
+            "currency": "USD"
+        },
+        "has_long_stays_weekly_rate_price": 0,
+        "included_taxes_and_charges_amount": {
+            "amount_rounded": "$36",
+            "amount_unrounded": "$36",
+            "value": 36,
+            "currency": "USD"
+        },
+        "nr_stays": 3,
+        "client_translations": {
+            "tooltip_footnote_text": [
+                ""
+            ],
+            "tooltip_taxes_and_charges": "",
+            "per_night_amount_prefix": "",
+            "amount_per_night_suffix": "",
+            "total_text": "",
+            "tooltip_total_text": "Total"
+        },
+        "charges_details": {
+            "amount": {
+                "currency": "USD",
+                "value": 0
+            },
+            "mode": "all_included",
+            "translated_copy": ""
+        },
+        "all_inclusive_amount": {
+            "amount_rounded": "$180",
+            "amount_unrounded": "$180",
+            "value": 180,
+            "currency": "USD"
+        },
+        "net_amount": {
+            "amount_rounded": "$144",
+            "value": 144,
+            "amount_unrounded": "$144",
+            "currency": "USD"
+        },
+        "excluded_amount": {
+            "amount_rounded": "$0",
+            "amount_unrounded": "$0",
+            "value": 0,
+            "currency": "USD"
+        },
+        "items": [
+            {
+                "inclusion_type": "included",
+                "item_amount": {
+                    "amount_rounded": "$14",
+                    "value": 14.4,
+                    "amount_unrounded": "$14.40",
+                    "currency": "USD"
+                },
+                "kind": "charge",
+                "details": "10 % City tax",
+                "base": {
+                    "kind": "percentage",
+                    "percentage": 10
+                },
+                "name": "City tax"
+            },
+            {
+                "inclusion_type": "included",
+                "kind": "charge",
+                "item_amount": {
+                    "amount_rounded": "$22",
+                    "amount_unrounded": "$21.60",
+                    "value": 21.6,
+                    "currency": "USD"
+                },
+                "details": "15 % VAT",
+                "base": {
+                    "percentage": 15,
+                    "kind": "percentage"
+                },
+                "name": "VAT"
+            }
+        ],
+        "has_long_stays_monthly_rate_price": 0,
+        "price_display_config": [
+            {
+                "value": 0,
+                "key": "use_nightly_prices"
+            }
+        ],
+        "benefits": [],
+        "all_inclusive_amount_hotel_currency": {
+            "amount_unrounded": "$180",
+            "value": 180,
+            "amount_rounded": "$180",
+            "currency": "USD"
+        }
+    },
+    "composite_price_breakdown": {
+        "all_inclusive_amount_hotel_currency": {
+            "currency": "USD",
+            "value": 180,
+            "amount_unrounded": "$180",
+            "amount_rounded": "$180"
+        },
+        "benefits": [],
+        "price_display_config": [
+            {
+                "key": "use_nightly_prices",
+                "value": 0
+            }
+        ],
+        "has_long_stays_monthly_rate_price": 0,
+        "has_long_stays_weekly_rate_price": 0,
+        "gross_amount_hotel_currency": {
+            "amount_unrounded": "$180",
+            "value": 180,
+            "amount_rounded": "$180",
+            "currency": "USD"
+        },
+        "gross_amount": {
+            "amount_rounded": "$180",
+            "value": 180,
+            "amount_unrounded": "$180",
+            "currency": "USD"
+        },
+        "gross_amount_per_night": {
+            "value": 180,
+            "amount_unrounded": "$180",
+            "amount_rounded": "$180",
+            "currency": "USD"
+        },
+        "items": [
+            {
+                "base": {
+                    "percentage": 10,
+                    "kind": "percentage"
+                },
+                "name": "City tax",
+                "inclusion_type": "included",
+                "item_amount": {
+                    "amount_rounded": "$14",
+                    "amount_unrounded": "$14.40",
+                    "value": 14.4,
+                    "currency": "USD"
+                },
+                "kind": "charge",
+                "details": "10 % City tax"
+            },
+            {
+                "item_amount": {
+                    "amount_rounded": "$22",
+                    "value": 21.6,
+                    "amount_unrounded": "$21.60",
+                    "currency": "USD"
+                },
+                "kind": "charge",
+                "details": "15 % VAT",
+                "inclusion_type": "included",
+                "name": "VAT",
+                "base": {
+                    "kind": "percentage",
+                    "percentage": 15
+                }
+            }
+        ],
+        "excluded_amount": {
+            "amount_rounded": "$0",
+            "value": 0,
+            "amount_unrounded": "$0",
+            "currency": "USD"
+        },
+        "net_amount": {
+            "currency": "USD",
+            "amount_rounded": "$144",
+            "value": 144,
+            "amount_unrounded": "$144"
+        },
+        "all_inclusive_amount": {
+            "currency": "USD",
+            "amount_rounded": "$180",
+            "amount_unrounded": "$180",
+            "value": 180
+        },
+        "charges_details": {
+            "amount": {
+                "value": 0,
+                "currency": "USD"
+            },
+            "mode": "all_included",
+            "translated_copy": ""
+        },
+        "client_translations": {
+            "amount_per_night_suffix": "",
+            "tooltip_footnote_text": [
+                ""
+            ],
+            "tooltip_taxes_and_charges": "",
+            "per_night_amount_prefix": "",
+            "tooltip_total_text": "Total",
+            "total_text": ""
+        },
+        "included_taxes_and_charges_amount": {
+            "currency": "USD",
+            "amount_rounded": "$36",
+            "value": 36,
+            "amount_unrounded": "$36"
+        }
+    },
+    "property_highlight_strip": [
+        {
+            "icon_list": [
+                {
+                    "icon": "iconset/pawprint",
+                    "size": 1
+                }
+            ],
+            "name": "Pet friendly"
+        },
+        {
+            "icon_list": [
+                {
+                    "size": 1,
+                    "icon": "iconset/food"
+                }
+            ],
+            "name": "Restaurant"
+        },
+        {
+            "name": "Air conditioning",
+            "icon_list": [
+                {
+                    "icon": "iconset/snowflake",
+                    "size": 1
+                }
+            ]
+        },
+        {
+            "name": "Private Bathroom",
+            "icon_list": [
+                {
+                    "icon": "iconset/shower",
+                    "size": 1
+                }
+            ]
+        },
+        {
+            "name": "Free Wifi",
+            "icon_list": [
+                {
+                    "icon": "iconset/wifi",
+                    "size": 1
+                }
+            ]
+        },
+        {
+            "name": "Bathtub",
+            "icon_list": [
+                {
+                    "icon": "iconset/bath",
+                    "size": 1
+                }
+            ]
+        },
+        {
+            "name": "Family rooms",
+            "icon_list": [
+                {
+                    "size": 1,
+                    "icon": "iconset/family"
+                }
+            ]
+        },
+        {
+            "name": "Room service",
+            "icon_list": [
+                {
+                    "size": 1,
+                    "icon": "iconset/gourmet"
+                }
+            ]
+        },
+        {
+            "name": "Non-smoking rooms",
+            "icon_list": [
+                {
+                    "icon": "iconset/nosmoking",
+                    "size": 1
+                }
+            ]
+        },
+        {
+            "name": "Facilities for disabled guests",
+            "icon_list": [
+                {
+                    "icon": "iconset/disabled",
+                    "size": 1
+                }
+            ]
+        }
+    ],
+    "facilities_block": {
+        "type": "popular",
+        "facilities": [
+            {
+                "icon": "nosmoking",
+                "name": "Non-smoking rooms"
+            },
+            {
+                "name": "Room service",
+                "icon": "clean"
+            },
+            {
+                "name": "Facilities for disabled guests",
+                "icon": "disabled"
+            },
+            {
+                "icon": "wifi",
+                "name": "Wifi in all areas"
+            },
+            {
+                "name": "Restaurant",
+                "icon": "food_and_drink"
+            },
+            {
+                "icon": "family",
+                "name": "Family rooms"
+            },
+            {
+                "name": "Free Wifi",
+                "icon": "wifi"
+            },
+            {
+                "icon": "pawprint",
+                "name": "Pet friendly"
+            }
+        ],
+        "name": "Most Popular Facilities"
+    },
+    "top_ufi_benefits": [
+        {
+            "translated_name": "Wifi",
+            "icon": "wifi"
+        },
+        {
+            "icon": "food_and_drink",
+            "translated_name": "Restaurant"
+        },
+        {
+            "translated_name": "Family rooms",
+            "icon": "family"
+        },
+        {
+            "translated_name": "Non-smoking rooms",
+            "icon": "nosmoking"
+        },
+        {
+            "translated_name": "Room service",
+            "icon": "clean"
+        },
+        {
+            "icon": "frontdesk",
+            "translated_name": "24-hour front desk"
+        }
+    ],
+    "languages_spoken": {
+        "languagecode": [
+            "en-gb"
+        ]
+    },
+    "spoken_languages": [
+        "en-gb"
+    ],
+    "breakfast_review_score": {
+        "review_score": 5.6,
+        "rating": 5.6,
+        "review_count": 28,
+        "review_score_word": "Okay",
+        "review_snippet": "",
+        "review_number": 28
+    },
+    "wifi_review_score": {
+        "rating": 7.8
+    },
+    "min_room_distribution": {
+        "children": [],
+        "adults": 1
+    },
+    "tax_exceptions": [],
+    "booking_home": {},
+    "aggregated_data": {
+        "has_nonrefundable": 1,
+        "has_kitchen": 0,
+        "has_seating": 1,
+        "common_kitchen_fac": [],
+        "has_refundable": 0
+    },
+    "last_reservation": {
+        "countrycode": null,
+        "time": "",
+        "country": null
+    },
+    "free_facilities_cancel_breakfast": [
+        {
+            "facility_id": 106
+        }
+    ],
+    "room_recommendation": [
+        {
+            "extra_beds_for_adults_price_in_hotel_currency": 0,
+            "babies": 0,
+            "number_of_extra_beds_for_adults": 0,
+            "adults": 1,
+            "extra_beds_for_children_price_in_hotel_currency": 0,
+            "extra_babycots_price_in_hotel_currency": 0,
+            "extra_beds_for_children_price": 0,
+            "total_extra_bed_price_in_hotel_currency": 0,
+            "total_extra_bed_price": 0,
+            "children": 0,
+            "number_of_extra_babycots": 0,
+            "extra_babycots_price": 0,
+            "number_of_extra_beds_and_babycots_total": 0,
+            "block_id": "809696301_343150670_1_41_0",
+            "extra_beds_for_adults_price": 0,
+            "number_of_extra_beds_for_children": 0
+        }
+    ],
+    "hotel_text": {},
+    "districts": [
+        11338
+    ],
+    "preferences": [],
+    "hotel_important_information_with_codes": [],
+    "rooms": {
+        "809696301": {
+            "facilities": [
+                {
+                    "alt_facilitytype_id": 6,
+                    "facilitytype_id": 6,
+                    "name": "TV",
+                    "id": 8,
+                    "alt_facilitytype_name": "Media & Technology"
+                },
+                {
+                    "alt_facilitytype_id": 5,
+                    "name": "Shower",
+                    "facilitytype_id": 5,
+                    "alt_facilitytype_name": "Bathroom",
+                    "id": 4
+                },
+                {
+                    "alt_facilitytype_id": 1,
+                    "facilitytype_id": 4,
+                    "name": "Safe",
+                    "alt_facilitytype_name": "General",
+                    "id": 6
+                },
+                {
+                    "name": "Free toiletries",
+                    "alt_facilitytype_id": 5,
+                    "facilitytype_id": 5,
+                    "id": 27,
+                    "alt_facilitytype_name": "Bathroom"
+                },
+                {
+                    "alt_facilitytype_id": 11,
+                    "facilitytype_id": 3,
+                    "name": "Wireless internet",
+                    "id": 46,
+                    "alt_facilitytype_name": "Internet"
+                },
+                {
+                    "id": 11,
+                    "alt_facilitytype_name": "General",
+                    "facilitytype_id": 4,
+                    "alt_facilitytype_id": 1,
+                    "name": "Air conditioning"
+                },
+                {
+                    "id": 5,
+                    "alt_facilitytype_name": "Bathroom",
+                    "alt_facilitytype_id": 5,
+                    "facilitytype_id": 5,
+                    "name": "Bathtub"
+                },
+                {
+                    "name": "Private bathroom",
+                    "alt_facilitytype_id": 5,
+                    "facilitytype_id": 5,
+                    "alt_facilitytype_name": "Bathroom",
+                    "id": 38
+                },
+                {
+                    "alt_facilitytype_name": "Bathroom",
+                    "id": 12,
+                    "alt_facilitytype_id": 5,
+                    "name": "Hairdryer",
+                    "facilitytype_id": 5
+                }
+            ],
+            "highlights": [
+                {
+                    "icon": "wifi",
+                    "translated_name": "Free WiFi"
+                },
+                {
+                    "icon": "bath",
+                    "id": 5,
+                    "translated_name": "Bathtub"
+                },
+                {
+                    "icon": "snowflake",
+                    "id": 11,
+                    "translated_name": "Air conditioning"
+                },
+                {
+                    "id": 38,
+                    "icon": "bath",
+                    "translated_name": "Private Bathroom"
+                }
+            ],
+            "description": "Providing free toiletries, this double room includes a private bathroom with a bath, a shower and a hairdryer. This double room features air conditioning, a safe deposit box and a TV. The unit offers 1 bed.",
+            "photos": [
+                {
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/400522056.jpg?k=9402b5db920c32a1f4589a84b844d67834de2e4ed4a0a645957ea53f051d3ce5&o=",
+                    "ratio": 1.32857142857143,
+                    "last_update_date": "2022-10-10 11:08:58",
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/400522056.jpg?k=9402b5db920c32a1f4589a84b844d67834de2e4ed4a0a645957ea53f051d3ce5&o=",
+                    "photo_id": 400522056,
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/400522056.jpg?k=9402b5db920c32a1f4589a84b844d67834de2e4ed4a0a645957ea53f051d3ce5&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/400522056.jpg?k=9402b5db920c32a1f4589a84b844d67834de2e4ed4a0a645957ea53f051d3ce5&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/400522056.jpg?k=9402b5db920c32a1f4589a84b844d67834de2e4ed4a0a645957ea53f051d3ce5&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/400522056.jpg?k=9402b5db920c32a1f4589a84b844d67834de2e4ed4a0a645957ea53f051d3ce5&o=",
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/400522056.jpg?k=9402b5db920c32a1f4589a84b844d67834de2e4ed4a0a645957ea53f051d3ce5&o="
+                },
+                {
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/400519716.jpg?k=8b75ab3fb7076168596dc0c87670dd7fff1057c4f9876db2b1c794bff3b4b53d&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/400519716.jpg?k=8b75ab3fb7076168596dc0c87670dd7fff1057c4f9876db2b1c794bff3b4b53d&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/400519716.jpg?k=8b75ab3fb7076168596dc0c87670dd7fff1057c4f9876db2b1c794bff3b4b53d&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/400519716.jpg?k=8b75ab3fb7076168596dc0c87670dd7fff1057c4f9876db2b1c794bff3b4b53d&o=",
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/400519716.jpg?k=8b75ab3fb7076168596dc0c87670dd7fff1057c4f9876db2b1c794bff3b4b53d&o=",
+                    "photo_id": 400519716,
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/400519716.jpg?k=8b75ab3fb7076168596dc0c87670dd7fff1057c4f9876db2b1c794bff3b4b53d&o=",
+                    "last_update_date": "2022-10-10 10:48:05",
+                    "ratio": 1.32857142857143,
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/400519716.jpg?k=8b75ab3fb7076168596dc0c87670dd7fff1057c4f9876db2b1c794bff3b4b53d&o="
+                },
+                {
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/400520777.jpg?k=cee8bafa7a2e807bf0c5619ec7c482e0d97624d5665aa3b5f455a08850177c2a&o=",
+                    "last_update_date": "2022-10-10 10:56:55",
+                    "ratio": 1.32857142857143,
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/400520777.jpg?k=cee8bafa7a2e807bf0c5619ec7c482e0d97624d5665aa3b5f455a08850177c2a&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/400520777.jpg?k=cee8bafa7a2e807bf0c5619ec7c482e0d97624d5665aa3b5f455a08850177c2a&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/400520777.jpg?k=cee8bafa7a2e807bf0c5619ec7c482e0d97624d5665aa3b5f455a08850177c2a&o=",
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/400520777.jpg?k=cee8bafa7a2e807bf0c5619ec7c482e0d97624d5665aa3b5f455a08850177c2a&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/400520777.jpg?k=cee8bafa7a2e807bf0c5619ec7c482e0d97624d5665aa3b5f455a08850177c2a&o=",
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/400520777.jpg?k=cee8bafa7a2e807bf0c5619ec7c482e0d97624d5665aa3b5f455a08850177c2a&o=",
+                    "photo_id": 400520777
+                },
+                {
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/400519307.jpg?k=75b848f9dcd511d75838c7a29f842907b62fda69b3c5599cb6b56c7d8443f360&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/400519307.jpg?k=75b848f9dcd511d75838c7a29f842907b62fda69b3c5599cb6b56c7d8443f360&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/400519307.jpg?k=75b848f9dcd511d75838c7a29f842907b62fda69b3c5599cb6b56c7d8443f360&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/400519307.jpg?k=75b848f9dcd511d75838c7a29f842907b62fda69b3c5599cb6b56c7d8443f360&o=",
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/400519307.jpg?k=75b848f9dcd511d75838c7a29f842907b62fda69b3c5599cb6b56c7d8443f360&o=",
+                    "photo_id": 400519307,
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/400519307.jpg?k=75b848f9dcd511d75838c7a29f842907b62fda69b3c5599cb6b56c7d8443f360&o=",
+                    "last_update_date": "2022-10-10 10:45:40",
+                    "ratio": 1.32857142857143,
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/400519307.jpg?k=75b848f9dcd511d75838c7a29f842907b62fda69b3c5599cb6b56c7d8443f360&o="
+                },
+                {
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/387692727.jpg?k=985a619083cbc2d51843c15b27edd49fa6a9e42fd90b8d446a705252488adf52&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/387692727.jpg?k=985a619083cbc2d51843c15b27edd49fa6a9e42fd90b8d446a705252488adf52&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/387692727.jpg?k=985a619083cbc2d51843c15b27edd49fa6a9e42fd90b8d446a705252488adf52&o=",
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/387692727.jpg?k=985a619083cbc2d51843c15b27edd49fa6a9e42fd90b8d446a705252488adf52&o=",
+                    "photo_id": 387692727,
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/387692727.jpg?k=985a619083cbc2d51843c15b27edd49fa6a9e42fd90b8d446a705252488adf52&o=",
+                    "last_update_date": "2022-08-31 14:32:20",
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/387692727.jpg?k=985a619083cbc2d51843c15b27edd49fa6a9e42fd90b8d446a705252488adf52&o=",
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/387692727.jpg?k=985a619083cbc2d51843c15b27edd49fa6a9e42fd90b8d446a705252488adf52&o=",
+                    "ratio": 1.33333333333333
+                },
+                {
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/400519770.jpg?k=6ba888328ebc5ef957d730c46168d819b4c12ddf87dff00514de6644e4c1809c&o=",
+                    "photo_id": 400519770,
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/400519770.jpg?k=6ba888328ebc5ef957d730c46168d819b4c12ddf87dff00514de6644e4c1809c&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/400519770.jpg?k=6ba888328ebc5ef957d730c46168d819b4c12ddf87dff00514de6644e4c1809c&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/400519770.jpg?k=6ba888328ebc5ef957d730c46168d819b4c12ddf87dff00514de6644e4c1809c&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/400519770.jpg?k=6ba888328ebc5ef957d730c46168d819b4c12ddf87dff00514de6644e4c1809c&o=",
+                    "ratio": 1.32857142857143,
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/400519770.jpg?k=6ba888328ebc5ef957d730c46168d819b4c12ddf87dff00514de6644e4c1809c&o=",
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/400519770.jpg?k=6ba888328ebc5ef957d730c46168d819b4c12ddf87dff00514de6644e4c1809c&o=",
+                    "last_update_date": "2022-10-10 10:48:48"
+                },
+                {
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/387692780.jpg?k=48bf1df18ac5cbd73ba408ebf72d68894789431dabd7ec0c39ef7c75e657f123&o=",
+                    "photo_id": 387692780,
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/387692780.jpg?k=48bf1df18ac5cbd73ba408ebf72d68894789431dabd7ec0c39ef7c75e657f123&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/387692780.jpg?k=48bf1df18ac5cbd73ba408ebf72d68894789431dabd7ec0c39ef7c75e657f123&o=",
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/387692780.jpg?k=48bf1df18ac5cbd73ba408ebf72d68894789431dabd7ec0c39ef7c75e657f123&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/387692780.jpg?k=48bf1df18ac5cbd73ba408ebf72d68894789431dabd7ec0c39ef7c75e657f123&o=",
+                    "ratio": 1.33333333333333,
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/387692780.jpg?k=48bf1df18ac5cbd73ba408ebf72d68894789431dabd7ec0c39ef7c75e657f123&o=",
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/387692780.jpg?k=48bf1df18ac5cbd73ba408ebf72d68894789431dabd7ec0c39ef7c75e657f123&o=",
+                    "last_update_date": "2022-08-31 14:32:35"
+                },
+                {
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/387692794.jpg?k=27ed5e516376724fce6d807fec03fb4e71d4dda016b5b97746d6379842fa87b0&o=",
+                    "ratio": 1.33333333333333,
+                    "last_update_date": "2022-08-31 14:32:40",
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/387692794.jpg?k=27ed5e516376724fce6d807fec03fb4e71d4dda016b5b97746d6379842fa87b0&o=",
+                    "photo_id": 387692794,
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/387692794.jpg?k=27ed5e516376724fce6d807fec03fb4e71d4dda016b5b97746d6379842fa87b0&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/387692794.jpg?k=27ed5e516376724fce6d807fec03fb4e71d4dda016b5b97746d6379842fa87b0&o=",
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/387692794.jpg?k=27ed5e516376724fce6d807fec03fb4e71d4dda016b5b97746d6379842fa87b0&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/387692794.jpg?k=27ed5e516376724fce6d807fec03fb4e71d4dda016b5b97746d6379842fa87b0&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/387692794.jpg?k=27ed5e516376724fce6d807fec03fb4e71d4dda016b5b97746d6379842fa87b0&o="
+                },
+                {
+                    "photo_id": 387692802,
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/387692802.jpg?k=3ead98abc62c9e1f0934d41bdfaa9cc48d9235a9228215f3c01579190e78153f&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/387692802.jpg?k=3ead98abc62c9e1f0934d41bdfaa9cc48d9235a9228215f3c01579190e78153f&o=",
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/387692802.jpg?k=3ead98abc62c9e1f0934d41bdfaa9cc48d9235a9228215f3c01579190e78153f&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/387692802.jpg?k=3ead98abc62c9e1f0934d41bdfaa9cc48d9235a9228215f3c01579190e78153f&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/387692802.jpg?k=3ead98abc62c9e1f0934d41bdfaa9cc48d9235a9228215f3c01579190e78153f&o=",
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/387692802.jpg?k=3ead98abc62c9e1f0934d41bdfaa9cc48d9235a9228215f3c01579190e78153f&o=",
+                    "ratio": 1.33333333333333,
+                    "last_update_date": "2022-08-31 14:32:44",
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/387692802.jpg?k=3ead98abc62c9e1f0934d41bdfaa9cc48d9235a9228215f3c01579190e78153f&o="
+                },
+                {
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/400519983.jpg?k=72c019fc0c41e63a3f1aaccd0a2ae22bf0edde1cea126496c78608e89cf1cb47&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/400519983.jpg?k=72c019fc0c41e63a3f1aaccd0a2ae22bf0edde1cea126496c78608e89cf1cb47&o=",
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/400519983.jpg?k=72c019fc0c41e63a3f1aaccd0a2ae22bf0edde1cea126496c78608e89cf1cb47&o=",
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/400519983.jpg?k=72c019fc0c41e63a3f1aaccd0a2ae22bf0edde1cea126496c78608e89cf1cb47&o=",
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/400519983.jpg?k=72c019fc0c41e63a3f1aaccd0a2ae22bf0edde1cea126496c78608e89cf1cb47&o=",
+                    "photo_id": 400519983,
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/400519983.jpg?k=72c019fc0c41e63a3f1aaccd0a2ae22bf0edde1cea126496c78608e89cf1cb47&o=",
+                    "last_update_date": "2022-10-10 10:49:57",
+                    "ratio": 1.32857142857143,
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/400519983.jpg?k=72c019fc0c41e63a3f1aaccd0a2ae22bf0edde1cea126496c78608e89cf1cb47&o="
+                },
+                {
+                    "url_square180": "https://cf.bstatic.com/xdata/images/hotel/square180/400880870.jpg?k=420f7ce006e4db1319ea8d6f8282ad0d8b450119854bef4db82d3bf69e6262cb&o=",
+                    "url_max750": "https://cf.bstatic.com/xdata/images/hotel/max750/400880870.jpg?k=420f7ce006e4db1319ea8d6f8282ad0d8b450119854bef4db82d3bf69e6262cb&o=",
+                    "url_640x200": "https://cf.bstatic.com/xdata/images/hotel/640x200/400880870.jpg?k=420f7ce006e4db1319ea8d6f8282ad0d8b450119854bef4db82d3bf69e6262cb&o=",
+                    "url_original": "https://cf.bstatic.com/xdata/images/hotel/max500/400880870.jpg?k=420f7ce006e4db1319ea8d6f8282ad0d8b450119854bef4db82d3bf69e6262cb&o=",
+                    "photo_id": 400880870,
+                    "url_max300": "https://cf.bstatic.com/xdata/images/hotel/max300/400880870.jpg?k=420f7ce006e4db1319ea8d6f8282ad0d8b450119854bef4db82d3bf69e6262cb&o=",
+                    "last_update_date": "2022-10-12 08:19:17",
+                    "url_square60": "https://cf.bstatic.com/xdata/images/hotel/square60/400880870.jpg?k=420f7ce006e4db1319ea8d6f8282ad0d8b450119854bef4db82d3bf69e6262cb&o=",
+                    "url_max1280": "https://cf.bstatic.com/xdata/images/hotel/1280x900/400880870.jpg?k=420f7ce006e4db1319ea8d6f8282ad0d8b450119854bef4db82d3bf69e6262cb&o=",
+                    "ratio": 1.32857142857143
+                }
+            ],
+            "private_bathroom_count": 0,
+            "bed_configurations": [
+                {
+                    "bed_types": [
+                        {
+                            "name": "King bed(s)",
+                            "description": "181–210 cm wide",
+                            "name_with_count": "1 king bed",
+                            "description_localized": null,
+                            "bed_type": 3,
+                            "description_imperial": "71–82 inches wide",
+                            "count": 1
+                        }
+                    ]
+                }
+            ],
+            "children_and_beds_text": {
+                "allow_children": 1,
+                "cribs_and_extra_beds": [
+                    {
+                        "highlight": 0,
+                        "text": "No capacity for extra beds or cribs."
+                    }
+                ],
+                "children_at_the_property": [
+                    {
+                        "text": "Children of all ages are welcome.",
+                        "highlight": 0
+                    },
+                    {
+                        "text": "To see correct prices and occupancy info, add the number and ages of children in your group to your search.",
+                        "highlight": 1
+                    }
+                ],
+                "age_intervals": []
+            },
+            "private_bathroom_highlight": {
+                "has_highlight": 1
+            }
+        }
+    },
+    "block": [
+        {
+            "name": "Standard Single Room - Non-refundable",
+            "deposit_required": 1,
+            "max_children_free": 0,
+            "block_text": {
+                "policies": [
+                    {
+                        "content": "Note that if canceled, modified, or in case of no-show, the total price of the reservation will be charged.",
+                        "class": "POLICY_CANCELLATION"
+                    },
+                    {
+                        "content": "You'll be charged a prepayment of the total price at any time.",
+                        "class": "POLICY_PREPAY"
+                    },
+                    {
+                        "content": "Breakfast included\nLunch US$15\nDinner US$20",
+                        "mealplan_vector": "41",
+                        "class": "POLICY_HOTEL_MEALPLAN"
+                    },
+                    {
+                        "class": "POLICY_TITLE",
+                        "content": "Non Refundable"
+                    }
+                ]
+            },
+            "half_board": 0,
+            "is_flash_deal": 0,
+            "smoking": 0,
+            "children_ages": [],
+            "room_name": "Standard Single Room",
+            "max_occupancy": "1",
+            "pod_ios_migrate_policies_to_smp_fullon": 0,
+            "genius_discount_percentage": 0,
+            "paymentterms": {
+                "cancellation": {
+                    "non_refundable_anymore": 0,
+                    "guaranteed_non_refundable": 0,
+                    "timeline": {
+                        "currency_code": "USD",
+                        "policygroup_instance_id": "1/1/-",
+                        "nr_stages": 1,
+                        "stages": [
+                            {
+                                "fee_rounded": 180,
+                                "amount": "180.00",
+                                "u_fee_remaining_pretty": "US$ 0",
+                                "u_fee_remaining": "0.00",
+                                "stage_fee_pretty": "US$ 180",
+                                "text": "If you cancel, you'll pay",
+                                "limit_from_date": "January 5, 2025",
+                                "u_fee": "180.00",
+                                "fee": 180,
+                                "limit_until_date": "January 5, 2025",
+                                "u_stage_fee_pretty": "US$ 180",
+                                "limit_from": "January 5, 2025 3:11 AM",
+                                "stage_fee": 180,
+                                "limit_from_time": "3:11 AM",
+                                "effective_number": 0,
+                                "u_fee_pretty": "US$ 180",
+                                "limit_timezone": "Addis Ababa",
+                                "fee_remaining_pretty": "US$ 0",
+                                "u_stage_fee": "180.00",
+                                "is_free": 0,
+                                "current_stage": 1,
+                                "is_effective": 1,
+                                "limit_from_raw": "2025-01-05 03:11:25",
+                                "b_number": 0,
+                                "limit_until": "January 5, 2025 3:11 AM",
+                                "amount_pretty": "US$ 180",
+                                "fee_remaining": 0,
+                                "stage_translation": "No refund if you cancel",
+                                "limit_until_raw": "2025-01-05 03:11:25",
+                                "limit_until_time": "3:11 AM",
+                                "text_refundable": "You won't be eligible for a refund if you cancel this booking.",
+                                "b_state": "NONREF",
+                                "fee_pretty": "US$ 180"
+                            }
+                        ],
+                        "u_currency_code": "USD"
+                    },
+                    "type": "non_refundable",
+                    "bucket": "SMP_NON_REF",
+                    "info": {
+                        "date_before_raw": null,
+                        "date": null,
+                        "refundable_date": null,
+                        "timezone_offset": null,
+                        "time_before_midnight": null,
+                        "refundable": 0,
+                        "timezone": null,
+                        "is_midnight": null,
+                        "date_before": null,
+                        "time": null,
+                        "date_raw": null
+                    },
+                    "description": "Note that if canceled, modified, or in case of no-show, the total price of the reservation will be charged.",
+                    "type_translation": "Non-refundable"
+                },
+                "prepayment": {
+                    "timeline": {
+                        "stages": [
+                            {
+                                "limit_until_time": "3:11 AM",
+                                "fee_pretty": "US$ 180",
+                                "b_state": "NONREF",
+                                "limit_until_raw": "2025-01-05 03:11:25",
+                                "fee_remaining": 0,
+                                "b_number": 0,
+                                "limit_until": "January 5, 2025 3:11 AM",
+                                "amount_pretty": "US$ 180",
+                                "u_stage_fee": "180.00",
+                                "is_free": 0,
+                                "current_stage": 1,
+                                "is_effective": 1,
+                                "limit_from_raw": "2025-01-05 03:11:25",
+                                "stage_fee": 180,
+                                "limit_from_time": "3:11 AM",
+                                "effective_number": 0,
+                                "u_fee_pretty": "US$ 180",
+                                "fee_remaining_pretty": "US$ 0",
+                                "limit_timezone": "Addis Ababa",
+                                "u_fee": "180.00",
+                                "limit_until_date": "January 5, 2025",
+                                "fee": 180,
+                                "u_stage_fee_pretty": "US$ 180",
+                                "limit_from": "January 5, 2025 3:11 AM",
+                                "stage_fee_pretty": "US$ 180",
+                                "u_fee_remaining": "0.00",
+                                "text": "Before you stay you'll pay",
+                                "limit_from_date": "January 5, 2025",
+                                "fee_rounded": 180,
+                                "u_fee_remaining_pretty": "US$ 0",
+                                "amount": "180.00"
+                            }
+                        ],
+                        "u_currency_code": "USD",
+                        "currency_code": "USD",
+                        "nr_stages": 1,
+                        "policygroup_instance_id": "1/1/-"
+                    },
+                    "simple_translation": "Prepayment",
+                    "type": "full_prepayment",
+                    "info": {
+                        "is_midnight": null,
+                        "date_before": null,
+                        "timezone_offset": null,
+                        "time": null,
+                        "refundable": 0,
+                        "timezone": null,
+                        "time_before_midnight": null,
+                        "prepayment_at_booktime": 0,
+                        "date": null
+                    },
+                    "type_extended": "non_refundable_prepayment",
+                    "description": "You'll be charged a prepayment of the total price at any time.",
+                    "extended_type_translation": "SECURE YOUR BOOKING – pay now",
+                    "type_translation": "SECURE YOUR BOOKING – pay now"
+                }
+            },
+            "name_without_policy": "Standard Single Room",
+            "room_count": 6,
+            "package_id": 0,
+            "extrabed_available_amount": null,
+            "is_genius_deal": null,
+            "bh_room_highlights": [],
+            "must_reserve_free_parking": 0,
+            "block_id": "809696301_343150670_1_41_0",
+            "is_block_fit": 1,
+            "is_domestic_rate": 0,
+            "nr_adults": 1,
+            "refundable_until": "",
+            "roomtype_id": 9,
+            "babycots_available": 0,
+            "max_children_free_age": 12,
+            "number_of_bathrooms": 0,
+            "refundable": 0,
+            "room_surface_in_feet2": 258.3338496,
+            "extrabed_available": 0,
+            "mealplan": "Breakfast included\nLunch US$15\nDinner US$20",
+            "room_surface_in_m2": 24,
+            "is_smart_deal": 0,
+            "is_last_minute_deal": 0,
+            "number_of_bedrooms": 0,
+            "all_inclusive": 0,
+            "room_id": 809696301,
+            "full_board": 0,
+            "nr_children": 0,
+            "can_reserve_free_parking": 0,
+            "babycots_available_amount": null,
+            "breakfast_included": 1
+        }
+    ],
+    "rawData": {
+        "priceBreakdown": {
+            "chargesInfo": "Includes taxes and charges",
+            "grossPrice": {
+                "value": 202,
+                "amountRounded": "US$202",
+                "currency": "USD"
+            },
+            "benefitBadges": [],
+            "taxExceptions": []
+        },
+        "countryCode": "et",
+        "reviewScore": 7.4,
+        "latitude": 8.989654,
+        "checkout": {
+            "untilTime": "00:00",
+            "fromTime": "00:00"
+        },
+        "accuratePropertyClass": 5,
+        "reviewCount": 610,
+        "blockIds": [
+            "809696301_343150670_2_41_0"
+        ],
+        "checkinDate": "2025-01-06",
+        "wishlistName": "Addis Ababa",
+        "mainPhotoId": 387692686,
+        "photoUrls": [
+            "https://cf.bstatic.com/xdata/images/hotel/square60/387692686.jpg?k=56cd03b8a032d28d3a2afe3197fe9e753f289f7cbf9db7ab0d881963253ddd3d&o="
+        ],
+        "checkin": {
+            "untilTime": "00:00",
+            "fromTime": "00:00"
+        },
+        "isHighlightedHotel": true,
+        "name": "Skylight In-Terminal Hotel",
+        "isFirstPage": true,
+        "longitude": 38.79301,
+        "rankingPosition": 0,
+        "id": 8096963,
+        "qualityClass": 0,
+        "optOutFromGalleryChanges": 0,
+        "isPreferred": true,
+        "reviewScoreWord": "Good",
+        "currency": "USD",
+        "position": 0,
+        "propertyClass": 5,
+        "ufi": -603097,
+        "checkoutDate": "2025-01-07"
+    }
+}

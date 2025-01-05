@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TripTypeSelector } from './TripTypeSelector';
+import { TripTypeSelector } from './FlightTripTypeSelector';
 import { FlightDetails } from './FlightDetails';
-import { PassengerCount } from './PassengerCount';
-import { PassengerInformation } from './PassengerInformation';
-import { ContactInformation } from './ContactInformation';
-import { SpecialRequests } from './SpecialRequests';
-import { BookingReview } from './BookingReview';
+import { PassengerCount } from './FlightPassengerCount';
+import { PassengerInformation } from './FlightPassengerInformation';
+import { ContactInformation } from './FlightBookingContactInformation';
+import { SpecialRequests } from './FlightSpecialRequests';
+import { BookingReview } from './FlightBookingReview';
 import { Airport } from '../../services/flightService';
 
 interface PassengerInfo {
@@ -63,6 +63,8 @@ export function BookingForm({
     showAutoFill = false
 }: BookingFormProps) {
     const [currentStep, setCurrentStep] = useState<FormStep>('trip');
+    const initialized = useRef(false);
+    const formDataRef = useRef<BookingFormData | null>(null);
     const [formData, setFormData] = useState<BookingFormData>({
         ...initialData,
         departureTime: initialData.departureTime ?? '09:00', // Default to 9 AM
@@ -70,40 +72,49 @@ export function BookingForm({
     });
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-    // Auto-populate data when form loads
     useEffect(() => {
-        if (showAutoFill) {
-            // Auto-fill contact information
-            if (onAutoFillContact) {
+        formDataRef.current = formData;
+    }, [formData]);
+
+    useEffect(() => {
+        const autoFillData = async () => {
+            if (!initialized.current && showAutoFill && onAutoFillContact && onAutoFillPassenger) {
+                // Get all auto-fill values first
                 const name = onAutoFillContact('name');
                 const email = onAutoFillContact('email');
                 const phone = onAutoFillContact('phone');
-
-                updateFormData({
-                    contactName: name || formData.contactName,
-                    contactEmail: email || formData.contactEmail,
-                    contactPhone: phone || formData.contactPhone
-                });
-            }
-
-            // Auto-fill first passenger information (assuming it's the user)
-            if (onAutoFillPassenger && formData.passengers.length > 0) {
                 const passengerData = onAutoFillPassenger(0);
-                if (passengerData) {
-                    const newPassengers = [...formData.passengers];
-                    newPassengers[0] = {
-                        ...newPassengers[0],
-                        fullName: passengerData.fullName,
-                        dateOfBirth: passengerData.dateOfBirth,
-                        passportNumber: passengerData.passportNumber,
-                        passportExpiry: passengerData.passportExpiry,
-                        nationality: passengerData.nationality,
-                        type: newPassengers[0].type
-                    };
-                    updateFormData({ passengers: newPassengers });
+                const currentFormData = formDataRef.current;
+
+                // Only proceed if we got some data
+                if (name || email || phone || passengerData) {
+                    // Update contact info if any values were returned
+                    if (name || email || phone) {
+                        updateFormData({
+                            contactName: name || '',
+                            contactEmail: email || '',
+                            contactPhone: phone || ''
+                        });
+                    }
+
+                    // Update passenger info if data was returned and we have passengers
+                    if (passengerData && currentFormData && currentFormData.passengers.length > 0) {
+                        const newPassengers = [...currentFormData.passengers];
+                        newPassengers[0] = {
+                            ...newPassengers[0],
+                            ...passengerData,
+                            type: newPassengers[0].type
+                        };
+                        updateFormData({ passengers: newPassengers });
+                    }
+
+                    // Only mark as initialized after successful update
+                    initialized.current = true;
                 }
             }
-        }
+        };
+
+        autoFillData();
     }, [showAutoFill, onAutoFillPassenger, onAutoFillContact]);
 
     const updateFormData = (updates: Partial<BookingFormData>) => {

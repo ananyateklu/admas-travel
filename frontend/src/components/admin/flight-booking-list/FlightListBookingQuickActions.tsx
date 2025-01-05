@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { CopyButton } from './CopyButton';
-import { StatusBadge } from './StatusBadge';
+import { CopyButton } from './FlightListCopyButton';
+import { StatusBadge } from './FlightListStatusBadge';
 
 interface BookingQuickActionsProps {
     bookingReference: string;

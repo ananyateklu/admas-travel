@@ -1,7 +1,7 @@
 import { BookingData } from '../types';
 import { useState } from 'react';
 import { getStatusStyle } from '../utils';
-import { RatingComponent } from '../../booking/RatingComponent';
+import { RatingComponent } from '../../flight-booking/FlightRatingComponent';
 import { motion } from 'framer-motion';
 
 interface BookingDetailsProps {

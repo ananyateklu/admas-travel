@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wonder } from './types';
+import { Wonder } from './home-types';
 
 interface ContentPanelsProps {
     currentWonder: Wonder;

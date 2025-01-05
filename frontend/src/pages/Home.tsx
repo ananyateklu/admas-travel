@@ -2,12 +2,12 @@ import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 
 // Components
-const AirlinesSection = lazy(() => import('../components/home/AirlinesSection').then(module => ({ default: module.AirlinesSection })));
-const VacationDestinations = lazy(() => import('../components/home/VacationDestinations').then(module => ({ default: module.VacationDestinations })));
-const HeroSection = lazy(() => import('../components/home/discover-section/HeroSection').then(module => ({ default: module.HeroSection })));
-const FeaturedDestinations = lazy(() => import('../components/home/FeaturedDestinations').then(module => ({ default: module.FeaturedDestinations })));
-const Highlights = lazy(() => import('../components/home/Highlights').then(module => ({ default: module.Highlights })));
-const NaturalWonders = lazy(() => import('../components/home/NaturalWonders').then(module => ({ default: module.NaturalWonders })));
+const AirlinesSection = lazy(() => import('../components/home/HomeAirlinesSection').then(module => ({ default: module.AirlinesSection })));
+const VacationDestinations = lazy(() => import('../components/home/HomeVacationDestinations').then(module => ({ default: module.VacationDestinations })));
+const HeroSection = lazy(() => import('../components/home/discover-section/HomeHeroSection').then(module => ({ default: module.HeroSection })));
+const FeaturedDestinations = lazy(() => import('../components/home/HomeFeaturedDestinations').then(module => ({ default: module.FeaturedDestinations })));
+const Highlights = lazy(() => import('../components/home/HomeHighlights').then(module => ({ default: module.Highlights })));
+const NaturalWonders = lazy(() => import('../components/home/HomeNaturalWonders').then(module => ({ default: module.NaturalWonders })));
 
 // Data
 import { partnerAirlines } from '../data/airlines';

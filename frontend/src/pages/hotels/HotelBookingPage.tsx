@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { hotelService } from '../../lib/api/hotelService';
-import { HotelBookingForm } from '../../components/hotels/HotelBookingForm';
+import { HotelBookingForm } from '../../components/hotel-booking/HotelBookingForm';
 import { HotelDetails, HotelDetailsResponse, HotelProperty } from '../../types/hotelTypes';
 import { useAuth } from '../../lib/firebase/useAuth';
 import { addDoc, collection, doc, getDoc } from 'firebase/firestore';

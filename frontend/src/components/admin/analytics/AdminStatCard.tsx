@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tooltip } from '../../../components/common/Tooltip';
+import { Tooltip } from '../../common/Tooltip';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface StatCardProps {
