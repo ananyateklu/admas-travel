@@ -2,23 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { hotelService } from '../../lib/api/hotelService';
 import { HotelSearchParams, HotelSearchResponse } from '../../types/hotelTypes';
+import { HotelSearchInput } from './HotelSearchInput';
 
 interface HotelSearchProps {
     onSearch: (results: HotelSearchResponse) => void;
     isLoading?: boolean;
+    onLoadingChange?: (isLoading: boolean) => void;
+    currentPage?: number;
 }
 
-interface DestinationResult {
+interface Destination {
     dest_id: string;
     search_type: string;
     label: string;
-}
-
-interface DestinationResponseData {
-    dest_id: string;
-    search_type: string;
-    label: string;
-    name: string;
     city_name?: string;
     country?: string;
     region?: string;
@@ -26,12 +22,6 @@ interface DestinationResponseData {
     type?: string;
     dest_type?: string;
     image_url?: string;
-}
-
-interface DestinationResponse {
-    status: boolean;
-    message: string;
-    data: DestinationResponseData[];
 }
 
 const getDefaultDates = () => {
@@ -57,10 +47,8 @@ const formatDate = (date: Date) => {
 
 const CACHE_KEY = 'hotelSearchParams';
 
-export function HotelSearch({ onSearch, isLoading }: HotelSearchProps) {
-    const [destination, setDestination] = useState('');
-    const [destinationResults, setDestinationResults] = useState<DestinationResult[]>([]);
-    const [showDestinationResults, setShowDestinationResults] = useState(false);
+export function HotelSearch({ onSearch, isLoading, onLoadingChange, currentPage = 1 }: HotelSearchProps) {
+    const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
 
     // Initialize dates with defaults
     const [dates, setDates] = useState(getDefaultDates());
@@ -72,7 +60,11 @@ export function HotelSearch({ onSearch, isLoading }: HotelSearchProps) {
             const parsed = JSON.parse(cached);
             // Update destination if we have cached params
             if (parsed.dest_id) {
-                setDestination(parsed.destination || '');
+                setSelectedDestination({
+                    dest_id: parsed.dest_id,
+                    search_type: parsed.search_type,
+                    label: parsed.destination || ''
+                });
             }
             return parsed;
         }
@@ -95,41 +87,9 @@ export function HotelSearch({ onSearch, isLoading }: HotelSearchProps) {
     useEffect(() => {
         localStorage.setItem(CACHE_KEY, JSON.stringify({
             ...searchParams,
-            destination // Also cache the destination text
+            destination: selectedDestination?.label // Also cache the destination text
         }));
-    }, [searchParams, destination]);
-
-    const handleDestinationSearch = async (query: string) => {
-        if (query.length < 2) {
-            setDestinationResults([]);
-            setShowDestinationResults(false);
-            return;
-        }
-
-        try {
-            const results = await hotelService.searchDestination(query) as DestinationResponse;
-            if (results.data) {
-                setDestinationResults(results.data.map(item => ({
-                    dest_id: item.dest_id,
-                    search_type: item.search_type,
-                    label: item.label
-                })));
-                setShowDestinationResults(true);
-            }
-        } catch (error) {
-            console.error('Error searching destination:', error);
-        }
-    };
-
-    const handleDestinationSelect = (result: DestinationResult) => {
-        setDestination(result.label); // Save the selected destination label
-        setSearchParams(prev => ({
-            ...prev,
-            dest_id: result.dest_id,
-            search_type: result.search_type.toUpperCase()
-        }));
-        setShowDestinationResults(false);
-    };
+    }, [searchParams, selectedDestination]);
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -139,14 +99,19 @@ export function HotelSearch({ onSearch, isLoading }: HotelSearchProps) {
         }
 
         try {
+            onLoadingChange?.(true);
             const results = await hotelService.searchHotels({
                 ...searchParams,
                 arrival_date: dates.arrival_date,
-                departure_date: dates.departure_date
+                departure_date: dates.departure_date,
+                page_number: String(currentPage)
             });
             onSearch(results);
         } catch (error) {
             console.error('Error searching hotels:', error);
+            onSearch({ status: false, data: { hotels: [] } });
+        } finally {
+            onLoadingChange?.(false);
         }
     };
 
@@ -167,136 +132,251 @@ export function HotelSearch({ onSearch, isLoading }: HotelSearchProps) {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-xl shadow-lg p-6"
         >
-            <form onSubmit={handleSearch} className="space-y-4">
-                <div className="space-y-2 relative">
-                    <label htmlFor="destination" className="block text-sm font-medium text-gray-700">
-                        Destination
-                    </label>
-                    <input
-                        type="text"
-                        id="destination"
-                        value={destination}
-                        onChange={(e) => {
-                            setDestination(e.target.value);
-                            handleDestinationSearch(e.target.value);
-                        }}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        placeholder="Where are you going?"
-                        required
-                    />
-                    {showDestinationResults && destinationResults.length > 0 && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-                            {destinationResults.map((result) => (
-                                <button
-                                    key={`${result.dest_id}-${result.search_type}`}
-                                    type="button"
-                                    onClick={() => handleDestinationSelect(result)}
-                                    className="w-full px-4 py-2 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
-                                >
-                                    {result.label}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <label htmlFor="arrival_date" className="block text-sm font-medium text-gray-700">
-                            Check-in Date
+            <form onSubmit={handleSearch} className="space-y-6">
+                <div className="grid grid-cols-12 gap-4">
+                    {/* Destination Search */}
+                    <div className="col-span-12 md:col-span-5">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Destination
                         </label>
-                        <input
-                            type="date"
-                            id="arrival_date"
-                            min={minArrivalDate}
-                            value={dates.arrival_date}
-                            onChange={(e) => {
-                                setDates(prev => ({ ...prev, arrival_date: e.target.value }));
-                                if (e.target.value > dates.departure_date) {
-                                    setDates(prev => ({ ...prev, departure_date: '' }));
-                                }
+                        <label className="block text-xs text-gray-400 mb-0.5">City or Hotel Name</label>
+                        <HotelSearchInput
+                            id="destination"
+                            label=""
+                            value={selectedDestination?.label ?? ''}
+                            onChange={(destination) => {
+                                setSelectedDestination(destination);
+                                setSearchParams(prev => ({
+                                    ...prev,
+                                    dest_id: destination.dest_id,
+                                    search_type: destination.search_type.toUpperCase()
+                                }));
                             }}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
                             required
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <label htmlFor="departure_date" className="block text-sm font-medium text-gray-700">
-                            Check-out Date
+                    {/* Check-in Date */}
+                    <div className="col-span-6 md:col-span-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Check-in
                         </label>
-                        <input
-                            type="date"
-                            id="departure_date"
-                            min={dates.arrival_date || minDepartureDate}
-                            value={dates.departure_date}
-                            onChange={(e) => setDates(prev => ({ ...prev, departure_date: e.target.value }))}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                            required
-                        />
+                        <label className="block text-xs text-gray-400 mb-0.5">Arrival Date</label>
+                        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                            <input
+                                type="date"
+                                id="arrival_date"
+                                min={minArrivalDate}
+                                value={dates.arrival_date}
+                                onChange={(e) => {
+                                    setDates(prev => ({ ...prev, arrival_date: e.target.value }));
+                                    if (e.target.value > dates.departure_date) {
+                                        setDates(prev => ({ ...prev, departure_date: '' }));
+                                    }
+                                }}
+                                className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
+                                    focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                                required
+                            />
+                        </motion.div>
+                    </div>
+
+                    {/* Check-out Date */}
+                    <div className="col-span-6 md:col-span-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Check-out
+                        </label>
+                        <label className="block text-xs text-gray-400 mb-0.5">Departure Date</label>
+                        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                            <input
+                                type="date"
+                                id="departure_date"
+                                min={dates.arrival_date || minDepartureDate}
+                                value={dates.departure_date}
+                                onChange={(e) => setDates(prev => ({ ...prev, departure_date: e.target.value }))}
+                                className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
+                                    focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                                required
+                            />
+                        </motion.div>
+                    </div>
+
+                    {/* Search Button */}
+                    <div className="col-span-12 md:col-span-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            &nbsp;
+                        </label>
+                        <label className="block text-xs text-gray-400 mb-0.5">&nbsp;</label>
+                        <motion.button
+                            type="submit"
+                            disabled={isLoading}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`w-full h-[34px] rounded-lg text-white font-medium text-xs
+                                transition-all duration-200 overflow-hidden
+                                ${isLoading
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-primary hover:bg-primary-dark'
+                                }`}
+                        >
+                            <div className="relative flex items-center justify-center gap-2">
+                                {isLoading ? (
+                                    <>
+                                        <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                                fill="none"
+                                            />
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            />
+                                        </svg>
+                                        <span>Searching...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                        <span>Search</span>
+                                    </>
+                                )}
+                            </div>
+                        </motion.button>
                     </div>
                 </div>
 
+                {/* Room and Guest Selection */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
                         <label htmlFor="adults" className="block text-sm font-medium text-gray-700">
-                            Adults
+                            Guests
                         </label>
-                        <select
-                            id="adults"
-                            value={searchParams.adults}
-                            onChange={(e) => setSearchParams(prev => ({ ...prev, adults: e.target.value }))}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        >
-                            {[1, 2, 3, 4, 5, 6].map(num => (
-                                <option key={num} value={num}>{num} Adult{num !== 1 ? 's' : ''}</option>
-                            ))}
-                        </select>
+                        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                            <select
+                                id="adults"
+                                value={searchParams.adults}
+                                onChange={(e) => setSearchParams(prev => ({ ...prev, adults: e.target.value }))}
+                                className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
+                                    focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                            >
+                                {[1, 2, 3, 4, 5, 6].map(num => (
+                                    <option key={num} value={num}>{num} Adult{num !== 1 ? 's' : ''}</option>
+                                ))}
+                            </select>
+                        </motion.div>
                     </div>
 
                     <div className="space-y-2">
                         <label htmlFor="rooms" className="block text-sm font-medium text-gray-700">
                             Rooms
                         </label>
-                        <select
-                            id="rooms"
-                            value={searchParams.room_qty}
-                            onChange={(e) => setSearchParams(prev => ({ ...prev, room_qty: e.target.value }))}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        >
-                            {[1, 2, 3, 4, 5].map(num => (
-                                <option key={num} value={num}>{num} Room{num !== 1 ? 's' : ''}</option>
-                            ))}
-                        </select>
+                        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                            <select
+                                id="rooms"
+                                value={searchParams.room_qty}
+                                onChange={(e) => setSearchParams(prev => ({ ...prev, room_qty: e.target.value }))}
+                                className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
+                                    focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                            >
+                                {[1, 2, 3, 4, 5].map(num => (
+                                    <option key={num} value={num}>{num} Room{num !== 1 ? 's' : ''}</option>
+                                ))}
+                            </select>
+                        </motion.div>
                     </div>
 
                     <div className="space-y-2">
                         <label htmlFor="currency" className="block text-sm font-medium text-gray-700">
                             Currency
                         </label>
-                        <select
-                            id="currency"
-                            value={searchParams.currency_code}
-                            onChange={(e) => setSearchParams(prev => ({ ...prev, currency_code: e.target.value }))}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        >
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="GBP">GBP</option>
-                        </select>
+                        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                            <select
+                                id="currency"
+                                value={searchParams.currency_code}
+                                onChange={(e) => setSearchParams(prev => ({ ...prev, currency_code: e.target.value }))}
+                                className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
+                                    focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                            >
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                            </select>
+                        </motion.div>
                     </div>
                 </div>
-
-                <motion.button
-                    type="submit"
-                    disabled={isLoading}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50 transition-colors"
-                >
-                    {isLoading ? 'Searching...' : 'Search Hotels'}
-                </motion.button>
             </form>
+
+            {/* Quick Links */}
+            <div className="mt-6 pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-4 text-sm">
+                    <span className="text-gray-500">Quick Links:</span>
+                    {[
+                        {
+                            label: 'Tonight',
+                            onClick: () => {
+                                const today = new Date();
+                                const todayStr = formatDate(today);
+                                const tomorrow = new Date(today);
+                                tomorrow.setDate(today.getDate() + 1);
+                                const tomorrowStr = formatDate(tomorrow);
+                                setDates({
+                                    arrival_date: todayStr,
+                                    departure_date: tomorrowStr
+                                });
+                            }
+                        },
+                        {
+                            label: 'Tomorrow',
+                            onClick: () => {
+                                const tomorrow = new Date();
+                                tomorrow.setDate(tomorrow.getDate() + 1);
+                                const tomorrowStr = formatDate(tomorrow);
+                                const dayAfter = new Date(tomorrow);
+                                dayAfter.setDate(tomorrow.getDate() + 1);
+                                const dayAfterStr = formatDate(dayAfter);
+                                setDates({
+                                    arrival_date: tomorrowStr,
+                                    departure_date: dayAfterStr
+                                });
+                            }
+                        },
+                        {
+                            label: 'Next Week',
+                            onClick: () => {
+                                const nextWeek = new Date();
+                                nextWeek.setDate(nextWeek.getDate() + 7);
+                                const nextWeekStr = formatDate(nextWeek);
+                                const dayAfterNextWeek = new Date(nextWeek);
+                                dayAfterNextWeek.setDate(nextWeek.getDate() + 1);
+                                const dayAfterNextWeekStr = formatDate(dayAfterNextWeek);
+                                setDates({
+                                    arrival_date: nextWeekStr,
+                                    departure_date: dayAfterNextWeekStr
+                                });
+                            }
+                        }
+                    ].map((link) => (
+                        <motion.button
+                            key={link.label}
+                            type="button"
+                            onClick={link.onClick}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="text-primary hover:text-primary-dark text-xs font-medium"
+                        >
+                            {link.label}
+                        </motion.button>
+                    ))}
+                </div>
+            </div>
         </motion.div>
     );
 } 

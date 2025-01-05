@@ -59,6 +59,18 @@ export default {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      keyframes: {
+        shimmer: {
+          "0%": { backgroundPosition: "-1000px 0" },
+          "100%": { backgroundPosition: "1000px 0" },
+        },
+      },
+      animation: {
+        shimmer: "shimmer 15s infinite linear",
+      },
+      backgroundSize: {
+        shimmer: "1000px 100%",
+      },
     },
   },
   plugins: [],

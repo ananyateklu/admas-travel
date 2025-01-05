@@ -1,16 +1,19 @@
 export interface HotelSearchParams {
     dest_id: string;
     search_type: string;
-    adults: string;
+    adults?: string;
     children_age?: string;
-    room_qty: string;
-    page_number: string;
-    units: string;
-    temperature_unit: string;
-    languagecode: string;
-    currency_code: string;
-    arrival_date: string;
-    departure_date: string;
+    room_qty?: string;
+    page_number?: string;
+    units?: string;
+    temperature_unit?: string;
+    languagecode?: string;
+    currency_code?: string;
+    arrival_date?: string;
+    departure_date?: string;
+    limit?: string;
+    offset?: string;
+    maxResults?: string;
 }
 
 export interface HotelProperty {
@@ -66,10 +69,14 @@ export interface HotelSearchResult {
 
 export interface HotelSearchResponse {
     status: boolean;
-    data: {
+    data?: {
         hotels: HotelSearchResult[];
+        meta?: {
+            total_count?: number;
+            page_count?: number;
+            current_page?: number;
+        }[];
     };
-    message?: string;
 }
 
 export interface HotelDetails extends HotelSearchResult {

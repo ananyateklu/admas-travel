@@ -26,7 +26,23 @@ export const hotelService = {
 
     searchHotels: async (params: HotelSearchParams): Promise<HotelSearchResponse> => {
         try {
-            const response = await api.get('/hotels/searchHotels', { params });
+            // Ensure page_number is a string and has a default value
+            const pageNumber = params.page_number ? String(params.page_number) : '1';
+            const pageSize = '12'; // Fixed page size
+
+            const searchParams = {
+                ...params,
+                page_number: pageNumber,
+                limit: pageSize,
+                offset: ((parseInt(pageNumber) - 1) * parseInt(pageSize)).toString(),
+                maxResults: pageSize
+            };
+
+            console.log('Searching hotels with params:', searchParams);
+
+            const response = await api.get('/hotels/searchHotels', { params: searchParams });
+            console.log('Hotel search response:', response.data);
+
             return response.data;
         } catch (error) {
             console.error('Error searching hotels:', error);

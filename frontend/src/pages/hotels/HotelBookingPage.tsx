@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { hotelService } from '../../lib/api/hotelService';
-import { HotelBookingForm } from '../../components/hotel-booking/HotelBookingForm';
-import { HotelDetails, HotelDetailsResponse, HotelProperty } from '../../types/hotelTypes';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../lib/firebase/useAuth';
+import { HotelBookingForm } from '../../components/hotel-booking/HotelBookingForm';
+import { HotelBookingHero } from '../../components/hotel-booking/HotelBookingHero';
+import bookPic from '../../assets/book.jpg';
+import { hotelService } from '../../lib/api/hotelService';
+import { HotelDetails, HotelDetailsResponse, HotelProperty } from '../../types/hotelTypes';
 import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase/firebase';
 
@@ -240,27 +242,67 @@ export default function HotelBookingPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen pt-32 pb-12 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-            </div>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="min-h-screen pt-32 pb-12 flex flex-col items-center justify-center"
+            >
+                <div className="w-16 h-16 relative">
+                    <div className="absolute inset-0 rounded-full border-4 border-primary border-opacity-25"></div>
+                    <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+                </div>
+                <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-4 text-gray-600"
+                >
+                    Loading hotel details...
+                </motion.p>
+            </motion.div>
         );
     }
 
     if (error || !hotel) {
         return (
-            <div className="min-h-screen pt-32 pb-12 px-4">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="min-h-screen pt-32 pb-12 px-4"
+            >
                 <div className="max-w-3xl mx-auto text-center">
-                    <h1 className="text-2xl font-semibold text-gray-900 mb-4">
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="w-16 h-16 mx-auto mb-6 text-red-500">
+                            <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                    </motion.div>
+                    <motion.h1
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-2xl font-semibold text-gray-900 mb-4"
+                    >
                         {error ?? 'Hotel not found'}
-                    </h1>
-                    <button
+                    </motion.h1>
+                    <motion.button
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
                         onClick={() => navigate('/hotels')}
-                        className="text-primary hover:text-primary-dark"
+                        className="text-primary hover:text-primary-dark transition-colors"
                     >
                         Return to hotel search
-                    </button>
+                    </motion.button>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
@@ -291,45 +333,69 @@ export default function HotelBookingPage() {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="min-h-screen pt-32 pb-12"
+            className="min-h-screen"
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <HotelBookingHero
+                backgroundImage={bookPic}
+                title="Book Your Perfect Stay"
+                subtitle="Experience comfort and luxury at your dream destination"
+            />
+
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10 pb-12"
+            >
                 <div className="max-w-3xl mx-auto">
-                    <h1 className="text-3xl font-semibold text-gray-900 mb-8">
-                        Book Your Stay at {hotel.property.name}
-                    </h1>
-                    <HotelBookingForm
-                        hotel={hotel}
-                        initialData={initialFormData}
-                        onSubmit={handleSubmit}
-                        showAutoFill={!!user}
-                        onAutoFillGuest={() => {
-                            if (!user || !userProfile) return null;
-                            return {
-                                fullName: user.displayName ?? '',
-                                dateOfBirth: userProfile.dateOfBirth ?? '',
-                                nationality: userProfile.nationality ?? '',
-                                idNumber: userProfile.idNumber ?? '',
-                                idExpiry: userProfile.idExpiry ?? ''
-                            };
-                        }}
-                        onAutoFillContact={(field) => {
-                            if (!user || !userProfile) return '';
-                            switch (field) {
-                                case 'name':
-                                    return user.displayName ?? '';
-                                case 'email':
-                                    return user.email ?? '';
-                                case 'phone':
-                                    return userProfile.phoneNumber ?? user.phoneNumber ?? '';
-                                default:
-                                    return '';
-                            }
-                        }}
-                    />
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="bg-white rounded-xl shadow-lg p-6"
+                    >
+                        <motion.h2
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="text-xl font-semibold text-gray-900 mb-6"
+                        >
+                            {hotel.property.name}
+                        </motion.h2>
+                        <HotelBookingForm
+                            hotel={hotel}
+                            initialData={initialFormData}
+                            onSubmit={handleSubmit}
+                            showAutoFill={!!user}
+                            onAutoFillGuest={() => {
+                                if (!user || !userProfile) return null;
+                                return {
+                                    fullName: user.displayName ?? '',
+                                    dateOfBirth: userProfile.dateOfBirth ?? '',
+                                    nationality: userProfile.nationality ?? '',
+                                    idNumber: userProfile.idNumber ?? '',
+                                    idExpiry: userProfile.idExpiry ?? ''
+                                };
+                            }}
+                            onAutoFillContact={(field) => {
+                                if (!user || !userProfile) return '';
+                                switch (field) {
+                                    case 'name':
+                                        return user.displayName ?? '';
+                                    case 'email':
+                                        return user.email ?? '';
+                                    case 'phone':
+                                        return userProfile.phoneNumber ?? user.phoneNumber ?? '';
+                                    default:
+                                        return '';
+                                }
+                            }}
+                        />
+                    </motion.div>
                 </div>
-            </div>
+            </motion.div>
         </motion.div>
     );
 }
