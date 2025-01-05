@@ -1,14 +1,15 @@
 import { motion } from 'framer-motion';
-import { HotelSearchResult } from '../../types/hotelTypes';
+import { HotelSearchResult } from '../../types/hotelSearch';
 import { HotelLoadingState } from './HotelLoadingState';
 import { HotelCard } from './HotelCard';
 
 interface HotelSearchResultsProps {
     results: HotelSearchResult[];
     isLoading: boolean;
+    searchParams: URLSearchParams;
 }
 
-export function HotelSearchResults({ results, isLoading }: HotelSearchResultsProps) {
+export function HotelSearchResults({ results, isLoading, searchParams }: HotelSearchResultsProps) {
     if (isLoading) {
         return (
             <motion.div
@@ -46,6 +47,7 @@ export function HotelSearchResults({ results, isLoading }: HotelSearchResultsPro
                     key={hotel.hotel_id}
                     hotel={hotel}
                     index={index}
+                    searchParams={searchParams}
                 />
             ))}
         </div>

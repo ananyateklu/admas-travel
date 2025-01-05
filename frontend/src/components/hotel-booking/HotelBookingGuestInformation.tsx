@@ -1,4 +1,4 @@
-import { HotelDetails } from '../../types/hotelTypes';
+import { HotelDetails } from '../../types/hotelDetails';
 import { HotelBookingFormData, GuestInfo } from './HotelBookingForm';
 import { RoomSelection } from './HotelBookingRoomSelection';
 

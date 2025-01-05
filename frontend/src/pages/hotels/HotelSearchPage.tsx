@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { HotelSearch } from '../../components/hotel-booking/HotelBookingSearch';
 import { HotelSearchResults } from '../../components/hotel-booking/HotelBookingSearchResults';
-import { HotelSearchResult, HotelSearchResponse } from '../../types/hotelTypes';
+import { HotelSearchResult, HotelSearchResponse } from '../../types/hotelSearch';
 import { HotelBookingHero } from '../../components/hotel-booking/HotelBookingHero';
 import bookPic from '../../assets/book.jpg';
 
@@ -60,6 +61,7 @@ export default function HotelSearchPage() {
     const [hasSearched, setHasSearched] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalResults, setTotalResults] = useState(0);
+    const [searchParams] = useSearchParams();
     const pageSize = 12;
 
     const handleSearch = async (results: HotelSearchResponse) => {
@@ -256,8 +258,9 @@ export default function HotelSearchPage() {
                         className="pb-10"
                     >
                         <HotelSearchResults
-                            results={searchResults.slice((currentPage - 1) * pageSize, currentPage * pageSize)}
+                            results={searchResults}
                             isLoading={isLoading}
+                            searchParams={searchParams}
                         />
                         {renderPagination()}
                     </motion.div>

@@ -1,13 +1,19 @@
 import { motion } from 'framer-motion';
-import { HotelSearchResult } from '../../types/hotelTypes';
-import { Link } from 'react-router-dom';
+import { HotelSearchResult } from '../../types/hotelSearch';
+import { useState } from 'react';
+import { HotelBookingModal } from './HotelBookingModal';
+import { HotelDetailsModal } from './HotelDetailsModal';
 
 interface HotelCardProps {
     hotel: HotelSearchResult;
     index: number;
+    searchParams: URLSearchParams;
 }
 
-export function HotelCard({ hotel, index }: HotelCardProps) {
+export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
     const getLocationFromAccessibilityLabel = (label: string) => {
         const lines = label.split('\n');
         const locationLine = lines.find(line =>
@@ -34,11 +40,13 @@ export function HotelCard({ hotel, index }: HotelCardProps) {
     const hasFreeCancel = hotel.accessibilityLabel.toLowerCase().includes('free cancellation');
     const noPrePayment = hotel.accessibilityLabel.toLowerCase().includes('no prepayment');
 
+    const handleBookingComplete = (bookingId: string) => {
+        console.log('Booking completed:', bookingId);
+        setIsBookingModalOpen(false);
+    };
+
     return (
-        <Link
-            to={`/hotels/${hotel.hotel_id}`}
-            className="block h-full"
-        >
+        <>
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -51,7 +59,8 @@ export function HotelCard({ hotel, index }: HotelCardProps) {
                     y: -4,
                     transition: { duration: 0.2 }
                 }}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden h-full flex flex-col"
+                onClick={() => setIsDetailsModalOpen(true)}
+                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden h-full flex flex-col cursor-pointer relative"
             >
                 {/* Image Section */}
                 <div className="aspect-[16/9] relative">
@@ -227,7 +236,41 @@ export function HotelCard({ hotel, index }: HotelCardProps) {
                         </div>
                     </div>
                 </div>
+                {/* Add Book Now button */}
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsBookingModalOpen(true);
+                    }}
+                    className="absolute bottom-4 right-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                >
+                    Book Now
+                </motion.button>
             </motion.div>
-        </Link>
+
+            {/* Hotel Details Modal */}
+            {isDetailsModalOpen && (
+                <HotelDetailsModal
+                    hotel={hotel}
+                    onClose={() => setIsDetailsModalOpen(false)}
+                    onBook={() => {
+                        setIsDetailsModalOpen(false);
+                        setIsBookingModalOpen(true);
+                    }}
+                />
+            )}
+
+            {/* Hotel Booking Modal */}
+            {isBookingModalOpen && (
+                <HotelBookingModal
+                    hotelId={String(hotel.hotel_id)}
+                    searchParams={searchParams}
+                    onClose={() => setIsBookingModalOpen(false)}
+                    onBookingComplete={handleBookingComplete}
+                />
+            )}
+        </>
     );
 } 

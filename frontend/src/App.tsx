@@ -18,7 +18,6 @@ const Contact = React.lazy(() => import('./pages/Contact'));
 const GetStarted = React.lazy(() => import('./pages/GetStarted'));
 const Account = React.lazy(() => import('./pages/Account'));
 const HotelSearchPage = React.lazy(() => import('./pages/hotels/HotelSearchPage'));
-const HotelDetailsPage = React.lazy(() => import('./pages/hotels/HotelDetailsPage'));
 const HotelBookingPage = React.lazy(() => import('./pages/hotels/HotelBookingPage'));
 const BookingDetailsPage = React.lazy(() => import('./pages/bookings/BookingDetailsPage'));
 
@@ -43,7 +42,6 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="book" element={<Book />} />
                 <Route path="hotels" element={<HotelSearchPage />} />
-                <Route path="hotels/:hotelId" element={<HotelDetailsPage />} />
                 <Route path="hotels/:hotelId/book" element={<HotelBookingPage />} />
                 <Route path="admin" element={<Admin />} />
                 <Route path="bookings" element={<Bookings />} />

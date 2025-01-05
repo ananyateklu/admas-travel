@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { HotelSearchParams, HotelSearchResponse, HotelDetailsResponse } from '../../types/hotelTypes';
+import { HotelSearchParams, HotelSearchResponse } from '../../types/hotelSearch';
+import { HotelDetailsResponse } from '../../types/hotelDetails';
 
 const BASE_URL = 'https://booking-com15.p.rapidapi.com/api/v1';
 
@@ -50,7 +51,7 @@ export const hotelService = {
         }
     },
 
-    getHotelDetails: async (hotelId: string, params: Omit<HotelSearchParams, 'dest_id' | 'search_type'>): Promise<{ status: boolean; data: HotelDetailsResponse }> => {
+    getHotelDetails: async (hotelId: string, params: Omit<HotelSearchParams, 'dest_id' | 'search_type'>): Promise<HotelDetailsResponse> => {
         try {
             const response = await api.get('/hotels/getHotelDetails', {
                 params: {
@@ -58,7 +59,11 @@ export const hotelService = {
                     ...params
                 }
             });
-            return response.data;
+            return {
+                status: response.data.status,
+                message: response.data.message,
+                data: response.data.data
+            };
         } catch (error) {
             console.error('Error getting hotel details:', error);
             throw error;

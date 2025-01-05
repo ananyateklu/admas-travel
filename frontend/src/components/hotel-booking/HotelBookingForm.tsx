@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { HotelDetails } from '../../types/hotelTypes';
+import { HotelDetails } from '../../types/hotelDetails';
 import { GuestInformation } from './HotelBookingGuestInformation';
 import { SpecialRequests } from '../flight-booking/FlightSpecialRequests';
 import { HotelContactInformation } from './HotelBookingContactInformation';
@@ -66,7 +66,7 @@ export function HotelBookingForm({
         numberOfRooms: 1,
         numberOfGuests: 1,
         numberOfNights: 1,
-        roomType: '',
+        roomType: Object.keys(hotel.rooms)[0] || '',
         guests: [{
             fullName: '',
             dateOfBirth: '',

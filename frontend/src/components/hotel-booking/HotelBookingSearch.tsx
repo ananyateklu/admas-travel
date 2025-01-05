@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { hotelService } from '../../lib/api/hotelService';
-import { HotelSearchParams, HotelSearchResponse } from '../../types/hotelTypes';
+import { HotelSearchParams, HotelSearchResponse } from '../../types/hotelSearch';
 import { HotelSearchInput } from './HotelSearchInput';
 
 interface HotelSearchProps {
