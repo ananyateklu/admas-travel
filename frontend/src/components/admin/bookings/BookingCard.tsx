@@ -108,7 +108,9 @@ export function BookingCard({
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                     {/* Left Section: Date and Main Info */}
                     <div className="flex items-start gap-2">
-                        <BookingDateBadge date={new Date(booking.departureDate)} />
+                        {booking.departureDate && (
+                            <BookingDateBadge date={new Date(booking.departureDate)} />
+                        )}
                         <div className="space-y-1.5">
                             <BookingHeader
                                 contactName={booking.contactName}
@@ -124,7 +126,9 @@ export function BookingCard({
                     {/* Right Section: Status and Actions */}
                     <div className="flex items-center gap-4">
                         <div className="relative z-10">
-                            <PassengerAvatars passengers={booking.passengers as { fullName: string; type: 'adult' | 'child'; nationality: string; passportNumber: string; }[]} />
+                            {booking.passengers && booking.passengers.length > 0 && (
+                                <PassengerAvatars passengers={booking.passengers as { fullName: string; type: 'adult' | 'child'; nationality: string; passportNumber: string; }[]} />
+                            )}
                         </div>
                         {!isReadOnly && onStatusChange ? (
                             <BookingStatusProgress
