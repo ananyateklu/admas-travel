@@ -27,6 +27,12 @@ export const navLinks = [
         description: 'Book a new flight'
     },
     {
+        path: '/hotels',
+        label: 'Hotels',
+        icon: BookIcon({ className: "w-4 h-4" }),
+        description: 'Search and book hotels'
+    },
+    {
         path: '/bookings',
         label: 'My Trips',
         icon: BookingsIcon({ className: "w-4 h-4" }),
