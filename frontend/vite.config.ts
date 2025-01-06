@@ -5,6 +5,7 @@ import { imagetools } from 'vite-imagetools'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), imagetools()],
+  base: '/',
   build: {
     rollupOptions: {
       output: {
@@ -15,6 +16,10 @@ export default defineConfig({
           'vendor-ui': ['@headlessui/react', '@heroicons/react'],
           'vendor-utils': ['date-fns', 'lodash'],
         },
+        format: 'es',
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       },
     },
     chunkSizeWarningLimit: 1000,

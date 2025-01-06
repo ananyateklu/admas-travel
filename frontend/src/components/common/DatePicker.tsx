@@ -12,6 +12,22 @@ interface DatePickerProps {
     className?: string;
 }
 
+const CustomInput = forwardRef<HTMLInputElement, { value?: string; onClick?: () => void; className?: string; isFocused?: boolean }>(
+    ({ value, onClick, className = '', isFocused = false }, ref) => (
+        <input
+            ref={ref}
+            value={value}
+            onClick={onClick}
+            readOnly
+            className={`w-full pl-10 pr-2 py-1.5 text-xs text-gray-900 bg-white border rounded-lg
+                ${isFocused ? 'border-primary ring-1 ring-primary/20' : 'border-gray-300'}
+                focus:outline-none transition-all duration-200 ${className}`}
+        />
+    )
+);
+
+CustomInput.displayName = 'DatePickerInput';
+
 export function DatePicker({
     label,
     selected,
@@ -22,22 +38,6 @@ export function DatePicker({
     className = ''
 }: DatePickerProps) {
     const [isFocused, setIsFocused] = useState(false);
-
-    const CustomInput = forwardRef<HTMLInputElement, { value?: string; onClick?: () => void }>(
-        ({ value, onClick }, ref) => (
-            <input
-                ref={ref}
-                value={value}
-                onClick={onClick}
-                readOnly
-                className={`w-full pl-10 pr-8 py-1.5 text-xs text-gray-900 bg-white border rounded-lg
-                    ${isFocused ? 'border-primary ring-1 ring-primary/20' : 'border-gray-300'}
-                    focus:outline-none transition-all duration-200 ${className}`}
-            />
-        )
-    );
-
-    CustomInput.displayName = 'DatePickerInput';
 
     return (
         <div className="relative">
@@ -54,7 +54,7 @@ export function DatePicker({
                     maxDate={maxDate}
                     required={required}
                     dateFormat="MMM d, yyyy"
-                    customInput={<CustomInput />}
+                    customInput={<CustomInput className={className} isFocused={isFocused} />}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     className="text-gray-900"

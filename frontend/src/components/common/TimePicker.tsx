@@ -38,19 +38,25 @@ export function TimePicker({
                 </label>
             )}
             <div className="relative">
-                <button
-                    type="button"
+                <input
+                    type="text"
+                    value={value || ''}
                     onClick={() => setIsOpen(!isOpen)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    aria-required={required}
-                    className={`w-full pl-10 pr-8 py-1.5 text-xs text-gray-900 bg-white border rounded-lg text-left
+                    readOnly
+                    placeholder="Select time"
+                    list="timeSlots"
+                    className={`w-full pl-8 pr-2 py-1.5 text-xs text-gray-900 bg-white border rounded-lg
                         ${isFocused ? 'border-primary ring-1 ring-primary/20' : 'border-gray-300'}
                         focus:outline-none transition-all duration-200 ${className}`}
-                >
-                    {value || 'Select time'}
-                </button>
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                />
+                <datalist id="timeSlots">
+                    {timeSlots.map((time) => (
+                        <option key={time} value={time} />
+                    ))}
+                </datalist>
+                <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none">
                     <svg
                         className={`w-4 h-4 ${isFocused ? 'text-primary' : 'text-gray-400'} transition-colors`}
                         fill="none"
@@ -62,21 +68,6 @@ export function TimePicker({
                             strokeLinejoin="round"
                             strokeWidth={1.5}
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                    </svg>
-                </div>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <svg
-                        className="w-4 h-4 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M19 9l-7 7-7-7"
                         />
                     </svg>
                 </div>

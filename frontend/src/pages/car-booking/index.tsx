@@ -9,6 +9,7 @@ import { carService } from '../../lib/api/carService';
 import { useAuth } from '../../lib/firebase/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { Toast } from '../../components/common/Toast';
+import mountainBg from '../../assets/mountains.jpeg';
 
 interface SearchFormData {
     pickupLocation: {
@@ -170,14 +171,24 @@ export default function CarBookingPage() {
             <Toast toasts={toasts} />
 
             {/* Hero Section */}
-            <div className="relative bg-primary text-white py-12 mb-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-8">
+            <div className="relative h-[30vh] bg-black text-white">
+                {/* Background Image */}
+                <div className="absolute inset-0 z-0">
+                    <img
+                        src={mountainBg}
+                        alt="Mountain landscape"
+                        className="w-full h-full object-cover opacity-60"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30" />
+                </div>
+
+                <div className="relative h-full flex items-center justify-center text-center pt-12">
+                    <motion.div className="max-w-2xl px-4">
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="text-3xl font-serif mb-4"
+                            className="text-2xl md:text-3xl lg:text-4xl font-serif mb-3"
                         >
                             Find Your Perfect Rental Car
                         </motion.h1>
@@ -185,26 +196,28 @@ export default function CarBookingPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="text-lg text-white/90 max-w-2xl mx-auto"
+                            className="text-base text-white/90"
                         >
                             Compare prices from top rental companies and find the perfect car for your journey
                         </motion.p>
-                    </div>
-
-                    {/* Search Form */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="max-w-5xl mx-auto"
-                    >
-                        <CarSearchForm
-                            onSubmit={handleSearch}
-                            isLoading={isSearching}
-                        />
                     </motion.div>
                 </div>
             </div>
+
+            {/* Search Form Section */}
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10 pb-12"
+            >
+                <div className="max-w-5xl mx-auto">
+                    <CarSearchForm
+                        onSubmit={handleSearch}
+                        isLoading={isSearching}
+                    />
+                </div>
+            </motion.div>
 
             {/* Results Section */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
