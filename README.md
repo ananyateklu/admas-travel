@@ -134,6 +134,16 @@ frontend/
 ├── src/
 │   ├── components/           # Reusable UI components
 │   │   ├── admin/           # Admin dashboard components
+│   │   ├── car-booking/     # Car rental components
+│   │   │   ├── CarBookingData.json    # Car booking data types
+│   │   │   ├── CarBookingModal.tsx    # Booking confirmation modal
+│   │   │   ├── CarCard.tsx            # Individual car display
+│   │   │   ├── CarDetailsModal.tsx    # Detailed car information
+│   │   │   ├── CarLoadingState.tsx    # Loading animations
+│   │   │   ├── CarSearchForm.tsx      # Search form component
+│   │   │   ├── CarSearchInput.tsx     # Location search input
+│   │   │   ├── CarSearchResults.tsx   # Search results display
+│   │   │   └── VehicleObject.json     # Vehicle type definitions
 │   │   ├── chat/            # Chat interface components
 │   │   ├── common/          # Common shared components
 │   │   ├── flight-booking/  # Flight booking components
@@ -186,6 +196,7 @@ frontend/
 │   │   ├── hotelTypes.ts           # Hotel-related types
 │   │   ├── flightbooking.ts        # Flight booking types
 │   │   ├── flight.ts               # Flight data types
+│   │   ├── carSearch.ts            # Car rental search and booking types
 │   │   └── *.json                  # Type definition data
 │   ├── services/           # Service layer
 │   │   └── flightService.ts # Flight-related services
@@ -288,6 +299,7 @@ The application uses Firebase for various features:
 
 - **hotelService.ts**: Hotel booking and management
 - **flightService.ts**: Flight booking and management
+- **carService.ts**: Car rental booking and management
 
 These services handle:
 
@@ -306,6 +318,8 @@ The application uses several custom hooks to manage various functionalities:
 - **useScrollAnimation**: Handle scroll-based animations
 - **useAirportSearch**: Manage airport search functionality
 - **useTravelPreferences**: Handle user travel preferences
+- **useCarSearch**: Manage car rental search state and filters
+- **useCarBooking**: Handle car rental booking process and state
 
 ## Type System
 
@@ -314,17 +328,8 @@ The application uses TypeScript with comprehensive type definitions:
 - **hotelTypes.ts**: Definitions for hotel bookings and properties
 - **flightbooking.ts**: Flight booking related types
 - **flight.ts**: Flight data and scheduling types
+- **carSearch.ts**: Car rental search and booking types
 - **types.ts**: Global type definitions
-
-## Services
-
-The application's service layer handles business logic and API interactions:
-
-- **flightService.ts**: Manages flight-related operations
-  - Flight search
-  - Booking management
-  - Price calculations
-  - Schedule updates
 
 ## State Management
 

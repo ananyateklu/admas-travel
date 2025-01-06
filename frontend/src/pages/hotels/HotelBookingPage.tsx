@@ -4,6 +4,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../lib/firebase/useAuth';
 import { HotelBookingForm } from '../../components/hotel-booking/HotelBookingForm';
 import { HotelBookingHero } from '../../components/hotel-booking/HotelBookingHero';
+import { BookingConfirmationPopup } from '../../components/common/BookingConfirmationPopup';
 import bookPic from '../../assets/book.jpg';
 import { hotelService } from '../../lib/api/hotelService';
 import { HotelDetailsResponse, HotelDetails, HotelRoomDetails } from '../../types/hotelDetails';
@@ -125,6 +126,13 @@ export default function HotelBookingPage() {
     const [error, setError] = useState<string | null>(null);
     const { user } = useAuth();
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [bookingDetails, setBookingDetails] = useState<{
+        name: string;
+        reference: string;
+        email: string;
+    } | null>(null);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -182,9 +190,26 @@ export default function HotelBookingPage() {
         fetchHotelDetails();
     }, [hotelId, searchParams]);
 
+    // Add function to generate booking reference
+    const generateBookingReference = () => {
+        const prefix = 'ADMAS'; // Full company name prefix
+        const year = new Date().getFullYear().toString().slice(-2); // Last 2 digits of year
+        const month = (new Date().getMonth() + 1).toString().padStart(2, '0'); // Current month
+        const random = Math.random().toString(36).substring(2, 5).toUpperCase(); // 3 random chars
+        const sequence = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // 3 digit sequence
+        return `${prefix}-${year}${month}-${random}${sequence}`;
+    };
+
     const handleSubmit = async (formData: HotelBookingFormData) => {
         try {
             if (!hotel || !user) return;
+
+            setIsSubmitting(true);
+            console.log('Starting hotel booking submission...'); // Debug log
+
+            // Generate booking reference
+            const bookingReference = generateBookingReference();
+            console.log('Generated booking reference:', bookingReference); // Debug log
 
             // Calculate number of nights
             const checkIn = new Date(formData.checkInDate);
@@ -205,6 +230,7 @@ export default function HotelBookingPage() {
                 ...formData,
                 hotelId: hotel.hotel_id,
                 hotelName: hotel.property.name,
+                bookingReference,
                 totalPrice: {
                     amount: totalPrice,
                     currency: selectedRoom.price.currency
@@ -238,17 +264,44 @@ export default function HotelBookingPage() {
                 numberOfGuests: formData.numberOfGuests
             };
 
+            console.log('Saving booking to Firestore...'); // Debug log
+
             // Save to Firestore
             const bookingsRef = collection(db, 'bookings');
-            const docRef = await addDoc(bookingsRef, bookingData);
+            await addDoc(bookingsRef, bookingData);
 
-            // Navigate to confirmation page with booking ID
-            navigate(`/bookings/${docRef.id}`);
+            console.log('Booking saved successfully, setting popup details...'); // Debug log
+
+            // Show confirmation popup
+            const details = {
+                name: hotel.property.name,
+                reference: bookingReference,
+                email: formData.contactEmail
+            };
+            console.log('Setting booking details:', details); // Debug log
+
+            setBookingDetails(details);
+            setShowConfirmation(true);
+
+            console.log('Show confirmation set to true'); // Debug log
         } catch (err) {
             console.error('Error submitting booking:', err);
             setError('Failed to submit booking. Please try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
+
+    const handleConfirmationClose = () => {
+        console.log('Closing confirmation popup'); // Debug log
+        setShowConfirmation(false);
+        setBookingDetails(null);
+        // Navigate to bookings page
+        navigate('/bookings');
+    };
+
+    // Add debug log for render
+    console.log('Current state:', { showConfirmation, bookingDetails }); // Debug log
 
     if (isLoading) {
         return (
@@ -340,72 +393,85 @@ export default function HotelBookingPage() {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="min-h-screen"
-        >
-            <HotelBookingHero
-                backgroundImage={bookPic}
-                title="Book Your Perfect Stay"
-                subtitle="Experience comfort and luxury at your dream destination"
-            />
-
+        <>
             <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10 pb-12"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="min-h-screen"
             >
-                <div className="max-w-3xl mx-auto">
-                    <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                        className="bg-white rounded-xl shadow-lg p-6"
-                    >
-                        <motion.h2
-                            initial={{ y: 10, opacity: 0 }}
+                <HotelBookingHero
+                    backgroundImage={bookPic}
+                    title="Book Your Perfect Stay"
+                    subtitle="Experience comfort and luxury at your dream destination"
+                />
+
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10 pb-12"
+                >
+                    <div className="max-w-3xl mx-auto">
+                        <motion.div
+                            initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.5 }}
-                            className="text-xl font-semibold text-gray-900 mb-6"
+                            transition={{ delay: 0.4 }}
+                            className="bg-white rounded-xl shadow-lg p-6"
                         >
-                            {hotel.property.name}
-                        </motion.h2>
-                        <HotelBookingForm
-                            hotel={hotel}
-                            initialData={initialFormData}
-                            onSubmit={handleSubmit}
-                            showAutoFill={!!user}
-                            onAutoFillGuest={() => {
-                                if (!user || !userProfile) return null;
-                                return {
-                                    fullName: user.displayName ?? '',
-                                    dateOfBirth: userProfile.dateOfBirth ?? '',
-                                    nationality: userProfile.nationality ?? '',
-                                    idNumber: userProfile.idNumber ?? '',
-                                    idExpiry: userProfile.idExpiry ?? ''
-                                };
-                            }}
-                            onAutoFillContact={(field) => {
-                                if (!user || !userProfile) return '';
-                                switch (field) {
-                                    case 'name':
-                                        return user.displayName ?? '';
-                                    case 'email':
-                                        return user.email ?? '';
-                                    case 'phone':
-                                        return userProfile.phoneNumber ?? user.phoneNumber ?? '';
-                                    default:
-                                        return '';
-                                }
-                            }}
-                        />
-                    </motion.div>
-                </div>
+                            <motion.h2
+                                initial={{ y: 10, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.5 }}
+                                className="text-xl font-semibold text-gray-900 mb-6"
+                            >
+                                {hotel.property.name}
+                            </motion.h2>
+                            <HotelBookingForm
+                                hotel={hotel}
+                                initialData={initialFormData}
+                                onSubmit={handleSubmit}
+                                isSubmitting={isSubmitting}
+                                showAutoFill={!!user}
+                                onAutoFillGuest={() => {
+                                    if (!user || !userProfile) return null;
+                                    return {
+                                        fullName: user.displayName ?? '',
+                                        dateOfBirth: userProfile.dateOfBirth ?? '',
+                                        nationality: userProfile.nationality ?? '',
+                                        idNumber: userProfile.idNumber ?? '',
+                                        idExpiry: userProfile.idExpiry ?? ''
+                                    };
+                                }}
+                                onAutoFillContact={(field) => {
+                                    if (!user || !userProfile) return '';
+                                    switch (field) {
+                                        case 'name':
+                                            return user.displayName ?? '';
+                                        case 'email':
+                                            return user.email ?? '';
+                                        case 'phone':
+                                            return userProfile.phoneNumber ?? user.phoneNumber ?? '';
+                                        default:
+                                            return '';
+                                    }
+                                }}
+                            />
+                        </motion.div>
+                    </div>
+                </motion.div>
             </motion.div>
-        </motion.div>
+
+            {/* Confirmation Popup */}
+            {bookingDetails && (
+                <BookingConfirmationPopup
+                    isOpen={showConfirmation}
+                    onClose={handleConfirmationClose}
+                    bookingType="hotel"
+                    bookingDetails={bookingDetails}
+                />
+            )}
+        </>
     );
 }

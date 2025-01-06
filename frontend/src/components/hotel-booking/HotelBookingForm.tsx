@@ -93,7 +93,12 @@ export function HotelBookingForm({
         if (currentStep < steps.length - 1) {
             handleNext();
         } else {
-            await onSubmit(formData);
+            console.log('Submitting form data:', formData); // Debug log
+            try {
+                await onSubmit(formData);
+            } catch (error) {
+                console.error('Error submitting form:', error);
+            }
         }
     };
 

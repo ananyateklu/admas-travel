@@ -22,7 +22,7 @@ export const navLinks = [
     },
     {
         path: '/book',
-        label: 'Book Flight',
+        label: 'Flight',
         icon: BookIcon({ className: "w-4 h-4" }),
         description: 'Book a new flight'
     },
@@ -31,6 +31,12 @@ export const navLinks = [
         label: 'Hotels',
         icon: BookIcon({ className: "w-4 h-4" }),
         description: 'Search and book hotels'
+    },
+    {
+        path: '/car-booking',
+        label: 'Cars',
+        icon: BookIcon({ className: "w-4 h-4" }),
+        description: 'Rent a car'
     },
     {
         path: '/bookings',

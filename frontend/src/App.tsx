@@ -20,6 +20,7 @@ const Account = React.lazy(() => import('./pages/Account'));
 const HotelSearchPage = React.lazy(() => import('./pages/hotels/HotelSearchPage'));
 const HotelBookingPage = React.lazy(() => import('./pages/hotels/HotelBookingPage'));
 const BookingDetailsPage = React.lazy(() => import('./pages/bookings/BookingDetailsPage'));
+const CarBookingPage = React.lazy(() => import('./pages/car-booking'));
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
                 <Route path="book" element={<Book />} />
                 <Route path="hotels" element={<HotelSearchPage />} />
                 <Route path="hotels/:hotelId/book" element={<HotelBookingPage />} />
+                <Route path="car-booking" element={<CarBookingPage />} />
                 <Route path="admin" element={<Admin />} />
                 <Route path="bookings" element={<Bookings />} />
                 <Route path="bookings/:bookingId" element={<BookingDetailsPage />} />
