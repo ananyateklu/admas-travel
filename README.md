@@ -90,14 +90,14 @@ Admas Travel is a modern travel booking platform built with React and TypeScript
 
 ### Installation
 
-1. Clone the repository
+1/ Clone the repository
 
 ```bash
 git clone https://github.com/yourusername/admas-travel.git
 cd admas-travel/frontend
 ```
 
-2. Install dependencies
+2/ Install dependencies
 
 ```bash
 npm install
@@ -105,11 +105,11 @@ npm install
 yarn install
 ```
 
-3. Set up environment variables
+3/ Set up environment variables
 
 Create a `.env` file in the frontend directory with the following variables:
 
-```env
+```plaintext
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
 VITE_FIREBASE_PROJECT_ID=your_project_id
@@ -119,7 +119,7 @@ VITE_FIREBASE_APP_ID=your_app_id
 VITE_CONVAI_API_KEY=your_convai_key
 ```
 
-4. Start the development server
+4/ Start the development server
 
 ```bash
 npm run dev
@@ -129,7 +129,7 @@ yarn dev
 
 ## Project Structure
 
-```
+```plaintext
 frontend/
 ├── src/
 │   ├── components/           # Reusable UI components
@@ -355,4 +355,4 @@ The application can be deployed using:
 - Vercel for frontend hosting
 - Firebase Hosting as an alternative
 - Continuous Integration/Deployment pipeline
-- Environment-specific configurations
+- Environment-specific configuration
