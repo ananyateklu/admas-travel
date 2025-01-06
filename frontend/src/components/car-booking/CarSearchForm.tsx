@@ -60,11 +60,11 @@ export function CarSearchForm({
         const newErrors: Partial<Record<keyof CarSearchFormData, string>> = {};
 
         if (!formData.pickupLocation.name || !formData.pickupLocation.latitude || !formData.pickupLocation.longitude) {
-            newErrors.pickupLocation = 'Please select a pickup location from the suggestions';
+            newErrors.pickupLocation = 'Please select a pickup location';
         }
 
         if (!formData.dropoffLocation.name || !formData.dropoffLocation.latitude || !formData.dropoffLocation.longitude) {
-            newErrors.dropoffLocation = 'Please select a drop-off location from the suggestions';
+            newErrors.dropoffLocation = 'Please select a drop-off location';
         }
 
         if (!formData.driverAge || parseInt(formData.driverAge) < 18) {
@@ -78,8 +78,15 @@ export function CarSearchForm({
             `${formData.dropoffDate.toDateString()} ${formData.dropoffTime}`
         );
 
+        // Check if times are the same on the same day
+        if (formData.pickupDate.toDateString() === formData.dropoffDate.toDateString() &&
+            formData.pickupTime === formData.dropoffTime) {
+            newErrors.dropoffTime = 'Select different pickup/drop-off times';
+        }
+
+        // Check if dropoff is before or equal to pickup
         if (dropoffDateTime <= pickupDateTime) {
-            newErrors.dropoffDate = 'Drop-off time must be after pickup time';
+            newErrors.dropoffTime = 'Drop-off must be after pickup';
         }
 
         setErrors(newErrors);
@@ -157,11 +164,19 @@ export function CarSearchForm({
                                 <TimePicker
                                     label=""
                                     value={formData.pickupTime}
-                                    onChange={(time: string) => setFormData(prev => ({ ...prev, pickupTime: time }))}
+                                    onChange={(time: string) => {
+                                        setFormData(prev => ({ ...prev, pickupTime: time }));
+                                        setErrors(prev => ({ ...prev, pickupTime: undefined, dropoffTime: undefined }));
+                                    }}
                                     required
-                                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg 
-                                        focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                                    className={`w-full px-2 py-1.5 text-xs border rounded-lg transition-all duration-200 
+                                        ${errors.pickupTime
+                                            ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
+                                            : 'border-gray-300 focus:ring-primary/20 focus:border-primary'}`}
                                 />
+                                {errors.pickupTime && (
+                                    <p className="mt-0.5 text-[10px] text-red-500 whitespace-nowrap absolute">{errors.pickupTime}</p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -188,11 +203,19 @@ export function CarSearchForm({
                                 <TimePicker
                                     label=""
                                     value={formData.dropoffTime}
-                                    onChange={(time: string) => setFormData(prev => ({ ...prev, dropoffTime: time }))}
+                                    onChange={(time: string) => {
+                                        setFormData(prev => ({ ...prev, dropoffTime: time }));
+                                        setErrors(prev => ({ ...prev, pickupTime: undefined, dropoffTime: undefined }));
+                                    }}
                                     required
-                                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-lg 
-                                        focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                                    className={`w-full px-2 py-1.5 text-xs border rounded-lg transition-all duration-200 
+                                        ${errors.dropoffTime
+                                            ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
+                                            : 'border-gray-300 focus:ring-primary/20 focus:border-primary'}`}
                                 />
+                                {errors.dropoffTime && (
+                                    <p className="mt-0.5 text-[10px] text-red-500 whitespace-nowrap absolute">{errors.dropoffTime}</p>
+                                )}
                             </div>
                         </div>
                     </div>

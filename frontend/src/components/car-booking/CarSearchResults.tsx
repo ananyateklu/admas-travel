@@ -25,27 +25,40 @@ export function CarSearchResults({
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-12 text-center"
+                className="flex flex-col items-center justify-center py-12 px-4 bg-white rounded-lg shadow-sm"
             >
-                <svg
-                    className="w-16 h-16 text-gray-300 mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                    />
-                </svg>
+                <div className="rounded-full bg-gray-50 p-3 mb-4">
+                    <svg
+                        className="w-8 h-8 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M8 16l-3 3m0 0l3 3m-3-3h14m-5-3v6m0 0l3-3m-3 3l-3-3M3 8l3-3m0 0l3 3m-3-3v14m5-3h6m0 0l3 3m-3-3l-3 3"
+                        />
+                    </svg>
+                </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    No cars available
+                    No Available Cars Found
                 </h3>
-                <p className="text-sm text-gray-500 max-w-md">
-                    We couldn't find any cars matching your search criteria. Try adjusting your search parameters or try a different location.
+                <p className="text-sm text-gray-500 text-center max-w-md">
+                    We couldn't find any cars matching your criteria. Try adjusting your dates,
+                    location, or search parameters for more options.
                 </p>
+                <div className="mt-6 space-x-4">
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    >
+                        Modify Search
+                    </motion.button>
+                </div>
             </motion.div>
         );
     }

@@ -56,6 +56,24 @@ export default function CarBookingPage() {
             const pickupDate = formData.pickupDate.toISOString().split('T')[0];
             const dropoffDate = formData.dropoffDate.toISOString().split('T')[0];
 
+            // Create Date objects for comparison
+            const pickupDateTime = new Date(`${pickupDate}T${formData.pickupTime}:00`);
+            const dropoffDateTime = new Date(`${dropoffDate}T${formData.dropoffTime}:00`);
+
+            // Check if pickup and dropoff times are the same
+            if (pickupDateTime.getTime() === dropoffDateTime.getTime()) {
+                throw new Error(JSON.stringify({
+                    message: "Pickup and drop-off times cannot be the same. Please select different times for your rental period."
+                }));
+            }
+
+            // Check if dropoff is before pickup
+            if (dropoffDateTime.getTime() < pickupDateTime.getTime()) {
+                throw new Error(JSON.stringify({
+                    message: "Drop-off time must be after pickup time. Please adjust your rental period."
+                }));
+            }
+
             const searchParams: CarSearchParams = {
                 pick_up_latitude: String(parseFloat(formData.pickupLocation.latitude).toFixed(6)),
                 pick_up_longitude: String(parseFloat(formData.pickupLocation.longitude).toFixed(6)),
@@ -79,9 +97,10 @@ export default function CarBookingPage() {
 
             const response = await carService.searchCarRentals(searchParams);
 
-            if (response.status && response.data.vehicles) {
+            if (response.status) {
                 setSearchResults(response.data.vehicles);
                 setSearchKey(response.data.search_key);
+                setSearchError(null);
             } else {
                 setSearchError('Failed to fetch car rentals. Please try again.');
                 setSearchResults([]);
@@ -94,6 +113,7 @@ export default function CarBookingPage() {
             } else {
                 setSearchError('An error occurred while searching for cars. Please try again.');
             }
+            setSearchResults([]);
         } finally {
             setIsSearching(false);
         }

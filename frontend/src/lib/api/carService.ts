@@ -304,9 +304,26 @@ export const carService = {
 
             console.log('Raw API response:', response.data);
 
-            // Check if we have the expected data structure
-            if (!response.data?.status || !response.data?.data?.search_results) {
-                throw new Error('Invalid response structure from API');
+            // Check if we have a valid response structure
+            if (!response.data?.status) {
+                return {
+                    status: false,
+                    data: {
+                        vehicles: [],
+                        search_key: ''
+                    }
+                };
+            }
+
+            // If no search results, return empty array
+            if (!response.data?.data?.search_results) {
+                return {
+                    status: true,
+                    data: {
+                        vehicles: [],
+                        search_key: response.data?.data?.search_key || ''
+                    }
+                };
             }
 
             // Map the API response to our CarSearchResponse type
@@ -333,7 +350,7 @@ export const carService = {
                                 vehicle.vehicle_info.airbags && 'Airbags',
                                 vehicle.vehicle_info.free_cancellation && 'Free Cancellation'
                             ].filter((feature): feature is string => Boolean(feature)),
-                            image_url: vehicle.vehicle_info.image_url ?? vehicle.vehicle_info.image_thumbnail_url ?? '/images/car-placeholder.png'
+                            image_url: vehicle.vehicle_info.image_url || vehicle.vehicle_info.image_thumbnail_url || ''
                         },
                         pricing: {
                             total_price: {
