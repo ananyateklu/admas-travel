@@ -341,28 +341,31 @@ Passenger ${i + 1}:
     return (
         <>
             <div className="min-h-screen bg-white">
-                <BookingHero backgroundImage={bookPic} />
+                <div className="relative">
+                    <BookingHero backgroundImage={bookPic} />
 
-                <section className="py-6">
-                    <div className="max-w-5xl mx-auto px-4">
-                        <div className="mb-3 flex justify-end">
-                            <NotificationToggle className="bg-white shadow-sm border border-gray-300 rounded-lg px-3 py-1.5" />
-                        </div>
-                        <div className="border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md">
-                            <BookingForm
-                                initialData={initialFormData}
-                                onSubmit={handleSubmit}
-                                isSubmitting={isSubmitting}
-                                onAutoFillPassenger={handleAutoFillPassenger}
-                                onAutoFillContact={handleAutoFillContact}
-                                showAutoFill={!!user}
-                            />
+                    {/* Booking Form Section - Moved up to overlap with hero */}
+                    <div className="absolute inset-x-0 bottom-0 translate-y-1/2">
+                        <div className="max-w-5xl mx-auto px-4">
+                            <div className="mb-3 flex justify-end">
+                                <NotificationToggle className="bg-white shadow-sm border border-gray-300 rounded-lg px-3 py-1.5" />
+                            </div>
+                            <div className="border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md">
+                                <BookingForm
+                                    initialData={initialFormData}
+                                    onSubmit={handleSubmit}
+                                    isSubmitting={isSubmitting}
+                                    onAutoFillPassenger={handleAutoFillPassenger}
+                                    onAutoFillContact={handleAutoFillContact}
+                                    showAutoFill={!!user}
+                                />
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
-                {/* Additional Information */}
-                <section className="py-6 bg-gray-50">
+                {/* Additional Information - Moved down to account for overlapping form */}
+                <section className="py-6 bg-gray-50 mt-[250px]">
                     <div className="max-w-5xl mx-auto px-4">
                         <div className="bg-white border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md p-4">
                             <div className="grid grid-cols-3 gap-4">
