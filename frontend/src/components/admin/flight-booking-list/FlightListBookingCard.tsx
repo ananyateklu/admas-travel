@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BookingData, BookingStatus } from '../types';
 import { BookingStatusProgress } from './FlightListBookingStatusProgress';
 import { BookingDateBadge } from './FlightListBookingDateBadge';
-import { BookingHeader } from './FlightListBookingHeader';
+import { BookingHeader } from '../shared/BookingHeader';
 import { JourneyDetails } from './FlightListJourneyDetails';
 import { PassengerAvatars } from './FlightListPassengerAvatars';
 import { BookingExpandedView } from './FlightListBookingExpandedView';
@@ -113,6 +113,7 @@ export function BookingCard({
                         )}
                         <div className="space-y-1.5">
                             <BookingHeader
+                                type="flight"
                                 contactName={booking.contactName}
                                 status={booking.status}
                                 bookingReference={booking.bookingReference}

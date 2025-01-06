@@ -17,6 +17,8 @@ interface SearchFiltersProps {
     statusFilter: string;
     onStatusFilterChange: (value: string) => void;
     onAdvancedFiltersChange?: (filters: Partial<AdvancedFilters>) => void;
+    bookingTypeFilter?: string;
+    onBookingTypeFilterChange?: (value: string) => void;
 }
 
 export function SearchFilters({
@@ -24,7 +26,9 @@ export function SearchFilters({
     onSearchChange,
     statusFilter,
     onStatusFilterChange,
-    onAdvancedFiltersChange
+    onAdvancedFiltersChange,
+    bookingTypeFilter = 'all',
+    onBookingTypeFilterChange
 }: SearchFiltersProps) {
     const [filters, setFilters] = useState<Partial<AdvancedFilters>>({});
 
@@ -121,6 +125,9 @@ export function SearchFilters({
         setFilters({});
         onSearchChange('');
         onStatusFilterChange('all');
+        if (onBookingTypeFilterChange) {
+            onBookingTypeFilterChange('all');
+        }
     };
 
     return (
@@ -167,6 +174,51 @@ export function SearchFilters({
                         </svg>
                         Reset Filters
                     </button>
+                </div>
+            </div>
+
+            {/* Booking Type Filters */}
+            <div className="px-3 py-2 border-b border-forest-50/50">
+                <div className="flex flex-wrap gap-2">
+                    <button
+                        onClick={() => onBookingTypeFilterChange?.('all')}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200
+                            ${bookingTypeFilter === 'all'
+                                ? 'bg-gradient-to-br from-forest-300 to-forest-400 text-white shadow-sm'
+                                : 'text-gray-600 hover:bg-forest-50/30 hover:text-forest-500'
+                            }`}
+                    >
+                        All Types
+                    </button>
+                    {['flight', 'hotel', 'car'].map(type => (
+                        <button
+                            key={type}
+                            onClick={() => onBookingTypeFilterChange?.(type)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex items-center gap-1.5
+                                ${bookingTypeFilter === type
+                                    ? 'bg-gradient-to-br from-forest-300 to-forest-400 text-white shadow-sm'
+                                    : 'text-gray-600 hover:bg-forest-50/30 hover:text-forest-500'
+                                }`}
+                        >
+                            {type === 'flight' && (
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
+                            )}
+                            {type === 'hotel' && (
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            )}
+                            {type === 'car' && (
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                                </svg>
+                            )}
+                            {type.charAt(0).toUpperCase() + type.slice(1)}s
+                        </button>
+                    ))}
                 </div>
             </div>
 

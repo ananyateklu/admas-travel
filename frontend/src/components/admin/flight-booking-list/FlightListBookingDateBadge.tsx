@@ -1,10 +1,17 @@
 import { motion } from 'framer-motion';
 
 interface BookingDateBadgeProps {
-    date: Date;
+    date: Date | string;
 }
 
 export function BookingDateBadge({ date }: BookingDateBadgeProps) {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+    // Check if date is valid
+    if (isNaN(dateObj.getTime())) {
+        return null;
+    }
+
     return (
         <motion.div
             className="relative"
@@ -21,7 +28,7 @@ export function BookingDateBadge({ date }: BookingDateBadgeProps) {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.1 }}
                 >
-                    {date.getDate()}
+                    {dateObj.getDate()}
                 </motion.span>
                 <motion.span
                     className="text-[10px] font-medium text-forest-600/80 uppercase tracking-wider"
@@ -29,7 +36,7 @@ export function BookingDateBadge({ date }: BookingDateBadgeProps) {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
                 >
-                    {date.toLocaleDateString(undefined, { month: 'short' })}
+                    {dateObj.toLocaleDateString(undefined, { month: 'short' })}
                 </motion.span>
                 <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>

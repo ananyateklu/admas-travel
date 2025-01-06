@@ -15,7 +15,7 @@ export interface HotelBooking {
         currency: string;
     };
     status: 'pending' | 'confirmed' | 'cancelled';
-    bookedAt: string;
+    bookedAt: string | { toDate(): Date };
 }
 
 // Types for the hotel details page
