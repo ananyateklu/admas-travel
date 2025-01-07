@@ -29,12 +29,6 @@ export function CarDetailsModal({
         availability
     } = car;
 
-    const modalVariants = {
-        hidden: { opacity: 0, scale: 0.95 },
-        visible: { opacity: 1, scale: 1 },
-        exit: { opacity: 0, scale: 0.95 }
-    };
-
     const formatPrice = (amount: number, currency: string | null) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -273,8 +267,9 @@ export function CarDetailsModal({
     };
 
     return createPortal(
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
             <motion.div
+                key="modal-backdrop"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -284,12 +279,17 @@ export function CarDetailsModal({
             >
                 <div className="min-h-screen w-full flex items-center justify-center p-4">
                     <motion.div
+                        key="modal-content"
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        variants={modalVariants}
+                        variants={{
+                            hidden: { opacity: 0, scale: 0.95, y: 20 },
+                            visible: { opacity: 1, scale: 1, y: 0 },
+                            exit: { opacity: 0, scale: 0.95, y: 20 }
+                        }}
                         transition={{ type: "spring", duration: 0.5 }}
-                        className="w-[95%] md:w-[85%] lg:w-[75%] xl:w-[70%] min-w-[800px] max-w-[1400px] bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden"
+                        className="w-[95%] md:w-[70%] lg:w-[55%] xl:w-[50%] min-w-[800px] max-w-[1200px] bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Close button */}
@@ -302,30 +302,29 @@ export function CarDetailsModal({
                             </svg>
                         </button>
 
-                        {/* Hero Image */}
-                        <div className="relative h-56 sm:h-64 w-full">
-                            <div className="absolute inset-0">
-                                <img
-                                    src={vehicle_info.image_url}
-                                    alt={vehicle_info.name}
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                            </div>
-                            <div className="absolute bottom-0 left-0 p-5 text-white">
-                                <h2 className="text-lg sm:text-xl font-serif mb-1">{vehicle_info.name}</h2>
-                                <div className="space-y-0.5">
-                                    <p className="text-[11px] text-white/90">
+                        {/* Hero Section */}
+                        <div className="relative flex items-center justify-between p-5 border-b">
+                            <div className="flex-1">
+                                <h2 className="text-xl font-serif mb-1 text-gray-900">{vehicle_info.name}</h2>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-gray-600">
                                         {vehicle_info.type} • {vehicle_info.category}
                                     </p>
-                                    <p className="text-xs opacity-90 flex items-center gap-1">
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <p className="text-sm text-gray-600 flex items-center gap-1">
+                                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
                                         {availability.pickup_location.name}
                                     </p>
                                 </div>
+                            </div>
+                            <div className="w-64 h-40 ml-6 rounded-lg overflow-hidden flex-shrink-0">
+                                <img
+                                    src={vehicle_info.image_url}
+                                    alt={vehicle_info.name}
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
                         </div>
 
@@ -342,7 +341,10 @@ export function CarDetailsModal({
                                 <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={onBook}
+                                    onClick={() => {
+                                        onClose();
+                                        onBook();
+                                    }}
                                     className="px-4 py-1.5 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark transition-colors"
                                 >
                                     Book Now

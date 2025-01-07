@@ -43,6 +43,7 @@ export default function CarBookingPage() {
     const [searchResults, setSearchResults] = useState<CarSearchResult[]>([]);
     const [searchError, setSearchError] = useState<string | null>(null);
     const [selectedCar, setSelectedCar] = useState<CarSearchResult | null>(null);
+    const [bookingCar, setBookingCar] = useState<CarSearchResult | null>(null);
     const [searchKey, setSearchKey] = useState<string>('');
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [isBooking, setIsBooking] = useState(false);
@@ -137,16 +138,18 @@ export default function CarBookingPage() {
             return;
         }
 
+        setBookingCar(selectedCar);
         setIsBookingModalOpen(true);
+        setSelectedCar(null);
     };
 
     const handleBookingConfirm = async (formData: BookingFormData) => {
-        if (!selectedCar || !user) return;
+        if (!bookingCar || !user) return;
 
         setIsBooking(true);
         try {
             const response = await carService.bookCar({
-                vehicle_id: selectedCar.vehicle_id,
+                vehicle_id: bookingCar.vehicle_id,
                 search_key: searchKey,
                 firstName: formData.firstName,
                 lastName: formData.lastName,
@@ -154,7 +157,7 @@ export default function CarBookingPage() {
                 phone: formData.phone,
                 specialRequests: formData.specialRequests,
                 userId: user.uid,
-                totalPrice: selectedCar.pricing.total_price
+                totalPrice: bookingCar.pricing.total_price
             });
 
             if (response.status) {
@@ -165,7 +168,7 @@ export default function CarBookingPage() {
                 });
 
                 setIsBookingModalOpen(false);
-                setSelectedCar(null);
+                setBookingCar(null);
             } else {
                 throw new Error(response.message || 'Failed to complete your booking');
             }
@@ -269,11 +272,13 @@ export default function CarBookingPage() {
             )}
 
             {/* Booking Modal */}
-            {selectedCar && (
+            {bookingCar && isBookingModalOpen && (
                 <CarBookingModal
-                    car={selectedCar}
-                    isOpen={isBookingModalOpen}
-                    onClose={() => setIsBookingModalOpen(false)}
+                    car={bookingCar}
+                    onClose={() => {
+                        setIsBookingModalOpen(false);
+                        setBookingCar(null);
+                    }}
                     onConfirm={handleBookingConfirm}
                     isLoading={isBooking}
                 />
