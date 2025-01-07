@@ -58,10 +58,10 @@ export function HotelDetailsModal({ hotel, onClose, onBook }: HotelDetailsModalP
                             <div className="absolute bottom-0 left-0 p-5 text-white">
                                 <h2 className="text-lg sm:text-xl font-serif mb-1">{hotel.property.name}</h2>
                                 <div className="space-y-0.5">
-                                    {hotel.accessibilityLabel.split('\n').map((line, index) => {
+                                    {hotel.accessibilityLabel.split('\n').map((line) => {
                                         if (line.includes('bed') || line.includes('room') || line.includes('bathroom')) {
                                             return (
-                                                <p key={`room-${index}`} className="text-[11px] text-white/90">
+                                                <p key={`room-${line.trim()}`} className="text-[11px] text-white/90">
                                                     {line.trim()}
                                                 </p>
                                             );
@@ -113,7 +113,7 @@ export function HotelDetailsModal({ hotel, onClose, onBook }: HotelDetailsModalP
                                 <div className="space-y-3">
                                     {/* Rating and Reviews */}
                                     <div className="flex items-center space-x-3">
-                                        {hotel.property.reviewScore && (
+                                        {Boolean(hotel.property.reviewScore) && (
                                             <div className="px-1.5 py-0.5 bg-primary text-white text-xs rounded">
                                                 {hotel.property.reviewScore.toFixed(1)}
                                             </div>
@@ -126,9 +126,9 @@ export function HotelDetailsModal({ hotel, onClose, onBook }: HotelDetailsModalP
                                     {/* Special Badges */}
                                     {hotel.property.priceBreakdown.benefitBadges?.length > 0 && (
                                         <div className="flex flex-wrap gap-1.5">
-                                            {hotel.property.priceBreakdown.benefitBadges.map((badge, index) => (
+                                            {hotel.property.priceBreakdown.benefitBadges.map((badge) => (
                                                 <div
-                                                    key={index}
+                                                    key={`badge-${badge.text}`}
                                                     className={`px-2 py-0.5 rounded text-[11px] ${badge.variant === 'constructive'
                                                         ? 'bg-green-100 text-green-700'
                                                         : 'bg-blue-100 text-blue-700'
@@ -173,10 +173,10 @@ export function HotelDetailsModal({ hotel, onClose, onBook }: HotelDetailsModalP
                                         <div>
                                             <h3 className="text-sm font-medium mb-1.5">Room Information</h3>
                                             <div className="bg-gray-50 rounded p-2">
-                                                {hotel.accessibilityLabel.split('\n').map((line, index) => {
+                                                {hotel.accessibilityLabel.split('\n').map((line) => {
                                                     if (line.includes('bed') || line.includes('room') || line.includes('bathroom')) {
                                                         return (
-                                                            <div key={index} className="text-xs text-gray-600">
+                                                            <div key={`room-detail-${line.trim()}`} className="text-xs text-gray-600">
                                                                 {line.trim()}
                                                             </div>
                                                         );
@@ -223,7 +223,7 @@ export function HotelDetailsModal({ hotel, onClose, onBook }: HotelDetailsModalP
                                             ...(Object.values(hotel.rooms || {}).flatMap(room => room.photos?.map(photo => photo.url_max1280) || []))
                                         ].map((photo, index) => (
                                             <motion.div
-                                                key={index}
+                                                key={`photo-${photo}`}
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ duration: 0.3, delay: index * 0.1 }}

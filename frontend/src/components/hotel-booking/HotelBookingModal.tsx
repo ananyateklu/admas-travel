@@ -193,7 +193,7 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
             const checkOut = new Date(formData.checkOutDate);
             const numberOfNights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
 
-            const selectedRoom = hotel.rooms[formData.roomType || ''];
+            const selectedRoom = hotel.rooms[formData.roomType ?? ''];
             if (!selectedRoom) throw new Error('Room not found');
 
             // Calculate total price based on per-night rate
@@ -216,7 +216,7 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                 room: {
                     id: formData.roomType,
                     name: selectedRoom.room_name || 'Standard Room',
-                    description: selectedRoom.facilities?.map(f => f.name).join(', ') || 'No description available',
+                    description: selectedRoom.facilities?.map(f => f.name).join(', ') ?? 'No description available',
                     amenities: selectedRoom.facilities?.map(f => f.name) || [],
                     price: {
                         amount: pricePerNight,
@@ -284,14 +284,16 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                             </svg>
                         </button>
 
-                        {isLoading ? (
+                        {isLoading && (
                             <div className="h-96 flex items-center justify-center">
                                 <div className="w-16 h-16 relative">
                                     <div className="absolute inset-0 rounded-full border-4 border-primary border-opacity-25"></div>
                                     <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
                                 </div>
                             </div>
-                        ) : error ? (
+                        )}
+
+                        {error && (
                             <div className="h-96 flex items-center justify-center">
                                 <div className="text-center">
                                     <div className="w-16 h-16 mx-auto mb-6 text-red-500">
@@ -308,7 +310,9 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                                     </button>
                                 </div>
                             </div>
-                        ) : hotel && (
+                        )}
+
+                        {!isLoading && !error && hotel && (
                             <>
                                 {/* Hero Image */}
                                 <div className="relative h-56 sm:h-64 w-full">

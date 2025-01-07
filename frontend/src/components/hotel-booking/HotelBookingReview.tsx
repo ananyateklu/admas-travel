@@ -8,7 +8,7 @@ interface HotelBookingReviewProps {
 }
 
 export function HotelBookingReview({ hotel, formData }: HotelBookingReviewProps) {
-    const selectedRoom = hotel.rooms[formData.roomType || ''];
+    const selectedRoom = hotel.rooms[formData.roomType ?? ''];
     if (!selectedRoom) return null;
 
     // Calculate number of nights
@@ -104,9 +104,12 @@ export function HotelBookingReview({ hotel, formData }: HotelBookingReviewProps)
                 <div>
                     <h3 className="text-sm font-medium text-gray-900 mb-2">Guest Information</h3>
                     <div className="space-y-2">
-                        {formData.guests.map((guest, index) => (
-                            <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-2.5">
-                                <p className="text-[11px] font-medium text-gray-900 mb-2">Guest {index + 1}</p>
+                        {formData.guests.map((guest) => (
+                            <div
+                                key={`${guest.fullName}-${guest.idNumber}`}
+                                className="bg-white rounded-lg shadow-sm border border-gray-200 p-2.5"
+                            >
+                                <p className="text-[11px] font-medium text-gray-900 mb-2">Guest Information</p>
                                 <div className="grid grid-cols-2 gap-2">
                                     <div>
                                         <p className="text-[11px] font-medium text-gray-900">Full Name</p>

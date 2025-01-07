@@ -23,7 +23,7 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
 
         if (!locationLine) return 'Location available upon request';
 
-        return locationLine.replace(/‎|‬/g, '').trim();
+        return locationLine.replace(/[‎‬]/g, '').trim();
     };
 
     const getRoomDetailsFromAccessibilityLabel = (label: string) => {
@@ -33,7 +33,7 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
             line.includes('bedroom') ||
             line.includes('bathroom')
         );
-        return roomLine?.trim() || '';
+        return roomLine?.trim() ?? '';
     };
 
     const isNewProperty = hotel.property.reviewCount === 0;
@@ -73,7 +73,7 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                         className="w-full h-full object-cover"
                     />
                     {/* Rating Badge */}
-                    {hotel.property.reviewScore && (
+                    {Boolean(hotel.property.reviewScore) && (
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}

@@ -9,7 +9,7 @@ export function HotelLoadingState({ count = 3 }: HotelLoadingStateProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {Array.from({ length: count }).map((_, i) => (
                 <motion.div
-                    key={i}
+                    key={`loading-hotel-${Math.random().toString(36).slice(2, 11)}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
@@ -32,9 +32,9 @@ export function HotelLoadingState({ count = 3 }: HotelLoadingStateProps) {
                     <div className="p-4 space-y-3">
                         {/* Stars */}
                         <div className="flex gap-1">
-                            {Array.from({ length: 5 }).map((_, starIndex) => (
+                            {Array.from({ length: 5 }).map(() => (
                                 <div
-                                    key={`star-${starIndex}`}
+                                    key={`loading-star-${Math.random().toString(36).slice(2, 11)}`}
                                     className="w-3 h-3 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-shimmer rounded-full"
                                 />
                             ))}
