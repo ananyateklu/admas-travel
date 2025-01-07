@@ -34,6 +34,17 @@ export interface HotelSearchResult {
     hotel_id: number;
     accessibilityLabel: string;
     property: HotelSearchProperty;
+    rooms?: {
+        [key: string]: {
+            photos: Array<{
+                url_max1280: string;
+                url_max750: string;
+                url_max300: string;
+                url_square60: string;
+                photo_id: number;
+            }>;
+        };
+    };
 }
 
 export interface HotelSearchProperty {
@@ -65,6 +76,15 @@ export interface HotelSearchProperty {
     currency: string;
     countryCode: string;
     photoUrls: string[];
+    rooms?: Array<{
+        photos: Array<{
+            url_max1280: string;
+            url_max750: string;
+            url_max300: string;
+            url_square60: string;
+            photo_id: number;
+        }>;
+    }>;
     priceBreakdown: {
         grossPrice: {
             value: number;

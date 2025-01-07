@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../lib/firebase/useAuth';
 import { HotelBookingForm } from './HotelBookingForm';
 import { hotelService } from '../../lib/api/hotelService';
-import { HotelDetailsResponse, HotelDetails, HotelRoomDetails } from '../../types/hotelDetails';
+import { HotelDetailsResponse, HotelDetails } from '../../types/hotelDetails';
 import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase/firebase';
+import { createPortal } from 'react-dom';
 
 interface UserProfile {
     dateOfBirth?: string;
@@ -61,7 +62,7 @@ function transformToHotelDetails(response: HotelDetailsResponse): HotelDetails {
         currency: data.composite_price_breakdown.gross_amount.currency,
         countryCode: 'US',
         city: data.city,
-        photoUrls: Object.values(data.rooms).flatMap((room: HotelRoomDetails) =>
+        photoUrls: Object.values(data.rooms).flatMap((room) =>
             room.photos?.map((photo) => photo.url_max1280) || []
         ),
         location: {
@@ -83,7 +84,7 @@ function transformToHotelDetails(response: HotelDetailsResponse): HotelDetails {
         }
     };
 
-    const rooms = Object.entries(data.rooms).reduce<HotelDetails['rooms']>((acc, [id, room]: [string, HotelRoomDetails]) => {
+    const rooms = Object.entries(data.rooms).reduce<HotelDetails['rooms']>((acc, [id, room]) => {
         const roomPrice = data.composite_price_breakdown.gross_amount.value / Object.keys(data.rooms).length;
 
         acc[id] = {
@@ -195,8 +196,6 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
             const selectedRoom = hotel.rooms[formData.roomType || ''];
             if (!selectedRoom) throw new Error('Room not found');
 
-            console.log('Selected Room:', selectedRoom); // Debug log
-
             // Calculate total price based on per-night rate
             const pricePerNight = selectedRoom.price.amount;
             const totalPrice = pricePerNight * numberOfNights * formData.numberOfRooms;
@@ -239,16 +238,13 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                 numberOfGuests: formData.numberOfGuests
             };
 
-            // Save to Firestore
-            const bookingsRef = collection(db, 'bookings');
-            const docRef = await addDoc(bookingsRef, bookingData);
-
-            // Close modal and notify parent
-            onBookingComplete(docRef.id);
+            // Add booking to Firestore
+            const bookingRef = await addDoc(collection(db, 'bookings'), bookingData);
+            onBookingComplete(bookingRef.id);
             onClose();
         } catch (err) {
-            console.error('Error submitting booking:', err);
-            setError('Failed to submit booking. Please try again.');
+            console.error('Error creating booking:', err);
+            setError('Failed to create booking');
         }
     };
 
@@ -258,29 +254,30 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
         exit: { opacity: 0, scale: 0.95 }
     };
 
-    return (
+    return createPortal(
         <AnimatePresence>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 z-[100] overflow-y-auto"
+                style={{ zIndex: 99999 }}
+                className="fixed inset-0 bg-black/50 overflow-y-auto flex items-center justify-center"
                 onClick={onClose}
             >
-                <div className="min-h-screen px-4 py-20 flex items-center justify-center">
+                <div className="min-h-[calc(100vh-4rem)] w-full flex items-center justify-center p-4">
                     <motion.div
                         initial="hidden"
                         animate="visible"
                         exit="exit"
                         variants={modalVariants}
                         transition={{ type: "spring", duration: 0.5 }}
-                        className="w-full max-w-4xl max-h-[calc(100vh-8rem)] overflow-y-auto bg-white rounded-2xl shadow-xl relative"
+                        className="w-[95%] lg:w-[70%] bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Close button */}
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 z-50 p-2 text-gray-400 hover:text-gray-500 transition-colors bg-white/80 backdrop-blur-sm rounded-full"
+                            className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-500 transition-colors bg-white/80 backdrop-blur-sm rounded-full"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -302,7 +299,7 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                         </svg>
                                     </div>
-                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{error}</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">{error}</h3>
                                     <button
                                         onClick={onClose}
                                         className="text-primary hover:text-primary-dark transition-colors"
@@ -314,22 +311,32 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                         ) : hotel && (
                             <>
                                 {/* Hero Image */}
-                                <div className="relative h-64 sm:h-72">
-                                    <img
-                                        src={hotel.property.photoUrls[0]}
-                                        alt={hotel.property.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                    <div className="absolute bottom-0 left-0 p-6 text-white">
-                                        <h2 className="text-2xl sm:text-3xl font-serif mb-2">{hotel.property.name}</h2>
-                                        <p className="text-base sm:text-lg opacity-90">
-                                            {hotel.property.location?.city}, {hotel.property.location?.country}
+                                <div className="relative h-56 sm:h-64 w-full">
+                                    <div className="absolute inset-0">
+                                        <img
+                                            src={hotel.property.photoUrls[0]}
+                                            alt={hotel.property.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                    </div>
+                                    <div className="absolute bottom-0 left-0 p-5 text-white">
+                                        <h2 className="text-lg sm:text-xl font-serif mb-1">{hotel.property.name}</h2>
+                                        <p className="text-xs opacity-90">
+                                            {hotel.property.location?.address && (
+                                                <span className="flex items-center gap-1">
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                    {hotel.property.location.address}, {hotel.property.location.city}, {hotel.property.location.country}
+                                                </span>
+                                            )}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="p-6">
+                                <div className="p-5">
                                     <HotelBookingForm
                                         hotel={hotel}
                                         initialData={{
@@ -386,6 +393,7 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                     </motion.div>
                 </div>
             </motion.div>
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 } 

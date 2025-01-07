@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { HotelDetails } from '../../types/hotelDetails';
 import { GuestInformation } from './HotelBookingGuestInformation';
-import { SpecialRequests } from '../flight-booking/FlightSpecialRequests';
 import { HotelContactInformation } from './HotelBookingContactInformation';
 import { HotelBookingReview } from './HotelBookingReview';
 
@@ -113,20 +112,20 @@ export function HotelBookingForm({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
             {/* Progress Steps */}
-            <div className="mb-8">
+            <div className="mb-4">
                 <div className="flex items-center justify-between relative">
                     {steps.map((step, index) => (
                         <React.Fragment key={step.id}>
                             <div className="flex flex-col items-center">
                                 <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-medium
                                         ${index <= currentStep ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'}`}
                                 >
                                     {index + 1}
                                 </div>
-                                <span className="mt-2 text-xs text-gray-600">{step.label}</span>
+                                <span className="mt-1 text-[10px] text-gray-600">{step.label}</span>
                             </div>
                             {index < steps.length - 1 && (
                                 <div className="flex-1 h-0.5 bg-gray-200">
@@ -142,7 +141,7 @@ export function HotelBookingForm({
             </div>
 
             {/* Step Content */}
-            <div className="mt-8">
+            <div className="mt-4">
                 {currentStep === 0 && (
                     <GuestInformation
                         hotel={hotel}
@@ -154,16 +153,12 @@ export function HotelBookingForm({
                 )}
 
                 {currentStep === 1 && (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                         <HotelContactInformation
                             formData={formData}
                             onChange={updateFormData}
                             onAutoFill={onAutoFillContact}
                             showAutoFill={showAutoFill}
-                        />
-                        <SpecialRequests
-                            value={formData.specialRequests ?? ''}
-                            onChange={(value) => updateFormData({ specialRequests: value })}
                         />
                     </div>
                 )}
@@ -177,12 +172,12 @@ export function HotelBookingForm({
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between pt-6">
+            <div className="flex justify-between pt-4 border-t border-gray-200">
                 {currentStep > 0 && (
                     <button
                         type="button"
                         onClick={handleBack}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                        className="px-3 py-1.5 text-[11px] font-medium text-gray-700 hover:text-gray-900"
                     >
                         Back
                     </button>
@@ -191,10 +186,17 @@ export function HotelBookingForm({
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="ml-auto px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50"
+                    className="ml-auto px-3 py-1.5 bg-primary text-white text-[11px] rounded-lg hover:bg-primary-dark disabled:opacity-50"
                     disabled={isSubmitting}
                 >
-                    {getButtonText()}
+                    {isSubmitting ? (
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <span>Processing...</span>
+                        </div>
+                    ) : (
+                        getButtonText()
+                    )}
                 </motion.button>
             </div>
         </form>
