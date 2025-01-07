@@ -262,7 +262,6 @@ export default function CarBookingPage() {
             {selectedCar && (
                 <CarDetailsModal
                     car={selectedCar}
-                    isOpen={!!selectedCar}
                     onClose={handleCloseModal}
                     onBook={handleBookCar}
                     searchKey={searchKey}
