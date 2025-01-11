@@ -237,18 +237,6 @@ interface FlightSearchResponse {
     };
 }
 
-interface AirportSearchResponse {
-    data: Array<{
-        id?: string;
-        name?: string;
-        city?: string;
-        country?: string;
-        code?: string;
-    }>;
-    status: boolean;
-    message: string;
-}
-
 interface FlightSearchOptions {
     fromId: string;
     toId: string;
@@ -272,22 +260,37 @@ export const flightService = {
     searchAirports: async (query: string): Promise<Airport[]> => {
         try {
             const params = {
-                query: encodeURIComponent(query),
-                languagecode: 'en-us'
+                query: encodeURIComponent(query)
             };
 
-            const data = await axiosWithRetry<AirportSearchResponse>(
-                'https://booking-com15.p.rapidapi.com/api/v1/flights/searchAirport',
+            const data = await axiosWithRetry<{
+                status: boolean;
+                message: string;
+                data: Array<{
+                    id: string;
+                    type: string;
+                    name: string;
+                    code: string;
+                    city: string;
+                    cityName: string;
+                    country: string;
+                    countryName: string;
+                }>;
+            }>(
+                'https://booking-com15.p.rapidapi.com/api/v1/flights/searchDestination',
                 params
             );
 
-            return data.data.map(item => ({
-                id: item.id ?? '',
-                name: item.name ?? '',
-                city: item.city ?? '',
-                country: item.country ?? '',
-                airportCode: item.code ?? ''
-            }));
+            // Filter to only include airports (not cities)
+            return data.data
+                .filter(item => item.type === 'AIRPORT')
+                .map(item => ({
+                    id: item.code,
+                    name: item.name,
+                    city: item.cityName,
+                    country: item.countryName,
+                    airportCode: item.code
+                }));
         } catch (error) {
             console.error('Error searching airports:', error);
             return [];

@@ -1,44 +1,57 @@
-import { useState } from 'react';
-import { Airport } from '../services/flightService';
-import { AIRPORTS } from '../data/airports';
+import { useState, useEffect } from 'react';
+import { Airport, flightService } from '../services/flightService';
 
 export function useAirportSearch(initialQuery: string = '') {
     const [query, setQuery] = useState(initialQuery);
+    const [airports, setAirports] = useState<Airport[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    // Filter airports based on query
-    const filteredAirports = query.length >= 2
-        ? AIRPORTS.filter((airport: Airport) => {
-            const searchTerm = query.toLowerCase();
-            const searchableFields = [
-                airport.name.toLowerCase(),
-                airport.city.toLowerCase(),
-                airport.country.toLowerCase(),
-                airport.airportCode.toLowerCase(),
-                `${airport.city} ${airport.country}`.toLowerCase(),
-                `${airport.airportCode} ${airport.city}`.toLowerCase()
-            ];
+    useEffect(() => {
+        let isMounted = true;
 
-            return searchableFields.some(field => field.includes(searchTerm));
-        })
-            .sort((a: Airport, b: Airport) => {
-                const searchTerm = query.toLowerCase();
-                const aStartsWith = a.airportCode.toLowerCase().startsWith(searchTerm) ||
-                    a.city.toLowerCase().startsWith(searchTerm);
-                const bStartsWith = b.airportCode.toLowerCase().startsWith(searchTerm) ||
-                    b.city.toLowerCase().startsWith(searchTerm);
+        const searchAirports = async () => {
+            if (query.length < 2) {
+                setAirports([]);
+                setError(null);
+                return;
+            }
 
-                if (aStartsWith && !bStartsWith) return -1;
-                if (!aStartsWith && bStartsWith) return 1;
-                return 0;
-            })
-            .slice(0, 10)
-        : [];
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                const results = await flightService.searchAirports(query);
+                if (isMounted) {
+                    setAirports(results);
+                }
+            } catch (error: unknown) {
+                if (isMounted) {
+                    setError('Failed to search airports. Please try again.');
+                    setAirports([]);
+                    console.error('Airport search error:', error);
+                }
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        // Debounce the search to prevent too many API calls
+        const timeoutId = setTimeout(searchAirports, 300);
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+        };
+    }, [query]);
 
     return {
         query,
         setQuery,
-        airports: filteredAirports,
-        isLoading: false,
-        error: null
+        airports,
+        isLoading,
+        error
     };
 } 

@@ -94,7 +94,7 @@ export function FlightDetails({
                             value={departureDate}
                             onChange={(e) => onDepartureDateChange(e.target.value)}
                             min={getMinDate()}
-                            className="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 transition-colors"
+                            className="w-full px-3 py-1.5 text-xs border rounded-lg border-gray-300 hover:border-forest-400 focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 focus:outline-none transition-colors"
                             required
                         />
                     </div>
@@ -104,7 +104,7 @@ export function FlightDetails({
                             type="time"
                             value={departureTime}
                             onChange={(e) => onDepartureTimeChange(e.target.value)}
-                            className="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 transition-colors"
+                            className="w-full px-3 py-1.5 text-xs border rounded-lg border-gray-300 hover:border-forest-400 focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 focus:outline-none transition-colors"
                             required
                         />
                     </div>
@@ -119,7 +119,7 @@ export function FlightDetails({
                                 value={returnDate}
                                 onChange={(e) => onReturnDateChange(e.target.value)}
                                 min={getMinReturnDate()}
-                                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 transition-colors"
+                                className="w-full px-3 py-1.5 text-xs border rounded-lg border-gray-300 hover:border-forest-400 focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 focus:outline-none transition-colors"
                                 required
                             />
                         </div>
@@ -129,7 +129,7 @@ export function FlightDetails({
                                 type="time"
                                 value={returnTime}
                                 onChange={(e) => onReturnTimeChange(e.target.value)}
-                                className="w-full px-3 py-1.5 text-xs border rounded-lg focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 transition-colors"
+                                className="w-full px-3 py-1.5 text-xs border rounded-lg border-gray-300 hover:border-forest-400 focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 focus:outline-none transition-colors"
                                 required
                             />
                         </div>
