@@ -5,7 +5,7 @@ import { Airport } from '../services/flightService';
 interface AirportSearchInputProps {
     label: string;
     id: string;
-    value: string;
+    value: Airport | string | null;
     onChange: (airport: Airport) => void;
     placeholder?: string;
     required?: boolean;
@@ -31,10 +31,35 @@ export function AirportSearchInput({
 
     // Initialize selectedAirport from value prop
     useEffect(() => {
-        if (value && !selectedAirport) {
-            setSelectedAirport({ id: '', name: value, city: '', country: '', airportCode: '' });
+        // Always update selectedAirport when value changes
+        if (value) {
+            const isAirportObject = typeof value === 'object' && value !== null && 'airportCode' in value;
+            if (isAirportObject) {
+                console.log('Setting selected airport from object:', value);
+                const airport = value;
+                // Ensure we have all required fields
+                setSelectedAirport({
+                    id: airport.id || '',
+                    name: airport.name || '',
+                    city: airport.city || '',
+                    country: airport.country || '',
+                    airportCode: airport.airportCode || '',
+                    coordinates: airport.coordinates
+                });
+            } else {
+                console.log('Setting selected airport from string:', value);
+                setSelectedAirport({
+                    id: '',
+                    name: value,
+                    city: '',
+                    country: '',
+                    airportCode: ''
+                });
+            }
+        } else {
+            setSelectedAirport(null);
         }
-    }, [value, selectedAirport]);
+    }, [value]); // Only depend on value changes
 
     // Handle click outside to close dropdown
     useEffect(() => {
@@ -50,6 +75,7 @@ export function AirportSearchInput({
     }, [setQuery]);
 
     const handleSelect = (airport: Airport) => {
+        console.log('Selected airport:', airport);
         setSelectedAirport(airport);
         onChange(airport);
         setQuery('');
@@ -74,6 +100,7 @@ export function AirportSearchInput({
         }
     };
 
+    // Use the airport name for display, but show the code if available
     const displayValue = selectedAirport ? selectedAirport.name : query;
 
     const renderDropdownContent = () => {
@@ -172,7 +199,7 @@ export function AirportSearchInput({
                         autoComplete="off"
                     />
 
-                    {/* Selected airport pill */}
+                    {/* Selected airport pill - Show if we have an airport code */}
                     {selectedAirport?.airportCode && (
                         <div className="absolute right-7 top-1/2 -translate-y-1/2 flex items-center">
                             <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-forest-400/10 text-forest-400">

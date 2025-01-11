@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TripTypeSelector } from './FlightTripTypeSelector';
 import { FlightDetails } from './FlightDetails';
@@ -8,6 +8,7 @@ import { ContactInformation } from './FlightBookingContactInformation';
 import { SpecialRequests } from './FlightSpecialRequests';
 import { BookingReview } from './FlightBookingReview';
 import { Airport } from '../../services/flightService';
+import { useFlightDetails } from '../../hooks/useFlightDetails';
 
 interface PassengerInfo {
     type: 'adult' | 'child';
@@ -65,12 +66,56 @@ export function BookingForm({
     const [currentStep, setCurrentStep] = useState<FormStep>('trip');
     const initialized = useRef(false);
     const formDataRef = useRef<BookingFormData | null>(null);
-    const [formData, setFormData] = useState<BookingFormData>({
-        ...initialData,
-        departureTime: initialData.departureTime ?? '09:00', // Default to 9 AM
-        returnTime: initialData.returnTime ?? '09:00' // Default to 9 AM
+
+    // Use the flight details hook for caching
+    const { flightDetails, updateFlightDetails, clearCache } = useFlightDetails({
+        from: initialData.from,
+        to: initialData.to,
+        departureDate: initialData.departureDate,
+        departureTime: initialData.departureTime ?? '09:00',
+        returnDate: initialData.returnDate,
+        returnTime: initialData.returnTime ?? '09:00',
+        isRoundTrip: initialData.tripType === 'roundtrip'
     });
+
+    // Initialize form data with cached flight details
+    const [formData, setFormData] = useState<BookingFormData>(() => ({
+        ...initialData,
+        from: flightDetails.from ?? initialData.from,
+        to: flightDetails.to ?? initialData.to,
+        departureDate: flightDetails.departureDate || initialData.departureDate,
+        departureTime: flightDetails.departureTime || initialData.departureTime || '09:00',
+        returnDate: flightDetails.returnDate ?? initialData.returnDate,
+        returnTime: flightDetails.returnTime ?? initialData.returnTime ?? '09:00',
+        tripType: flightDetails.isRoundTrip ? 'roundtrip' : 'oneway'
+    }));
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+    const updateFormData = useCallback((updates: Partial<BookingFormData>) => {
+        setFormData(prev => {
+            const next = { ...prev, ...updates };
+            // Update flight details cache directly here instead of in a useEffect
+            updateFlightDetails({
+                from: next.from,
+                to: next.to,
+                departureDate: next.departureDate,
+                departureTime: next.departureTime,
+                returnDate: next.returnDate,
+                returnTime: next.returnTime,
+                isRoundTrip: next.tripType === 'roundtrip'
+            });
+            return next;
+        });
+        // Clear validation errors for updated fields
+        const updatedFields = Object.keys(updates);
+        if (updatedFields.length > 0) {
+            setValidationErrors(prev => {
+                const next = { ...prev };
+                updatedFields.forEach(field => delete next[field]);
+                return next;
+            });
+        }
+    }, [updateFlightDetails]);
 
     useEffect(() => {
         formDataRef.current = formData;
@@ -115,20 +160,7 @@ export function BookingForm({
         };
 
         autoFillData();
-    }, [showAutoFill, onAutoFillPassenger, onAutoFillContact]);
-
-    const updateFormData = (updates: Partial<BookingFormData>) => {
-        setFormData(prev => ({ ...prev, ...updates }));
-        // Clear validation errors for updated fields
-        const updatedFields = Object.keys(updates);
-        if (updatedFields.length > 0) {
-            setValidationErrors(prev => {
-                const next = { ...prev };
-                updatedFields.forEach(field => delete next[field]);
-                return next;
-            });
-        }
-    };
+    }, [showAutoFill, onAutoFillPassenger, onAutoFillContact, updateFormData]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -172,7 +204,6 @@ export function BookingForm({
             nationality: autoFilledData.nationality,
             type: newPassengers[index].type // Preserve the original passenger type
         };
-        console.log('Updating passengers with:', newPassengers);
         updateFormData({ passengers: newPassengers });
     };
 
@@ -276,6 +307,13 @@ export function BookingForm({
             setCurrentStep(FORM_STEPS[currentIndex - 1].id);
         }
     };
+
+    // Clear cache when form is submitted successfully
+    useEffect(() => {
+        if (currentStep === 'review' && !isSubmitting) {
+            clearCache();
+        }
+    }, [currentStep, isSubmitting, clearCache]);
 
     return (
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm">

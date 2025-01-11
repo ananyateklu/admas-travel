@@ -54,7 +54,7 @@ export function FlightDetails({
                         <AirportSearchInput
                             label=""
                             id="from"
-                            value={from?.name ?? ''}
+                            value={from}
                             onChange={onFromChange}
                             required
                             type="departure"
@@ -72,7 +72,7 @@ export function FlightDetails({
                         <AirportSearchInput
                             label=""
                             id="to"
-                            value={to?.name ?? ''}
+                            value={to}
                             onChange={onToChange}
                             required
                             type="arrival"
