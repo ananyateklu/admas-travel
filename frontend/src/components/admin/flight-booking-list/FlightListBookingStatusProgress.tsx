@@ -28,7 +28,7 @@ export function BookingStatusProgress({
                     const currentStepIndex = STATUS_OPTIONS.findIndex(opt => opt.value === currentStatus);
                     const isPassed = currentStepIndex > index;
                     const isUpcoming = currentStepIndex < index;
-                    const canChangeStatus = isAdmin;
+                    const canChangeStatus = isAdmin || (currentStatus === 'pending' && option.value === 'cancelled');
 
                     // Get the button style based on status
                     const getButtonStyle = () => {
@@ -63,9 +63,9 @@ export function BookingStatusProgress({
                         <button
                             key={option.value}
                             type="button"
-                            disabled={isLoading}
+                            disabled={isLoading || (!canChangeStatus && option.value !== 'cancelled')}
                             className={`relative flex items-center ${index > 0 ? 'ml-6' : ''} group/button outline-none focus:outline-none`}
-                            onClick={() => onStatusChange(bookingId, option.value, userId)}
+                            onClick={() => canChangeStatus && onStatusChange(bookingId, option.value, userId)}
                             title={`Change status to ${option.label}`}
                             aria-label={option.label}
                         >

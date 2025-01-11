@@ -146,6 +146,7 @@ export function Bookings() {
     const [error, setError] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
     const [isSubmittingRating, setIsSubmittingRating] = useState<string | null>(null);
+    const [updateLoading, setUpdateLoading] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) {
@@ -276,6 +277,40 @@ export function Bookings() {
             toast.error('Failed to submit rating. Please try again.');
         } finally {
             setIsSubmittingRating(null);
+        }
+    };
+
+    const handleStatusChange = async (bookingId: string, newStatus: string, userId: string, previousStatus?: string) => {
+        if (!user) return;
+
+        setUpdateLoading(bookingId);
+        try {
+            const updateData = {
+                status: newStatus,
+                previousStatus: previousStatus ?? undefined
+            };
+
+            // Update both the main booking and user's booking copy
+            await Promise.all([
+                updateDoc(doc(db, 'bookings', bookingId), updateData),
+                updateDoc(doc(db, 'users', userId, 'bookings', bookingId), updateData)
+            ]);
+
+            // Update local state
+            setBookings(prevBookings =>
+                prevBookings.map(booking =>
+                    booking.bookingId === bookingId
+                        ? { ...booking, ...updateData }
+                        : booking
+                )
+            );
+
+            toast.success(`Booking status updated to ${newStatus}`);
+        } catch (err) {
+            console.error('Error updating booking status:', err);
+            toast.error('Failed to update booking status');
+        } finally {
+            setUpdateLoading(null);
         }
     };
 
@@ -454,6 +489,8 @@ export function Bookings() {
                                             booking={booking}
                                             isExpanded={expandedBookingId === booking.bookingId}
                                             onToggleExpand={() => toggleBookingDetails(booking.bookingId)}
+                                            onStatusChange={handleStatusChange}
+                                            updateLoading={updateLoading}
                                             onDelete={handleDelete}
                                             isDeleting={isDeleting === booking.bookingId}
                                             currentUserId={user?.uid}
