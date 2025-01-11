@@ -130,16 +130,16 @@ export function HotelSearch({ onSearch, isLoading, onLoadingChange, currentPage 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white rounded-xl shadow-lg p-6"
+            className="bg-white rounded-xl shadow-lg p-4 max-w-[90%] mx-auto"
         >
-            <form onSubmit={handleSearch} className="space-y-6">
-                <div className="grid grid-cols-12 gap-4">
+            <form onSubmit={handleSearch} className="space-y-4">
+                <div className="grid grid-cols-12 gap-3">
                     {/* Destination Search */}
-                    <div className="col-span-12 md:col-span-5">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="col-span-12 md:col-span-6">
+                        <label className="block text-xs font-medium text-gray-700">
                             Destination
                         </label>
-                        <label className="block text-xs text-gray-400 mb-0.5">City or Hotel Name</label>
+                        <label className="block text-[10px] text-gray-400 -mt-0.5 mb-0.5">City or Hotel Name</label>
                         <HotelSearchInput
                             id="destination"
                             label=""
@@ -157,11 +157,11 @@ export function HotelSearch({ onSearch, isLoading, onLoadingChange, currentPage 
                     </div>
 
                     {/* Check-in Date */}
-                    <div className="col-span-6 md:col-span-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="col-span-6 md:col-span-2">
+                        <label className="block text-xs font-medium text-gray-700">
                             Check-in
                         </label>
-                        <label className="block text-xs text-gray-400 mb-0.5">Arrival Date</label>
+                        <label className="block text-[10px] text-gray-400 -mt-0.5 mb-0.5">Arrival Date</label>
                         <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                             <input
                                 type="date"
@@ -174,19 +174,19 @@ export function HotelSearch({ onSearch, isLoading, onLoadingChange, currentPage 
                                         setDates(prev => ({ ...prev, departure_date: '' }));
                                     }
                                 }}
-                                className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
-                                    focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                                className="w-full px-2 py-1 text-[11px] border border-gray-300 rounded-lg 
+                                    focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all duration-200"
                                 required
                             />
                         </motion.div>
                     </div>
 
                     {/* Check-out Date */}
-                    <div className="col-span-6 md:col-span-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="col-span-6 md:col-span-2">
+                        <label className="block text-xs font-medium text-gray-700">
                             Check-out
                         </label>
-                        <label className="block text-xs text-gray-400 mb-0.5">Departure Date</label>
+                        <label className="block text-[10px] text-gray-400 -mt-0.5 mb-0.5">Departure Date</label>
                         <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                             <input
                                 type="date"
@@ -194,32 +194,32 @@ export function HotelSearch({ onSearch, isLoading, onLoadingChange, currentPage 
                                 min={dates.arrival_date || minDepartureDate}
                                 value={dates.departure_date}
                                 onChange={(e) => setDates(prev => ({ ...prev, departure_date: e.target.value }))}
-                                className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
-                                    focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                                className="w-full px-2 py-1 text-[11px] border border-gray-300 rounded-lg 
+                                    focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all duration-200"
                                 required
                             />
                         </motion.div>
                     </div>
 
                     {/* Search Button */}
-                    <div className="col-span-12 md:col-span-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="col-span-12 md:col-span-2">
+                        <label className="block text-xs font-medium text-gray-700">
                             &nbsp;
                         </label>
-                        <label className="block text-xs text-gray-400 mb-0.5">&nbsp;</label>
+                        <label className="block text-[10px] text-gray-400 -mt-0.5 mb-0.5">&nbsp;</label>
                         <motion.button
                             type="submit"
                             disabled={isLoading}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className={`w-full h-[34px] rounded-lg text-white font-medium text-xs
+                            className={`w-full h-[30px] rounded-lg text-white font-medium text-[11px]
                                 transition-all duration-200 overflow-hidden
                                 ${isLoading
                                     ? 'bg-gray-400 cursor-not-allowed'
                                     : 'bg-primary hover:bg-primary-dark'
                                 }`}
                         >
-                            <div className="relative flex items-center justify-center gap-2">
+                            <div className="relative flex items-center justify-center gap-1.5">
                                 {isLoading ? (
                                     <>
                                         <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
@@ -254,7 +254,7 @@ export function HotelSearch({ onSearch, isLoading, onLoadingChange, currentPage 
                 </div>
 
                 {/* Room and Guest Selection */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
                     <div className="space-y-2">
                         <label htmlFor="adults" className="block text-sm font-medium text-gray-700">
                             Guests

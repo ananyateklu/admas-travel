@@ -312,7 +312,7 @@ export function BookingForm({
                                     {index < FORM_STEPS.length - 1 && (
                                         <div className="flex-1 h-0.5 bg-gray-200 relative mx-3">
                                             <div
-                                                className="absolute inset-0 bg-gold transition-all duration-300"
+                                                className="absolute inset-0 bg-forest-400 transition-all duration-300"
                                                 style={{
                                                     transform: `scaleX(${isCompleted ? 1 : 0})`,
                                                     transformOrigin: 'left'
@@ -328,7 +328,7 @@ export function BookingForm({
             </div>
 
             {/* Form Content */}
-            <div className="p-4">
+            <div className="p-2">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentStep}
@@ -415,20 +415,24 @@ export function BookingForm({
                         )}
 
                         {currentStep === 'contact' && (
-                            <div className="space-y-4">
-                                <ContactInformation
-                                    contactName={formData.contactName}
-                                    contactEmail={formData.contactEmail}
-                                    contactPhone={formData.contactPhone}
-                                    onContactChange={handleContactChange}
-                                    onAutoFill={handleAutoFillContact}
-                                    showAutoFill={showAutoFill}
-                                    errors={validationErrors}
-                                />
-                                <SpecialRequests
-                                    value={formData.specialRequests ?? ''}
-                                    onChange={(value) => updateFormData({ specialRequests: value })}
-                                />
+                            <div className="grid grid-cols-12 gap-4">
+                                <div className="col-span-5">
+                                    <ContactInformation
+                                        contactName={formData.contactName}
+                                        contactEmail={formData.contactEmail}
+                                        contactPhone={formData.contactPhone}
+                                        onContactChange={handleContactChange}
+                                        onAutoFill={handleAutoFillContact}
+                                        showAutoFill={showAutoFill}
+                                        errors={validationErrors}
+                                    />
+                                </div>
+                                <div className="col-span-7">
+                                    <SpecialRequests
+                                        value={formData.specialRequests ?? ''}
+                                        onChange={(value) => updateFormData({ specialRequests: value })}
+                                    />
+                                </div>
                             </div>
                         )}
 
@@ -461,7 +465,7 @@ export function BookingForm({
                     type="button"
                     onClick={currentStep === 'review' ? handleConfirmBooking : handleNext}
                     disabled={isSubmitting}
-                    className="px-4 py-1.5 bg-gold text-white text-sm rounded-lg hover:bg-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                    className="px-4 py-1.5 bg-forest-400 text-white text-sm rounded-lg hover:bg-forest-400/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                     whileHover={{ x: currentStep === 'review' ? 0 : 4 }}
                     whileTap={{ scale: 0.95 }}
                 >
@@ -514,7 +518,7 @@ function getButtonContent(step: FormStep) {
 }
 
 function getStepClassName(isActive: boolean, isCompleted: boolean): string {
-    if (isActive) return 'border-gold bg-gold text-white';
-    if (isCompleted) return 'border-gold bg-gold/10 text-gold';
+    if (isActive) return 'border-forest-400 bg-forest-400 text-white';
+    if (isCompleted) return 'border-forest-400 bg-forest-400/10 text-forest-400';
     return 'border-gray-300 text-gray-500';
 } 

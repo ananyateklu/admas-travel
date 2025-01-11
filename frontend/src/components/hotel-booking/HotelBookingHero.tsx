@@ -33,7 +33,7 @@ export function HotelBookingHero({
 
     return (
         <motion.div
-            className="relative h-[30vh] bg-gray-900 overflow-hidden"
+            className="relative h-[35vh] bg-gray-900 overflow-hidden"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
@@ -42,7 +42,7 @@ export function HotelBookingHero({
                 className="absolute inset-0"
                 initial={{ scale: 1.1 }}
                 animate={{ scale: 1 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
             >
                 <img
                     src={backgroundImage}
@@ -51,9 +51,9 @@ export function HotelBookingHero({
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30" />
             </motion.div>
-            <div className="relative h-full flex items-center justify-center text-center pt-12">
+            <div className="relative h-full flex items-center justify-center text-center">
                 <motion.div
-                    className="max-w-2xl px-4"
+                    className="max-w-2xl mx-auto px-4"
                     variants={itemVariants}
                 >
                     <motion.h1
@@ -65,7 +65,7 @@ export function HotelBookingHero({
                         {title}
                     </motion.h1>
                     <motion.p
-                        className="text-base text-white/90"
+                        className="text-sm md:text-base text-white/90"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.3 }}

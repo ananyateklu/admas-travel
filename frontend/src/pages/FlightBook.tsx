@@ -344,8 +344,8 @@ Passenger ${i + 1}:
                 <div className="relative">
                     <BookingHero backgroundImage={bookPic} />
 
-                    {/* Booking Form Section - Moved up to overlap with hero */}
-                    <div className="absolute inset-x-0 bottom-0 translate-y-1/2">
+                    {/* Booking Form Section - Using negative margin instead of absolute positioning */}
+                    <div className="-mt-[100px] relative z-10">
                         <div className="max-w-5xl mx-auto px-4">
                             <div className="mb-3 flex justify-end">
                                 <NotificationToggle className="bg-white shadow-sm border border-gray-300 rounded-lg px-3 py-1.5" />
@@ -364,8 +364,8 @@ Passenger ${i + 1}:
                     </div>
                 </div>
 
-                {/* Additional Information - Moved down to account for overlapping form */}
-                <section className="py-6 bg-gray-50 mt-[250px]">
+                {/* Additional Information - Adjust margin top */}
+                <section className="py-6 bg-gray-50 mt-[25px]">
                     <div className="max-w-5xl mx-auto px-4">
                         <div className="bg-white border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md p-4">
                             <div className="grid grid-cols-3 gap-4">

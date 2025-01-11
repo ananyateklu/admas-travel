@@ -216,7 +216,7 @@ export default function HotelBookingPage() {
             const checkOut = new Date(formData.checkOutDate);
             const numberOfNights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
 
-            const selectedRoom = hotel.rooms[formData.roomType || ''];
+            const selectedRoom = hotel.rooms[formData.roomType ?? ''];
             if (!selectedRoom) throw new Error('Room not found');
 
             console.log('Selected Room:', selectedRoom); // Debug log
@@ -242,7 +242,7 @@ export default function HotelBookingPage() {
                 room: {
                     id: formData.roomType,
                     name: selectedRoom.room_name || 'Standard Room',
-                    description: selectedRoom.facilities?.map(f => f.name).join(', ') || 'No description available',
+                    description: selectedRoom.facilities?.map(f => f.name).join(', ') ?? 'No description available',
                     amenities: selectedRoom.facilities?.map(f => f.name) || [],
                     price: {
                         amount: pricePerNight,

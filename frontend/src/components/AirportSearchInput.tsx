@@ -80,7 +80,7 @@ export function AirportSearchInput({
         if (isLoading) {
             return (
                 <div className="p-4 text-center">
-                    <div className="inline-block animate-spin rounded-full h-5 w-5 border-2 border-gold border-t-transparent"></div>
+                    <div className="inline-block animate-spin rounded-full h-5 w-5 border-2 border-forest-400 border-t-transparent"></div>
                     <p className="text-sm text-gray-500 mt-2">Searching airports...</p>
                 </div>
             );
@@ -107,7 +107,7 @@ export function AirportSearchInput({
                                             {airport.city}, {airport.country}
                                         </p>
                                     </div>
-                                    <span className="flex-shrink-0 text-[10px] font-medium text-gold bg-gold/10 px-1.5 py-0.5 rounded">
+                                    <span className="flex-shrink-0 text-[10px] font-medium text-forest-400 bg-forest-400/10 px-1.5 py-0.5 rounded">
                                         {airport.airportCode}
                                     </span>
                                 </div>
@@ -142,7 +142,7 @@ export function AirportSearchInput({
                     {/* Icon */}
                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
                         <svg
-                            className={`w-5 h-5 ${isFocused ? 'text-gold' : 'text-gray-400'} transition-colors`}
+                            className={`w-5 h-5 ${isFocused ? 'text-forest-400' : 'text-gray-400'} transition-colors`}
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -164,7 +164,7 @@ export function AirportSearchInput({
                         onChange={handleInputChange}
                         onFocus={() => setIsFocused(true)}
                         className={`w-full pl-10 pr-16 py-1.5 text-xs border rounded-lg
-                            ${isFocused ? 'border-gold ring-1 ring-gold/20' : 'border-gray-300'}
+                            ${isFocused ? 'border-forest-400 ring-1 ring-forest-400/20' : 'border-gray-300'}
                             ${selectedAirport ? 'bg-gray-50' : 'bg-white'}
                             focus:outline-none transition-all duration-200 ${className}`}
                         placeholder={placeholder}
@@ -175,7 +175,7 @@ export function AirportSearchInput({
                     {/* Selected airport pill */}
                     {selectedAirport?.airportCode && (
                         <div className="absolute right-7 top-1/2 -translate-y-1/2 flex items-center">
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gold/10 text-gold">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-forest-400/10 text-forest-400">
                                 {selectedAirport.airportCode}
                             </span>
                         </div>

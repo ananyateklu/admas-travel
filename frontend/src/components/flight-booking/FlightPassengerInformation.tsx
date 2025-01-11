@@ -29,10 +29,10 @@ export function PassengerInformation({
     };
 
     const inputClassName = (error: string | undefined) => `
-        w-full px-2 py-1.5 text-xs border rounded-lg
+        w-full px-2 py-1 text-xs border rounded-lg
         ${error ? 'border-red-300' : 'border-gray-300'}
         hover:border-gray-400
-        focus:outline-none focus:ring-1 focus:ring-gold/30 focus:border-gold
+        focus:outline-none focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400
         disabled:bg-gray-50 disabled:text-gray-500
         placeholder:text-gray-400
         transition-all duration-200
@@ -46,12 +46,12 @@ export function PassengerInformation({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
         >
-            <div className="flex items-center justify-between px-3 py-2 border-b border-gray-300">
-                <div className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-gold/10 flex items-center justify-center">
-                        <span className="text-[10px] font-medium text-gold">{index + 1}</span>
+            <div className="flex items-center justify-between px-2 py-1 border-b border-gray-300">
+                <div className="flex items-center gap-1">
+                    <div className="w-4 h-4 rounded-full bg-forest-400/10 flex items-center justify-center">
+                        <span className="text-[10px] font-medium text-forest-400">{index + 1}</span>
                     </div>
-                    <h4 className="text-xs font-medium text-gray-700">
+                    <h4 className="text-[10px] font-medium text-gray-700">
                         {passenger.type === 'adult' ? 'Adult' : 'Child'} Passenger
                     </h4>
                 </div>
@@ -59,7 +59,7 @@ export function PassengerInformation({
                     <motion.button
                         type="button"
                         onClick={() => onAutoFill(index)}
-                        className="text-[10px] text-gold hover:text-gold/80 transition-colors flex items-center gap-1 group"
+                        className="text-[10px] text-forest-400 hover:text-forest-400/80 transition-colors flex items-center gap-1 group"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                     >
@@ -71,92 +71,94 @@ export function PassengerInformation({
                 )}
             </div>
 
-            <div className="p-3 grid grid-cols-2 gap-3">
-                <div className="col-span-2">
-                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
-                        Full Name
-                    </label>
-                    <input
-                        type="text"
-                        value={passenger.fullName}
-                        onChange={(e) => onPassengerChange(index, 'fullName', e.target.value)}
-                        className={inputClassName(getError(index, 'Name'))}
-                        placeholder="As shown on passport"
-                    />
-                    {getError(index, 'Name') && (
-                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Name')}</p>
-                    )}
-                </div>
+            <div className="p-1.5">
+                <div className="grid grid-cols-6 gap-1.5">
+                    <div className="col-span-6">
+                        <div className="flex items-center gap-1">
+                            <label className="text-[9px] font-medium text-gray-600">Full Name</label>
+                            {getError(index, 'Name') && (
+                                <span className="text-[9px] text-red-500">({getError(index, 'Name')})</span>
+                            )}
+                        </div>
+                        <input
+                            type="text"
+                            value={passenger.fullName}
+                            onChange={(e) => onPassengerChange(index, 'fullName', e.target.value)}
+                            className={inputClassName(getError(index, 'Name'))}
+                            placeholder="As shown on passport"
+                        />
+                    </div>
 
-                <div>
-                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
-                        Date of Birth
-                    </label>
-                    <input
-                        type="date"
-                        value={passenger.dateOfBirth}
-                        onChange={(e) => onPassengerChange(index, 'dateOfBirth', e.target.value)}
-                        className={inputClassName(getError(index, 'Birth'))}
-                        max={new Date().toISOString().split('T')[0]}
-                    />
-                    {getError(index, 'Birth') && (
-                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Birth')}</p>
-                    )}
-                </div>
+                    <div className="col-span-3">
+                        <div className="flex items-center gap-1">
+                            <label className="text-[9px] font-medium text-gray-600">Birth Date</label>
+                            {getError(index, 'Birth') && (
+                                <span className="text-[9px] text-red-500">({getError(index, 'Birth')})</span>
+                            )}
+                        </div>
+                        <input
+                            type="date"
+                            value={passenger.dateOfBirth}
+                            onChange={(e) => onPassengerChange(index, 'dateOfBirth', e.target.value)}
+                            className={inputClassName(getError(index, 'Birth'))}
+                            max={new Date().toISOString().split('T')[0]}
+                        />
+                    </div>
 
-                <div>
-                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
-                        Nationality
-                    </label>
-                    <input
-                        type="text"
-                        value={passenger.nationality}
-                        onChange={(e) => onPassengerChange(index, 'nationality', e.target.value)}
-                        className={inputClassName(getError(index, 'Nationality'))}
-                        placeholder="Country of citizenship"
-                    />
-                    {getError(index, 'Nationality') && (
-                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Nationality')}</p>
-                    )}
-                </div>
+                    <div className="col-span-3">
+                        <div className="flex items-center gap-1">
+                            <label className="text-[9px] font-medium text-gray-600">Nationality</label>
+                            {getError(index, 'Nationality') && (
+                                <span className="text-[9px] text-red-500">({getError(index, 'Nationality')})</span>
+                            )}
+                        </div>
+                        <input
+                            type="text"
+                            value={passenger.nationality}
+                            onChange={(e) => onPassengerChange(index, 'nationality', e.target.value)}
+                            className={inputClassName(getError(index, 'Nationality'))}
+                            placeholder="Country of citizenship"
+                        />
+                    </div>
 
-                <div>
-                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
-                        Passport Number
-                    </label>
-                    <input
-                        type="text"
-                        value={passenger.passportNumber}
-                        onChange={(e) => onPassengerChange(index, 'passportNumber', e.target.value)}
-                        className={inputClassName(getError(index, 'Passport'))}
-                        placeholder="Valid passport number"
-                    />
-                    {getError(index, 'Passport') && (
-                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Passport')}</p>
-                    )}
-                </div>
+                    <div className="col-span-3">
+                        <div className="flex items-center gap-1">
+                            <label className="text-[9px] font-medium text-gray-600">Passport No.</label>
+                            {getError(index, 'Passport') && (
+                                <span className="text-[9px] text-red-500">({getError(index, 'Passport')})</span>
+                            )}
+                        </div>
+                        <input
+                            type="text"
+                            value={passenger.passportNumber}
+                            onChange={(e) => onPassengerChange(index, 'passportNumber', e.target.value)}
+                            className={inputClassName(getError(index, 'Passport'))}
+                            placeholder="Valid passport number"
+                        />
+                    </div>
 
-                <div>
-                    <label className="block text-[10px] font-medium text-gray-600 mb-1">
-                        Passport Expiry Date
-                    </label>
-                    <input
-                        type="date"
-                        value={passenger.passportExpiry}
-                        onChange={(e) => onPassengerChange(index, 'passportExpiry', e.target.value)}
-                        className={inputClassName(getError(index, 'Expiry'))}
-                        min={new Date().toISOString().split('T')[0]}
-                    />
-                    {getError(index, 'Expiry') && (
-                        <p className="mt-1 text-[10px] text-red-500">{getError(index, 'Expiry')}</p>
-                    )}
+                    <div className="col-span-3">
+                        <div className="flex items-center gap-1">
+                            <label className="text-[9px] font-medium text-gray-600">Passport Expiry</label>
+                            {getError(index, 'Expiry') && (
+                                <span className="text-[9px] text-red-500">({getError(index, 'Expiry')})</span>
+                            )}
+                        </div>
+                        <input
+                            type="date"
+                            value={passenger.passportExpiry}
+                            onChange={(e) => onPassengerChange(index, 'passportExpiry', e.target.value)}
+                            className={inputClassName(getError(index, 'Expiry'))}
+                            min={new Date().toISOString().split('T')[0]}
+                        />
+                    </div>
                 </div>
             </div>
         </motion.div>
     );
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-2">
             {passengers.map((passenger, index) => renderPassengerForm(passenger, index))}
         </div>
     );
