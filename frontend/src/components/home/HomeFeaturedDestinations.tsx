@@ -174,7 +174,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={prevDestinations}
-                            className="absolute -left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-800 p-2 rounded-full shadow-md transition-all z-10 border border-gray-100"
+                            className="absolute left-2 top-[calc(50%-16px)] transform-none bg-white hover:bg-gray-50 text-gray-800 p-2 rounded-full shadow-md transition-all border border-gray-100 pointer-events-auto z-30 w-8 h-8 flex items-center justify-center origin-center"
                             aria-label="View previous destinations"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,8 +183,8 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                         </motion.button>
 
                         {/* Destinations Grid */}
-                        <div className="relative overflow-hidden py-4">
-                            <div className="relative w-full" style={{ height: 'min(35vh, 300px)' }}>
+                        <div className="relative overflow-hidden py-4 pointer-events-none">
+                            <div className="relative w-full pointer-events-auto" style={{ height: 'min(35vh, 300px)' }}>
                                 <AnimatePresence mode="sync">
                                     {destinations
                                         .slice(currentDestinationIndex, currentDestinationIndex + 4)
@@ -212,7 +212,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                                     scale: 1.05,
                                                     zIndex: 20,
                                                 }}
-                                                className="origin-center group relative"
+                                                className="origin-center group relative pointer-events-auto"
                                                 aria-label={`${destination.name} in ${destination.country}`}
                                             >
                                                 <motion.div
@@ -296,7 +296,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={nextDestinations}
-                            className="absolute -right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-800 p-2 rounded-full shadow-md transition-all z-10 border border-gray-100"
+                            className="absolute right-2 top-[calc(50%-16px)] transform-none bg-white hover:bg-gray-50 text-gray-800 p-2 rounded-full shadow-md transition-all border border-gray-100 pointer-events-auto z-30 w-8 h-8 flex items-center justify-center origin-center"
                             aria-label="View next destinations"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,7 +305,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                         </motion.button>
 
                         {/* Navigation Dots */}
-                        <nav className="flex justify-center gap-1.5 mt-4" aria-label="Destination pages">
+                        <nav className="flex justify-center gap-1.5 mt-4 pointer-events-auto" aria-label="Destination pages">
                             {Array.from({ length: Math.ceil(destinations.length / 4) }).map((_, index) => (
                                 <motion.button
                                     key={`destination-page-${index + 1}`}
