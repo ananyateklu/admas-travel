@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { CarSearchInput } from './CarSearchInput';
 import { LocationSearchResult } from '../../types/carSearch';
 import { DatePicker } from '../common/DatePicker';
 import { TimePicker } from '../common/TimePicker';
+import { carService } from '../../lib/api/carService';
 
 interface CarSearchFormData {
     pickupLocation: LocationSearchResult;
@@ -26,6 +27,8 @@ export function CarSearchForm({
     isLoading = false,
     initialData
 }: CarSearchFormProps) {
+    const [isLocating, setIsLocating] = useState(false);
+    const [locationError, setLocationError] = useState<string | null>(null);
     const [formData, setFormData] = useState<CarSearchFormData>({
         pickupLocation: initialData?.pickupLocation || {
             dest_id: '',
@@ -47,14 +50,78 @@ export function CarSearchForm({
             country: '',
             address: ''
         },
-        pickupDate: initialData?.pickupDate || new Date(),
-        dropoffDate: initialData?.dropoffDate || new Date(Date.now() + 24 * 60 * 60 * 1000),
+        pickupDate: initialData?.pickupDate || (() => {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return tomorrow;
+        })(),
+        dropoffDate: initialData?.dropoffDate || (() => {
+            const dayAfterTomorrow = new Date();
+            dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+            return dayAfterTomorrow;
+        })(),
         pickupTime: initialData?.pickupTime ?? '10:00',
         dropoffTime: initialData?.dropoffTime ?? '10:00',
         driverAge: initialData?.driverAge ?? '25'
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof CarSearchFormData, string>>>({});
+
+    const getCurrentLocation = useCallback(async () => {
+        setIsLocating(true);
+        setLocationError(null);
+
+        try {
+            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            });
+
+            const { latitude, longitude } = position.coords;
+
+            // Get the address from coordinates
+            const cityResponse = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+            );
+            const cityData = await cityResponse.json();
+
+            if (cityData.address) {
+                // Get the most specific location name
+                const locationName = cityData.address.city ||
+                    cityData.address.town ||
+                    cityData.address.village ||
+                    cityData.address.county ||
+                    cityData.address.state;
+
+                if (locationName) {
+                    // Search for locations using the city/town name
+                    const response = await carService.searchDestination(locationName);
+                    if (response.status && response.data && response.data.length > 0) {
+                        setFormData(prev => ({
+                            ...prev,
+                            pickupLocation: response.data[0]
+                        }));
+                        setLocationError(null);
+                        return;
+                    }
+                }
+            }
+
+            throw new Error('No locations found nearby');
+        } catch (error) {
+            console.error('Error getting location:', error);
+            setLocationError(
+                error instanceof GeolocationPositionError
+                    ? 'Unable to get your location. Please check your browser permissions.'
+                    : 'Unable to find nearby locations. Please enter manually.'
+            );
+        } finally {
+            setIsLocating(false);
+        }
+    }, []);
 
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<keyof CarSearchFormData, string>> = {};
@@ -126,20 +193,48 @@ export function CarSearchForm({
                             Pick-up Location
                         </label>
                         <label className="block text-xs text-gray-400 mb-0.5">City or Airport</label>
-                        <CarSearchInput
-                            label=""
-                            id="pickup-location"
-                            value={formData.pickupLocation.name}
-                            onChange={(location) => {
-                                setFormData(prev => ({ ...prev, pickupLocation: location }));
-                                setErrors(prev => ({ ...prev, pickupLocation: undefined }));
-                            }}
-                            type="pickup"
-                            required
-                        />
-                        {errors.pickupLocation && (
-                            <p className="mt-1 text-xs text-red-500">{errors.pickupLocation}</p>
-                        )}
+                        <div className="space-y-2">
+                            <CarSearchInput
+                                label=""
+                                id="pickup-location"
+                                value={formData.pickupLocation.name}
+                                onChange={(location) => {
+                                    setFormData(prev => ({ ...prev, pickupLocation: location }));
+                                    setErrors(prev => ({ ...prev, pickupLocation: undefined }));
+                                }}
+                                type="pickup"
+                                required
+                            />
+                            <motion.button
+                                type="button"
+                                onClick={getCurrentLocation}
+                                disabled={isLocating}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="flex items-center gap-1 text-xs text-primary hover:text-primary-dark focus:outline-none"
+                            >
+                                {isLocating ? (
+                                    <>
+                                        <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                        <span>Locating your position...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <span>Use my current location</span>
+                                    </>
+                                )}
+                            </motion.button>
+                            {locationError && (
+                                <p className="text-xs text-red-500">{locationError}</p>
+                            )}
+                            {errors.pickupLocation && (
+                                <p className="text-xs text-red-500">{errors.pickupLocation}</p>
+                            )}
+                        </div>
                     </div>
 
                     {/* Pickup Date & Time */}

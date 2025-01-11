@@ -224,15 +224,15 @@ export const carService = {
             const response = await axios.request({
                 method: 'GET',
                 url: `${BASE_URL}/searchDestination`,
-                params: { query },
+                params: {
+                    query,
+                    languagecode: 'en-us'
+                },
                 headers: HEADERS
             });
 
-            console.log('Raw location search response:', response.data);
-
-            // Map the API response to our LocationSearchResult type
-            if (response.data.status && Array.isArray(response.data.data)) {
-                const mappedLocations = response.data.data.map((location: ApiLocationResponse) => ({
+            if (response.data?.status && response.data?.data) {
+                const locations: LocationSearchResult[] = response.data.data.map((location: ApiLocationResponse) => ({
                     dest_id: location.id ?? '',
                     name: location.name ?? '',
                     type: location.type ?? '',
@@ -242,21 +242,7 @@ export const carService = {
                     country: location.country ?? '',
                     address: location.address ?? ''
                 }));
-
-                // Filter out locations with invalid coordinates
-                const validLocations = mappedLocations.filter((location: LocationSearchResult) => {
-                    const hasCoordinates = location.latitude && location.longitude;
-                    console.log('Location coordinates after mapping:', {
-                        name: location.name,
-                        lat: location.latitude,
-                        lng: location.longitude,
-                        hasCoordinates
-                    });
-                    return hasCoordinates;
-                });
-
-                console.log(`Valid locations: ${validLocations.length} of ${mappedLocations.length}`);
-                return { status: true, data: validLocations };
+                return { status: true, data: locations };
             }
 
             return { status: false, data: [] };
@@ -350,7 +336,7 @@ export const carService = {
                                 vehicle.vehicle_info.airbags && 'Airbags',
                                 vehicle.vehicle_info.free_cancellation && 'Free Cancellation'
                             ].filter((feature): feature is string => Boolean(feature)),
-                            image_url: vehicle.vehicle_info.image_url || vehicle.vehicle_info.image_thumbnail_url || ''
+                            image_url: vehicle.vehicle_info.image_url ?? vehicle.vehicle_info.image_thumbnail_url ?? ''
                         },
                         pricing: {
                             total_price: {
