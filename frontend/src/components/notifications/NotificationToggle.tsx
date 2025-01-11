@@ -88,7 +88,7 @@ export function NotificationToggle({ className = '' }: NotificationToggleProps) 
                 whileTap={{ scale: 0.95 }}
             >
                 <div
-                    className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isEnabled ? 'bg-gold' : 'bg-gray-300'
+                    className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isEnabled ? 'bg-forest-400' : 'bg-gray-300'
                         } ${isUpdating ? 'opacity-50' : ''}`}
                 >
                     <motion.div
