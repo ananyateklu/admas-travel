@@ -125,5 +125,41 @@ export const hotelService = {
             console.error('Error getting hotel policies:', error);
             throw error;
         }
+    },
+
+    async searchNearbyDestinations(latitude: number, longitude: number) {
+        try {
+            // First get the address from coordinates using OpenStreetMap
+            const cityResponse = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+            );
+            const cityData = await cityResponse.json();
+
+            if (cityData.address) {
+                // Get the most specific location name
+                const locationName = cityData.address.city ||
+                    cityData.address.town ||
+                    cityData.address.village ||
+                    cityData.address.county ||
+                    cityData.address.state;
+
+                if (locationName) {
+                    // Search for destinations using the city/town name
+                    const response = await this.searchDestination(locationName);
+                    return response;
+                }
+            }
+
+            return {
+                status: false,
+                data: []
+            };
+        } catch (error) {
+            console.error('Error searching nearby destinations:', error);
+            return {
+                status: false,
+                data: []
+            };
+        }
     }
 }; 

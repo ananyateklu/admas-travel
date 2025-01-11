@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { hotelService } from '../../lib/api/hotelService';
 
@@ -40,6 +40,8 @@ export function HotelSearchInput({
     const [isFocused, setIsFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isLocating, setIsLocating] = useState(false);
+    const [locationError, setLocationError] = useState<string | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -93,6 +95,45 @@ export function HotelSearchInput({
         }
     };
 
+    const handleGetCurrentLocation = useCallback(async () => {
+        setIsLocating(true);
+        setLocationError(null);
+
+        try {
+            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            });
+
+            const { latitude, longitude } = position.coords;
+
+            // Search for destinations near the coordinates
+            const response = await hotelService.searchNearbyDestinations(latitude, longitude);
+
+            if (response.status && response.data && response.data.length > 0) {
+                const nearestDestination = response.data[0];
+                setSelectedDestination(nearestDestination);
+                onChange(nearestDestination);
+                setLocationError(null);
+                return;
+            }
+
+            throw new Error('No destinations found nearby');
+        } catch (error) {
+            console.error('Error getting location:', error);
+            setLocationError(
+                error instanceof GeolocationPositionError
+                    ? 'Unable to get your location. Please check your browser permissions.'
+                    : 'Unable to find nearby destinations. Please enter manually.'
+            );
+        } finally {
+            setIsLocating(false);
+        }
+    }, [onChange]);
+
     const handleSelect = (destination: Destination) => {
         setSelectedDestination(destination);
         onChange(destination);
@@ -130,7 +171,7 @@ export function HotelSearchInput({
     const displayValue = selectedDestination ? selectedDestination.label : query;
 
     const renderDropdownContent = () => {
-        if (isLoading) {
+        if (isLoading || isLocating) {
             return (
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -138,19 +179,21 @@ export function HotelSearchInput({
                     className="p-4 text-center"
                 >
                     <div className="inline-block animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
-                    <p className="text-sm text-gray-500 mt-2">Searching destinations...</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                        {isLocating ? 'Getting your location...' : 'Searching destinations...'}
+                    </p>
                 </motion.div>
             );
         }
 
-        if (error) {
+        if (error || locationError) {
             return (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="p-4 text-center text-red-500"
                 >
-                    {error}
+                    {error ?? locationError}
                 </motion.div>
             );
         }
@@ -164,7 +207,7 @@ export function HotelSearchInput({
                 >
                     {destinations.map((destination, index) => (
                         <motion.li
-                            key={`${destination.dest_id}-${destination.search_type}`}
+                            key={`${destination.dest_id}-${index}`}
                             initial={{ opacity: 0, y: -8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
@@ -225,7 +268,7 @@ export function HotelSearchInput({
             )}
             <div ref={dropdownRef} className="relative">
                 <div className="relative">
-                    {/* Icon */}
+                    {/* Search Icon */}
                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
                         <svg
                             className={`w-5 h-5 ${isFocused ? 'text-primary' : 'text-gray-400'} transition-colors`}
@@ -250,7 +293,7 @@ export function HotelSearchInput({
                         value={displayValue}
                         onChange={handleInputChange}
                         onFocus={() => setIsFocused(true)}
-                        className={`w-full pl-10 pr-8 py-1.5 text-xs border rounded-lg
+                        className={`w-full pl-10 pr-10 py-1.5 text-xs border rounded-lg
                             ${isFocused ? 'border-primary ring-1 ring-primary/20' : 'border-gray-300'}
                             ${selectedDestination ? 'bg-gray-50' : 'bg-white'}
                             focus:outline-none transition-all duration-200 ${className}`}
@@ -259,14 +302,14 @@ export function HotelSearchInput({
                         autoComplete="off"
                     />
 
-                    {/* Clear button */}
+                    {/* Clear Button */}
                     {(displayValue || selectedDestination) && (
                         <motion.button
                             type="button"
                             onClick={handleClear}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}
-                            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-gray-100 transition-colors"
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors"
                         >
                             <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -275,9 +318,34 @@ export function HotelSearchInput({
                     )}
                 </div>
 
+                {/* Location Button */}
+                <motion.button
+                    type="button"
+                    onClick={handleGetCurrentLocation}
+                    disabled={isLocating}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center gap-1 text-xs text-primary hover:text-primary-dark focus:outline-none mt-2"
+                >
+                    {isLocating ? (
+                        <>
+                            <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                            <span>Locating your position...</span>
+                        </>
+                    ) : (
+                        <>
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>Use my current location</span>
+                        </>
+                    )}
+                </motion.button>
+
                 {/* Dropdown */}
                 <AnimatePresence>
-                    {query.length >= 2 && !selectedDestination && (
+                    {(query.length >= 2 || isLocating || locationError) && !selectedDestination && (
                         <motion.div
                             initial={{ opacity: 0, y: -4 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -290,6 +358,9 @@ export function HotelSearchInput({
                     )}
                 </AnimatePresence>
             </div>
+            {locationError && (
+                <p className="text-xs text-red-500 mt-1">{locationError}</p>
+            )}
         </div>
     );
 } 
