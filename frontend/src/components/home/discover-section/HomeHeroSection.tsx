@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollAnimation } from '../../../hooks/useScrollAnimation';
 import { NavigationIndicator } from './HomeNavigationArrows';
@@ -13,6 +13,49 @@ export function HeroSection() {
     const [isChanging, setIsChanging] = useState(false);
     const [direction, setDirection] = useState<'left' | 'right'>('right');
     const [isLoading, setIsLoading] = useState(true);
+    const [userInteracted, setUserInteracted] = useState(false);
+    const autoChangeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleNavigate = useCallback((wonderId: string) => {
+        if (isChanging) return;
+
+        const targetWonder = wonders.find(w => w.id === wonderId);
+        if (!targetWonder || targetWonder.id === currentWonder.id) return;
+
+        setIsChanging(true);
+        setDirection(wonders.indexOf(targetWonder) > wonders.indexOf(currentWonder) ? 'right' : 'left');
+        setIsLoading(true);
+        setCurrentWonder(targetWonder);
+
+        // Reset auto-change when user interacts
+        setUserInteracted(true);
+        setTimeout(() => {
+            setUserInteracted(false);
+        }, 10000); // Reset user interaction after 10 seconds
+
+        setTimeout(() => {
+            setIsChanging(false);
+            setIsLoading(false);
+        }, 300);
+    }, [isChanging, currentWonder]);
+
+    const handleAutoChange = useCallback(() => {
+        if (!userInteracted) {
+            const currentIndex = wonders.findIndex(w => w.id === currentWonder.id);
+            const nextIndex = (currentIndex + 1) % wonders.length;
+            handleNavigate(wonders[nextIndex].id);
+        }
+    }, [currentWonder, userInteracted, handleNavigate]);
+
+    // Auto-change functionality
+    useEffect(() => {
+        autoChangeIntervalRef.current = setInterval(handleAutoChange, 5000);
+        return () => {
+            if (autoChangeIntervalRef.current) {
+                clearInterval(autoChangeIntervalRef.current);
+            }
+        };
+    }, [handleAutoChange]);
 
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -31,25 +74,17 @@ export function HeroSection() {
         navigate('/get-started', { replace: true });
     }, [navigate]);
 
-    const handleNavigate = useCallback((wonderId: string) => {
-        if (isChanging) return;
-
-        const targetWonder = wonders.find(w => w.id === wonderId);
-        if (!targetWonder || targetWonder.id === currentWonder.id) return;
-
-        setIsChanging(true);
-        setDirection(wonders.indexOf(targetWonder) > wonders.indexOf(currentWonder) ? 'right' : 'left');
-        setIsLoading(true);
-        setCurrentWonder(targetWonder);
-
-        setTimeout(() => {
-            setIsChanging(false);
-            setIsLoading(false);
-        }, 300);
-    }, [isChanging, currentWonder]);
-
     const handleImageLoad = useCallback(() => {
         setIsLoading(false);
+    }, []);
+
+    // Add mouse enter/leave handlers for the section
+    const handleMouseEnter = useCallback(() => {
+        setUserInteracted(true);
+    }, []);
+
+    const handleMouseLeave = useCallback(() => {
+        setUserInteracted(false);
     }, []);
 
     return (
@@ -60,6 +95,8 @@ export function HeroSection() {
                 transform: 'translate3d(0,0,0)',
                 backfaceVisibility: 'hidden'
             }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
             <AnimatePresence mode="wait">
                 <motion.div
