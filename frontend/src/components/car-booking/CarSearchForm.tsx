@@ -5,6 +5,7 @@ import { LocationSearchResult } from '../../types/carSearch';
 import { DatePicker } from '../common/DatePicker';
 import { TimePicker } from '../common/TimePicker';
 import { carService } from '../../lib/api/carService';
+import { useCarBookingForm } from '../../hooks/useCarBookingForm';
 
 interface CarSearchFormData {
     pickupLocation: LocationSearchResult;
@@ -29,43 +30,26 @@ export function CarSearchForm({
 }: CarSearchFormProps) {
     const [isLocating, setIsLocating] = useState(false);
     const [locationError, setLocationError] = useState<string | null>(null);
-    const [formData, setFormData] = useState<CarSearchFormData>({
-        pickupLocation: initialData?.pickupLocation || {
-            dest_id: '',
-            name: '',
-            type: '',
-            latitude: '',
-            longitude: '',
-            city: '',
-            country: '',
-            address: ''
-        },
-        dropoffLocation: initialData?.dropoffLocation || {
-            dest_id: '',
-            name: '',
-            type: '',
-            latitude: '',
-            longitude: '',
-            city: '',
-            country: '',
-            address: ''
-        },
-        pickupDate: initialData?.pickupDate || (() => {
+    const [errors, setErrors] = useState<Partial<Record<keyof CarSearchFormData, string>>>({});
+
+    // Use the new hook for form state management
+    const { formData, updateFormData } = useCarBookingForm({
+        pickupLocation: initialData?.pickupLocation || null,
+        dropoffLocation: initialData?.dropoffLocation || null,
+        pickupDate: initialData?.pickupDate?.toISOString() ?? (() => {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
-            return tomorrow;
+            return tomorrow.toISOString();
         })(),
-        dropoffDate: initialData?.dropoffDate || (() => {
+        dropoffDate: initialData?.dropoffDate?.toISOString() ?? (() => {
             const dayAfterTomorrow = new Date();
             dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
-            return dayAfterTomorrow;
+            return dayAfterTomorrow.toISOString();
         })(),
         pickupTime: initialData?.pickupTime ?? '10:00',
         dropoffTime: initialData?.dropoffTime ?? '10:00',
         driverAge: initialData?.driverAge ?? '25'
     });
-
-    const [errors, setErrors] = useState<Partial<Record<keyof CarSearchFormData, string>>>({});
 
     const getCurrentLocation = useCallback(async () => {
         setIsLocating(true);
@@ -100,10 +84,8 @@ export function CarSearchForm({
                     // Search for locations using the city/town name
                     const response = await carService.searchDestination(locationName);
                     if (response.status && response.data && response.data.length > 0) {
-                        setFormData(prev => ({
-                            ...prev,
-                            pickupLocation: response.data[0]
-                        }));
+                        const nearestLocation = response.data[0];
+                        updateFormData({ pickupLocation: nearestLocation });
                         setLocationError(null);
                         return;
                     }
@@ -121,16 +103,16 @@ export function CarSearchForm({
         } finally {
             setIsLocating(false);
         }
-    }, []);
+    }, [updateFormData]);
 
     const validateForm = (): boolean => {
         const newErrors: Partial<Record<keyof CarSearchFormData, string>> = {};
 
-        if (!formData.pickupLocation.name || !formData.pickupLocation.latitude || !formData.pickupLocation.longitude) {
+        if (!formData.pickupLocation?.name || !formData.pickupLocation.latitude || !formData.pickupLocation.longitude) {
             newErrors.pickupLocation = 'Please select a pickup location';
         }
 
-        if (!formData.dropoffLocation.name || !formData.dropoffLocation.latitude || !formData.dropoffLocation.longitude) {
+        if (!formData.dropoffLocation?.name || !formData.dropoffLocation.latitude || !formData.dropoffLocation.longitude) {
             newErrors.dropoffLocation = 'Please select a drop-off location';
         }
 
@@ -138,16 +120,19 @@ export function CarSearchForm({
             newErrors.driverAge = 'Driver must be at least 18 years old';
         }
 
-        const pickupDateTime = new Date(
-            `${formData.pickupDate.toDateString()} ${formData.pickupTime}`
-        );
-        const dropoffDateTime = new Date(
-            `${formData.dropoffDate.toDateString()} ${formData.dropoffTime}`
-        );
+        const pickupDateTime = new Date(`${formData.pickupDate}T${formData.pickupTime}:00`);
+        const dropoffDateTime = new Date(`${formData.dropoffDate}T${formData.dropoffTime}:00`);
+
+        if (isNaN(pickupDateTime.getTime())) {
+            newErrors.pickupDate = 'Please select a valid pickup date';
+        }
+
+        if (isNaN(dropoffDateTime.getTime())) {
+            newErrors.dropoffDate = 'Please select a valid drop-off date';
+        }
 
         // Check if times are the same on the same day
-        if (formData.pickupDate.toDateString() === formData.dropoffDate.toDateString() &&
-            formData.pickupTime === formData.dropoffTime) {
+        if (formData.pickupDate === formData.dropoffDate && formData.pickupTime === formData.dropoffTime) {
             newErrors.dropoffTime = 'Select different pickup/drop-off times';
         }
 
@@ -167,15 +152,27 @@ export function CarSearchForm({
             return;
         }
 
-        await onSubmit(formData);
+        if (!formData.pickupLocation || !formData.dropoffLocation) {
+            return;
+        }
+
+        // Convert ISO date strings back to Date objects for the onSubmit handler
+        await onSubmit({
+            pickupLocation: formData.pickupLocation,
+            dropoffLocation: formData.dropoffLocation,
+            pickupDate: new Date(formData.pickupDate),
+            dropoffDate: new Date(formData.dropoffDate),
+            pickupTime: formData.pickupTime,
+            dropoffTime: formData.dropoffTime,
+            driverAge: formData.driverAge
+        });
     };
 
     const handleSameAsPickup = () => {
-        setFormData(prev => ({
-            ...prev,
-            dropoffLocation: prev.pickupLocation
-        }));
-        setErrors(prev => ({ ...prev, dropoffLocation: undefined }));
+        if (formData.pickupLocation) {
+            updateFormData({ dropoffLocation: formData.pickupLocation });
+            setErrors(prev => ({ ...prev, dropoffLocation: undefined }));
+        }
     };
 
     return (
@@ -197,9 +194,9 @@ export function CarSearchForm({
                             <CarSearchInput
                                 label=""
                                 id="pickup-location"
-                                value={formData.pickupLocation.name}
+                                value={formData.pickupLocation?.name ?? ''}
                                 onChange={(location) => {
-                                    setFormData(prev => ({ ...prev, pickupLocation: location }));
+                                    updateFormData({ pickupLocation: location });
                                     setErrors(prev => ({ ...prev, pickupLocation: undefined }));
                                 }}
                                 type="pickup"
@@ -247,8 +244,8 @@ export function CarSearchForm({
                             <div className="flex-1">
                                 <DatePicker
                                     label=""
-                                    selected={formData.pickupDate}
-                                    onChange={(date: Date | null) => date && setFormData(prev => ({ ...prev, pickupDate: date }))}
+                                    selected={new Date(formData.pickupDate)}
+                                    onChange={(date: Date | null) => date && updateFormData({ pickupDate: date.toISOString() })}
                                     minDate={new Date()}
                                     required
                                     className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
@@ -260,7 +257,7 @@ export function CarSearchForm({
                                     label=""
                                     value={formData.pickupTime}
                                     onChange={(time: string) => {
-                                        setFormData(prev => ({ ...prev, pickupTime: time }));
+                                        updateFormData({ pickupTime: time });
                                         setErrors(prev => ({ ...prev, pickupTime: undefined, dropoffTime: undefined }));
                                     }}
                                     required
@@ -286,9 +283,9 @@ export function CarSearchForm({
                             <div className="flex-1">
                                 <DatePicker
                                     label=""
-                                    selected={formData.dropoffDate}
-                                    onChange={(date: Date | null) => date && setFormData(prev => ({ ...prev, dropoffDate: date }))}
-                                    minDate={formData.pickupDate}
+                                    selected={new Date(formData.dropoffDate)}
+                                    onChange={(date: Date | null) => date && updateFormData({ dropoffDate: date.toISOString() })}
+                                    minDate={new Date(formData.pickupDate)}
                                     required
                                     className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
                                         focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
@@ -299,7 +296,7 @@ export function CarSearchForm({
                                     label=""
                                     value={formData.dropoffTime}
                                     onChange={(time: string) => {
-                                        setFormData(prev => ({ ...prev, dropoffTime: time }));
+                                        updateFormData({ dropoffTime: time });
                                         setErrors(prev => ({ ...prev, pickupTime: undefined, dropoffTime: undefined }));
                                     }}
                                     required
@@ -382,9 +379,9 @@ export function CarSearchForm({
                                     <CarSearchInput
                                         label=""
                                         id="dropoff-location"
-                                        value={formData.dropoffLocation.name}
+                                        value={formData.dropoffLocation?.name ?? ''}
                                         onChange={(location) => {
-                                            setFormData(prev => ({ ...prev, dropoffLocation: location }));
+                                            updateFormData({ dropoffLocation: location });
                                             setErrors(prev => ({ ...prev, dropoffLocation: undefined }));
                                         }}
                                         type="dropoff"
@@ -419,7 +416,7 @@ export function CarSearchForm({
                                     <input
                                         type="number"
                                         value={formData.driverAge}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, driverAge: e.target.value }))}
+                                        onChange={(e) => updateFormData({ driverAge: e.target.value })}
                                         min="18"
                                         max="99"
                                         className="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg 
@@ -483,11 +480,10 @@ export function CarSearchForm({
                                 const today = new Date();
                                 const tomorrow = new Date();
                                 tomorrow.setDate(today.getDate() + 1);
-                                setFormData(prev => ({
-                                    ...prev,
-                                    pickupDate: today,
-                                    dropoffDate: tomorrow
-                                }));
+                                updateFormData({
+                                    pickupDate: today.toISOString(),
+                                    dropoffDate: tomorrow.toISOString()
+                                });
                             }
                         },
                         {
@@ -497,11 +493,10 @@ export function CarSearchForm({
                                 tomorrow.setDate(tomorrow.getDate() + 1);
                                 const dayAfter = new Date();
                                 dayAfter.setDate(tomorrow.getDate() + 1);
-                                setFormData(prev => ({
-                                    ...prev,
-                                    pickupDate: tomorrow,
-                                    dropoffDate: dayAfter
-                                }));
+                                updateFormData({
+                                    pickupDate: tomorrow.toISOString(),
+                                    dropoffDate: dayAfter.toISOString()
+                                });
                             }
                         },
                         {
@@ -511,11 +506,10 @@ export function CarSearchForm({
                                 nextWeek.setDate(nextWeek.getDate() + 7);
                                 const dayAfterNextWeek = new Date();
                                 dayAfterNextWeek.setDate(nextWeek.getDate() + 1);
-                                setFormData(prev => ({
-                                    ...prev,
-                                    pickupDate: nextWeek,
-                                    dropoffDate: dayAfterNextWeek
-                                }));
+                                updateFormData({
+                                    pickupDate: nextWeek.toISOString(),
+                                    dropoffDate: dayAfterNextWeek.toISOString()
+                                });
                             }
                         }
                     ].map((link) => (
