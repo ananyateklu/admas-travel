@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import Footer from './Footer';
 import admasLogo from '../assets/admast.png';
 import { useAuth } from '../lib/firebase/useAuth';
-import { ConvaiChat } from './chat/ConvaiChat';
+import { N8nChat } from './chat/N8nChat';
 import { NavMenu } from './navigation/NavMenu';
 import { NavLinks } from './navigation/NavLinks';
 import { UserMenu } from './navigation/UserMenu';
@@ -127,7 +127,7 @@ export default function Layout() {
             <Footer />
 
             {/* Chat Widget */}
-            <ConvaiChat agentId="k57XOhpbsRdgDr1Gxn1H" />
+            <N8nChat webhookUrl={import.meta.env.VITE_N8N_WEBHOOK_URL ?? ''} />
         </div>
     );
 } 

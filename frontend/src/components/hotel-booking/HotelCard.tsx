@@ -60,17 +60,17 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                     transition: { duration: 0.2 }
                 }}
                 onClick={() => setIsDetailsModalOpen(true)}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden h-full flex flex-col cursor-pointer relative"
+                className="group bg-white rounded-xl border border-gray-200/60 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.08),0_2px_6px_-1px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_24px_-8px_rgba(0,0,0,0.12),0_4px_12px_-4px_rgba(0,0,0,0.08)] transition-all duration-200 overflow-hidden h-full flex flex-col cursor-pointer relative will-change-transform"
             >
                 {/* Image Section */}
-                <div className="aspect-[16/9] relative">
+                <div className="aspect-[16/9] relative overflow-hidden">
                     <motion.img
                         initial={{ scale: 1.1 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.6 }}
                         src={hotel.property.photoUrls[0] || '/placeholder-hotel.jpg'}
                         alt={hotel.property.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     {/* Rating Badge */}
                     {Boolean(hotel.property.reviewScore) && (
@@ -78,7 +78,7 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="absolute top-2 left-2 px-2 py-1 bg-primary text-white rounded text-sm font-medium"
+                            className="absolute top-2 left-2 px-2 py-1 bg-primary text-white text-sm font-medium rounded-lg shadow-sm backdrop-blur-sm bg-opacity-90"
                         >
                             {hotel.property.reviewScore}
                         </motion.div>
@@ -101,11 +101,11 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                                         key={badge.identifier}
                                         className={`
                                             inline-flex items-center px-2.5 py-1.5 
-                                            rounded-md text-xs font-semibold 
-                                            whitespace-nowrap shadow-sm
+                                            rounded-lg text-xs font-medium 
+                                            whitespace-nowrap shadow-sm backdrop-blur-sm
                                             ${isSpecialDeal
-                                                ? 'bg-gold-50 text-gold-700 ring-1 ring-gold-600/20'
-                                                : 'bg-blue-50 text-blue-700 ring-1 ring-blue-700/10'
+                                                ? 'bg-gold-50/95 text-gold-700 ring-1 ring-gold-600/20'
+                                                : 'bg-blue-50/95 text-blue-700 ring-1 ring-blue-700/10'
                                             }
                                         `}
                                     >
@@ -114,7 +114,7 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                                 );
                             })}
                             {isNewProperty && (
-                                <span className="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-semibold bg-green-50 text-green-700 whitespace-nowrap ring-1 ring-green-600/20 shadow-sm">
+                                <span className="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium bg-green-50/95 text-green-700 whitespace-nowrap ring-1 ring-green-600/20 shadow-sm backdrop-blur-sm">
                                     New to Booking.com
                                 </span>
                             )}
@@ -123,9 +123,9 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                 </div>
 
                 {/* Content Section */}
-                <div className="p-2.5 flex flex-col flex-grow">
+                <div className="p-3.5 flex flex-col flex-grow">
                     {/* Rating Section */}
-                    <div className="flex items-center gap-1.5 mb-1">
+                    <div className="flex items-center gap-1.5 mb-1.5">
                         {hotel.property.propertyClass > 0 && (
                             <motion.div
                                 initial={{ opacity: 0 }}
@@ -145,13 +145,13 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                                 transition={{ delay: 0.4 }}
                                 className="flex items-center gap-1 text-[11px]"
                             >
-                                <span className="text-gray-600">•</span>
-                                <span className="font-medium">
+                                <span className="text-gray-400">•</span>
+                                <span className="font-medium text-gray-600">
                                     {hotel.property.reviewCount} reviews
                                 </span>
                                 {hotel.property.reviewScoreWord && (
                                     <>
-                                        <span className="text-gray-600">•</span>
+                                        <span className="text-gray-400">•</span>
                                         <span className="text-primary font-medium">
                                             {hotel.property.reviewScoreWord}
                                         </span>
@@ -162,13 +162,13 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                     </div>
 
                     {/* Hotel Details Group */}
-                    <div className="space-y-0.5">
+                    <div className="space-y-1">
                         {/* Hotel Info */}
                         <motion.h3
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3 }}
-                            className="text-sm font-medium line-clamp-1"
+                            className="text-sm font-medium text-gray-900 line-clamp-1 group-hover:text-primary transition-colors"
                         >
                             {hotel.property.name}
                         </motion.h3>
@@ -207,7 +207,7 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                     </div>
 
                     {/* Price Section */}
-                    <div className="mt-auto pt-2 min-h-[4.5rem]">
+                    <div className="mt-auto pt-3 min-h-[4.5rem]">
                         <div className="flex flex-col">
                             {hotel.property.priceBreakdown.strikethroughPrice && (
                                 <div className="text-[11px] text-gray-500 line-through">
@@ -244,7 +244,7 @@ export function HotelCard({ hotel, index, searchParams }: HotelCardProps) {
                         e.stopPropagation();
                         setIsBookingModalOpen(true);
                     }}
-                    className="absolute bottom-4 right-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+                    className="absolute bottom-4 right-4 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark shadow-sm hover:shadow-md transition-all duration-200"
                 >
                     Book Now
                 </motion.button>

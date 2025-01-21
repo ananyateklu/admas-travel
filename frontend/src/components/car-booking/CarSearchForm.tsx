@@ -120,8 +120,13 @@ export function CarSearchForm({
             newErrors.driverAge = 'Driver must be at least 18 years old';
         }
 
-        const pickupDateTime = new Date(`${formData.pickupDate}T${formData.pickupTime}:00`);
-        const dropoffDateTime = new Date(`${formData.dropoffDate}T${formData.dropoffTime}:00`);
+        const pickupDateTime = new Date(`${formData.pickupDate}`);
+        const dropoffDateTime = new Date(`${formData.dropoffDate}`);
+        const pickupTime = formData.pickupTime.split(':').map(Number);
+        const dropoffTime = formData.dropoffTime.split(':').map(Number);
+
+        pickupDateTime.setHours(pickupTime[0], pickupTime[1], 0);
+        dropoffDateTime.setHours(dropoffTime[0], dropoffTime[1], 0);
 
         if (isNaN(pickupDateTime.getTime())) {
             newErrors.pickupDate = 'Please select a valid pickup date';
@@ -131,13 +136,7 @@ export function CarSearchForm({
             newErrors.dropoffDate = 'Please select a valid drop-off date';
         }
 
-        // Check if times are the same on the same day
-        if (formData.pickupDate === formData.dropoffDate && formData.pickupTime === formData.dropoffTime) {
-            newErrors.dropoffTime = 'Select different pickup/drop-off times';
-        }
-
-        // Check if dropoff is before or equal to pickup
-        if (dropoffDateTime <= pickupDateTime) {
+        if (pickupDateTime >= dropoffDateTime) {
             newErrors.dropoffTime = 'Drop-off must be after pickup';
         }
 
@@ -147,25 +146,51 @@ export function CarSearchForm({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('Form submitted', formData);
 
         if (!validateForm()) {
+            console.log('Form validation failed', errors);
             return;
         }
 
         if (!formData.pickupLocation || !formData.dropoffLocation) {
+            console.log('Missing location data', { pickup: formData.pickupLocation, dropoff: formData.dropoffLocation });
+            setErrors(prev => ({
+                ...prev,
+                pickupLocation: !formData.pickupLocation ? 'Please select a pickup location' : undefined,
+                dropoffLocation: !formData.dropoffLocation ? 'Please select a drop-off location' : undefined
+            }));
             return;
         }
 
-        // Convert ISO date strings back to Date objects for the onSubmit handler
-        await onSubmit({
-            pickupLocation: formData.pickupLocation,
-            dropoffLocation: formData.dropoffLocation,
-            pickupDate: new Date(formData.pickupDate),
-            dropoffDate: new Date(formData.dropoffDate),
-            pickupTime: formData.pickupTime,
-            dropoffTime: formData.dropoffTime,
-            driverAge: formData.driverAge
-        });
+        try {
+            // Convert ISO date strings back to Date objects for the onSubmit handler
+            await onSubmit({
+                pickupLocation: {
+                    ...formData.pickupLocation,
+                    dest_id: formData.pickupLocation.dest_id ?? '',
+                    type: formData.pickupLocation.type ?? '',
+                    city: formData.pickupLocation.city ?? '',
+                    country: formData.pickupLocation.country ?? '',
+                    address: formData.pickupLocation.address ?? ''
+                },
+                dropoffLocation: {
+                    ...formData.dropoffLocation,
+                    dest_id: formData.dropoffLocation.dest_id ?? '',
+                    type: formData.dropoffLocation.type ?? '',
+                    city: formData.dropoffLocation.city ?? '',
+                    country: formData.dropoffLocation.country ?? '',
+                    address: formData.dropoffLocation.address ?? ''
+                },
+                pickupDate: new Date(formData.pickupDate),
+                dropoffDate: new Date(formData.dropoffDate),
+                pickupTime: formData.pickupTime,
+                dropoffTime: formData.dropoffTime,
+                driverAge: formData.driverAge
+            });
+        } catch (error) {
+            console.error('Error submitting form:', error);
+        }
     };
 
     const handleSameAsPickup = () => {

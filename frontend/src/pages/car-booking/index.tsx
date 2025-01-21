@@ -13,10 +13,12 @@ import mountainBg from '../../assets/mountains.jpeg';
 
 interface SearchFormData {
     pickupLocation: {
+        name: string;
         latitude: string;
         longitude: string;
     };
     dropoffLocation: {
+        name: string;
         latitude: string;
         longitude: string;
     };
@@ -49,6 +51,7 @@ export default function CarBookingPage() {
     const [isBooking, setIsBooking] = useState(false);
 
     const handleSearch = async (formData: SearchFormData) => {
+        console.log('Search initiated with data:', formData);
         setIsSearching(true);
         setSearchError(null);
 
@@ -57,9 +60,40 @@ export default function CarBookingPage() {
             const pickupDate = formData.pickupDate.toISOString().split('T')[0];
             const dropoffDate = formData.dropoffDate.toISOString().split('T')[0];
 
-            // Create Date objects for comparison
-            const pickupDateTime = new Date(`${pickupDate}T${formData.pickupTime}:00`);
-            const dropoffDateTime = new Date(`${dropoffDate}T${formData.dropoffTime}:00`);
+            // Format times to ensure HH:mm format in 24-hour time
+            const formatTime = (time: string) => {
+                const [hours, minutes] = time.split(':').map(Number);
+                const hour24 = String(hours).padStart(2, '0');
+                const mins = String(minutes).padStart(2, '0');
+                return `${hour24}:${mins}`;
+            };
+
+            const pickupTime = formatTime(formData.pickupTime);
+            const dropoffTime = formatTime(formData.dropoffTime);
+
+            // Create Date objects for comparison (using UTC to avoid timezone issues)
+            const pickupDateTime = new Date(Date.UTC(
+                parseInt(pickupDate.split('-')[0]),
+                parseInt(pickupDate.split('-')[1]) - 1,
+                parseInt(pickupDate.split('-')[2]),
+                parseInt(pickupTime.split(':')[0]),
+                parseInt(pickupTime.split(':')[1])
+            ));
+
+            const dropoffDateTime = new Date(Date.UTC(
+                parseInt(dropoffDate.split('-')[0]),
+                parseInt(dropoffDate.split('-')[1]) - 1,
+                parseInt(dropoffDate.split('-')[2]),
+                parseInt(dropoffTime.split(':')[0]),
+                parseInt(dropoffTime.split(':')[1])
+            ));
+
+            console.log('Formatted dates:', {
+                pickupDateTime: pickupDateTime.toISOString(),
+                dropoffDateTime: dropoffDateTime.toISOString(),
+                pickupTime,
+                dropoffTime
+            });
 
             // Check if pickup and dropoff times are the same
             if (pickupDateTime.getTime() === dropoffDateTime.getTime()) {
@@ -80,11 +114,13 @@ export default function CarBookingPage() {
                 pick_up_longitude: String(parseFloat(formData.pickupLocation.longitude).toFixed(6)),
                 drop_off_latitude: String(parseFloat(formData.dropoffLocation.latitude).toFixed(6)),
                 drop_off_longitude: String(parseFloat(formData.dropoffLocation.longitude).toFixed(6)),
-                pick_up_time: `${pickupDate}T${formData.pickupTime}:00`,
-                drop_off_time: `${dropoffDate}T${formData.dropoffTime}:00`,
+                pick_up_time: pickupTime,
+                drop_off_time: dropoffTime,
                 driver_age: formData.driverAge,
                 currency_code: 'USD'
             };
+
+            console.log('Search params:', searchParams);
 
             // Validate coordinates before making the API call
             if (!searchParams.pick_up_latitude || !searchParams.pick_up_longitude ||
@@ -96,23 +132,28 @@ export default function CarBookingPage() {
                 }));
             }
 
+            console.log('Making API call...');
             const response = await carService.searchCarRentals(searchParams);
+            console.log('API response:', response);
 
             if (response.status) {
-                setSearchResults(response.data.vehicles);
+                setSearchResults(response.data.vehicles ?? []);
                 setSearchKey(response.data.search_key);
                 setSearchError(null);
             } else {
-                setSearchError('Failed to fetch car rentals. Please try again.');
-                setSearchResults([]);
+                throw new Error('Failed to fetch car rentals');
             }
         } catch (error) {
-            if (error instanceof Error && error.message.startsWith('{')) {
-                const validationErrors = JSON.parse(error.message);
-                setSearchError(validationErrors.message || 'Invalid search parameters. Please check your inputs and try again.');
-                console.error('Validation errors:', validationErrors);
+            console.error('Search error:', error);
+            if (error instanceof Error) {
+                try {
+                    const validationErrors = JSON.parse(error.message);
+                    setSearchError(validationErrors.message || 'Invalid search parameters. Please check your inputs and try again.');
+                } catch {
+                    setSearchError(error.message || 'An error occurred while searching for cars. Please try again.');
+                }
             } else {
-                setSearchError('An error occurred while searching for cars. Please try again.');
+                setSearchError('An unexpected error occurred. Please try again.');
             }
             setSearchResults([]);
         } finally {
