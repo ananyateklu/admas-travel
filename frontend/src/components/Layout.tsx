@@ -107,7 +107,7 @@ export default function Layout() {
                                             +1 (612) 743-7243
                                         </span>
                                     </motion.a>
-                                    <UserMenu user={user} onSignOut={handleSignOut} />
+                                    <UserMenu user={user} onSignOut={handleSignOut} isMenuOpen={isMenuOpen} />
                                 </div>
                             </div>
                         </nav>

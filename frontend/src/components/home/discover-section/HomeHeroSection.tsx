@@ -1,13 +1,11 @@
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useScrollAnimation } from '../../../hooks/useScrollAnimation';
 import { NavigationIndicator } from './HomeNavigationArrows';
 import { ContentPanels } from './HomeContentPanels';
 import { Wonder, wonders } from './home-types';
 
 export function HeroSection() {
-    const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
     const [currentWonder, setCurrentWonder] = useState<Wonder>(wonders[0]);
     const [isChanging, setIsChanging] = useState(false);
@@ -69,10 +67,6 @@ export function HeroSection() {
         once: true,
         threshold: 0.2
     });
-
-    const handleStartJourney = useCallback(() => {
-        navigate('/get-started', { replace: true });
-    }, [navigate]);
 
     const handleImageLoad = useCallback(() => {
         setIsLoading(false);
@@ -139,70 +133,77 @@ export function HeroSection() {
                 </motion.div>
             </AnimatePresence>
 
-            <div className="absolute inset-0 flex">
-                {/* Left side with title and navigation */}
-                <div className="w-[350px] flex flex-col pt-8 relative">
-                    {/* Title Section */}
-                    <div className="px-8">
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                            className="text-yellow-400 text-xs font-medium tracking-[0.2em] mb-4"
-                        >
-                            DISCOVER ETHIOPIA
-                        </motion.p>
-                        <motion.div className="mb-1">
-                            <motion.h1
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-auto">
+                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center pointer-events-auto">
+                    {/* Left side with title and navigation */}
+                    <div className="w-[350px] flex flex-col relative pointer-events-auto">
+                        {/* Title Section */}
+                        <div className="px-8">
+                            <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8, delay: 0.4 }}
-                                className="text-white text-4xl font-serif leading-[1.2] drop-shadow-lg"
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                                className="flex items-center gap-2 mb-4"
                             >
-                                <div className="flex items-center gap-2">
-                                    <span className="text-white">Ancient</span>
-                                    <span className="text-white">Wonders</span>
-                                </div>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <span className="text-2xl text-white">&</span>
-                                    <span className="text-white">Natural</span>
-                                    <span className="text-white">Beauty</span>
-                                </div>
-                            </motion.h1>
-                            <motion.div
-                                initial={{ opacity: 0, scaleX: 0 }}
-                                animate={{ opacity: 1, scaleX: 1 }}
-                                transition={{ duration: 0.8, delay: 0.6 }}
-                                className="h-0.5 w-24 bg-yellow-400 mt-4 rounded-full"
+                                <div className="h-0.5 w-4 bg-primary-400 rounded-full" />
+                                <p className="text-yellow-400 text-xs font-medium tracking-[0.2em]">
+                                    DISCOVER ETHIOPIA
+                                </p>
+                            </motion.div>
+                            <motion.div className="mb-1">
+                                <motion.h1
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.4 }}
+                                    className="text-white text-4xl font-serif leading-[1.2] drop-shadow-lg"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-white">Ancient</span>
+                                        <span className="text-primary-400">Wonders</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className="text-2xl text-white">&</span>
+                                        <span className="text-white">Natural</span>
+                                        <span className="text-yellow-400">Beauty</span>
+                                    </div>
+                                </motion.h1>
+                                <motion.div
+                                    initial={{ opacity: 0, scaleX: 0 }}
+                                    animate={{ opacity: 1, scaleX: 1 }}
+                                    transition={{ duration: 0.8, delay: 0.6 }}
+                                    className="flex items-center gap-2 mt-4"
+                                >
+                                    <div className="h-0.5 w-12 bg-yellow-400 rounded-full" />
+                                    <div className="h-0.5 w-8 bg-primary-400 rounded-full" />
+                                </motion.div>
+                            </motion.div>
+                        </div>
+
+                        {/* Navigation */}
+                        <div className="mt-8">
+                            <NavigationIndicator
+                                wonders={wonders}
+                                currentWonder={currentWonder}
+                                onNavigate={handleNavigate}
                             />
-                        </motion.div>
+                        </div>
                     </div>
 
-                    {/* Navigation */}
-                    <div className="flex-1 relative">
-                        <NavigationIndicator
-                            wonders={wonders}
+                    {/* Right side - Content */}
+                    <motion.div
+                        ref={contentRef}
+                        className="flex-1 relative z-50 pointer-events-auto"
+                        style={{
+                            transform: 'translate3d(0,0,0)',
+                            backfaceVisibility: 'hidden'
+                        }}
+                    >
+                        <ContentPanels
                             currentWonder={currentWonder}
-                            onNavigate={handleNavigate}
+                            isInView={isInView}
                         />
-                    </div>
+                    </motion.div>
                 </div>
-
-                {/* Right side - Content */}
-                <motion.div
-                    ref={contentRef}
-                    className="flex-1 flex flex-col justify-center pr-6"
-                    style={{
-                        transform: 'translate3d(0,0,0)',
-                        backfaceVisibility: 'hidden'
-                    }}
-                >
-                    <ContentPanels
-                        currentWonder={currentWonder}
-                        isInView={isInView}
-                        onStartJourney={handleStartJourney}
-                    />
-                </motion.div>
             </div>
 
             <motion.div

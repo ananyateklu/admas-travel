@@ -11,7 +11,7 @@ export function NavigationIndicator({ wonders, currentWonder, onNavigate }: Navi
     return (
         <div className="h-full flex items-start pt-6">
             <div className="flex flex-col gap-3 pl-8 relative z-20">
-                {wonders.map((wonder) => (
+                {wonders.map((wonder, index) => (
                     <motion.div
                         key={wonder.id}
                         className={`group cursor-pointer flex items-center gap-2`}
@@ -20,11 +20,11 @@ export function NavigationIndicator({ wonders, currentWonder, onNavigate }: Navi
                         transition={{ duration: 0.2 }}
                         onClick={() => onNavigate(wonder.id)}
                     >
-                        <motion.div className="relative flex items-center">
+                        <motion.div className="relative flex items-center gap-1">
                             <motion.div
                                 className={`w-1.5 h-1.5 rounded-full transition-all duration-300 
                                     ${wonder.id === currentWonder.id
-                                        ? 'bg-yellow-400'
+                                        ? index % 2 === 0 ? 'bg-yellow-400' : 'bg-primary-400'
                                         : 'bg-white/30'}`}
                             />
                             {wonder.id !== currentWonder.id && (
@@ -44,7 +44,7 @@ export function NavigationIndicator({ wonders, currentWonder, onNavigate }: Navi
                         <motion.span
                             className={`text-xs font-light whitespace-nowrap
                                 ${wonder.id === currentWonder.id
-                                    ? 'text-yellow-400'
+                                    ? index % 2 === 0 ? 'text-yellow-400' : 'text-primary-400'
                                     : 'text-white/50 group-hover:text-white/70'}`}
                         >
                             {wonder.title}

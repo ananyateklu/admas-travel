@@ -376,7 +376,7 @@ Passenger ${i + 1}:
                                         </svg>
                                     </div>
                                     <h3 className="text-base font-semibold mb-1.5 text-gray-900">Email Support</h3>
-                                    <p className="text-xs text-gray-600 hover:text-gray-900 transition-colors">ananya.meseret@gmail.com</p>
+                                    <p className="text-xs text-gray-600 hover:text-gray-900 transition-colors">admastravel@gmail.com</p>
                                 </div>
                                 <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-4 group">
                                     <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">

@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import danakilImage from '../../assets/danakil.jpg';
 import abayRiverImage from '../../assets/abay-river.jpeg';
 
 export function NaturalWonders() {
+    const navigate = useNavigate();
     const { ref: sectionRef, isInView } = useScrollAnimation({
         threshold: 0.2
     });
@@ -38,6 +39,10 @@ export function NaturalWonders() {
         }
     };
 
+    const handleExploreMore = () => {
+        navigate('/explore-more');
+    };
+
     return (
         <section className="py-12 bg-gray-50 relative overflow-hidden">
             <motion.div
@@ -54,22 +59,22 @@ export function NaturalWonders() {
                             variants={textVariants}
                             className="text-2xl font-serif mb-3"
                         >
-                            Discover Natural Wonders
+                            Discover Ethiopia
                         </motion.h2>
                         <motion.p
                             variants={textVariants}
                             className="text-gray-600 text-sm mb-4"
                         >
-                            From the otherworldly landscapes of the Danakil Depression to the lush Simien Mountains,
-                            Ethiopia offers some of Africa's most spectacular natural wonders.
+                            From the otherworldly landscapes of the Danakil Depression to the vibrant streets of Addis Ababa,
+                            Ethiopia offers a unique blend of natural wonders and urban experiences.
                         </motion.p>
                         <motion.div
                             variants={textVariants}
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <Link
-                                to="/natural-wonders"
+                            <button
+                                onClick={handleExploreMore}
                                 className="inline-block px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-400 transition-colors group relative overflow-hidden"
                             >
                                 <span className="relative z-10 flex items-center gap-1 text-xs">
@@ -88,7 +93,7 @@ export function NaturalWonders() {
                                     animate={{ x: ['0%', '100%'] }}
                                     transition={{ duration: 1.5, repeat: Infinity }}
                                 />
-                            </Link>
+                            </button>
                         </motion.div>
                     </motion.div>
                     <div className="grid grid-cols-2 gap-3">

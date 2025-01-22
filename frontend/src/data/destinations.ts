@@ -27,6 +27,7 @@ export interface EthiopianDestination {
     name: string;
     count: number;
     image: string;
+    description: string;
 }
 
 export interface EthiopianRegions {
@@ -97,19 +98,59 @@ export const vacationRegions: Region[] = [
 
 export const ethiopianRegions: EthiopianRegions = {
     north: [
-        { name: "Lalibela", count: 4, image: lalibelaImage },
-        { name: "Axum", count: 3, image: axumImage },
-        { name: "Gondar", count: 5, image: gonderImage }
+        {
+            name: "Lalibela",
+            count: 4,
+            image: lalibelaImage,
+            description: "Ancient rock-hewn churches carved from solid rock, a testament to Ethiopian Orthodox Christianity."
+        },
+        {
+            name: "Axum",
+            count: 3,
+            image: axumImage,
+            description: "Ancient capital with massive obelisks and tombs, home to the claimed Ark of the Covenant."
+        },
+        {
+            name: "Gondar",
+            count: 5,
+            image: gonderImage,
+            description: "Medieval castles known as Africa's Camelot, featuring unique Portuguese and Indian architecture."
+        }
     ],
     south: [
-        { name: "Omo Valley", count: 6, image: omoValleyImage },
-        { name: "Bale Mountains", count: 4, image: baleMountainsImage }
+        {
+            name: "Omo Valley",
+            count: 6,
+            image: omoValleyImage,
+            description: "Home to fascinating indigenous tribes with unique traditions and colorful ceremonies."
+        },
+        {
+            name: "Bale Mountains",
+            count: 4,
+            image: baleMountainsImage,
+            description: "Diverse ecosystems from moorlands to forests, home to the endangered Ethiopian Wolf."
+        }
     ],
     east: [
-        { name: "Danakil Depression", count: 3, image: danakilImage }
+        {
+            name: "Danakil Depression",
+            count: 3,
+            image: danakilImage,
+            description: "Surreal landscapes with colorful minerals, active volcanoes, and vast salt flats."
+        }
     ],
     central: [
-        { name: "Lake Tana", count: 5, image: tanaLakeImage },
-        { name: "Simien Mountains", count: 7, image: simienmountainsImage }
+        {
+            name: "Lake Tana",
+            count: 5,
+            image: tanaLakeImage,
+            description: "Ancient monasteries on islands, preserving remarkable murals and religious artifacts."
+        },
+        {
+            name: "Simien Mountains",
+            count: 7,
+            image: simienmountainsImage,
+            description: "UNESCO site with breathtaking landscapes and unique wildlife like Gelada baboons."
+        }
     ]
 }; 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import { useNavigate } from 'react-router-dom';
 
 interface Region {
     id: string;
@@ -14,6 +15,7 @@ interface EthiopianDestination {
     name: string;
     count: number;
     image: string;
+    description?: string;
 }
 
 interface EthiopianRegions {
@@ -34,6 +36,7 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
     const { ref: sectionRef, isInView } = useScrollAnimation({
         threshold: 0.2
     });
+    const navigate = useNavigate();
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -240,14 +243,21 @@ export function VacationDestinations({ regions, ethiopianRegions }: VacationDest
                                                     <span className="h-0.5 w-4 bg-gold rounded-full" />
                                                     <span className="text-gold text-xs">{destination.count} Experiences</span>
                                                 </div>
-                                                <h3 className="text-lg font-serif mb-2 group-hover:text-primary transition-colors">{destination.name}</h3>
-                                                <motion.button
-                                                    whileHover={{ scale: 1.05 }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                    className="mt-2 px-3 py-1 bg-primary/10 text-primary rounded text-xs hover:bg-primary hover:text-white transition-all"
-                                                >
-                                                    View Details
-                                                </motion.button>
+                                                <h3 className="text-lg font-serif mb-1 group-hover:text-primary transition-colors">{destination.name}</h3>
+                                                <p className="text-xs text-gray-600 mb-2 line-clamp-2">{destination.description ?? 'Discover the rich history and natural beauty of this destination.'}</p>
+                                                <div className="flex items-center justify-end">
+                                                    <motion.button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            navigate('/explore-more');
+                                                        }}
+                                                        className="px-2 py-1 bg-primary text-white text-[10px] rounded-full transition-all duration-300 hover:bg-primary-400"
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                    >
+                                                        Explore More
+                                                    </motion.button>
+                                                </div>
                                             </div>
                                         </motion.div>
                                     ))}

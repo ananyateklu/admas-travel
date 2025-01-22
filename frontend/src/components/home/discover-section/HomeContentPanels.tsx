@@ -1,13 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wonder } from './home-types';
+import { useNavigate } from 'react-router-dom';
 
 interface ContentPanelsProps {
     currentWonder: Wonder;
     isInView: boolean;
-    onStartJourney: () => void;
 }
 
-export function ContentPanels({ currentWonder, isInView, onStartJourney }: ContentPanelsProps) {
+export function ContentPanels({ currentWonder, isInView }: ContentPanelsProps) {
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -85,6 +85,8 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
         }
     };
 
+    const navigate = useNavigate();
+
     return (
         <motion.div
             initial="hidden"
@@ -95,7 +97,7 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
             {/* Title Section */}
             <motion.div variants={itemVariants} className="max-w-xl">
                 <div className="overflow-hidden">
-                    <motion.span
+                    <motion.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{
@@ -103,10 +105,13 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                             ease: [0.16, 1, 0.3, 1],
                             delay: 0.1
                         }}
-                        className="inline-block text-yellow-400 text-4xl font-serif mb-1"
+                        className="flex items-center gap-2 mb-1"
                     >
-                        Discover
-                    </motion.span>
+                        <span className="inline-block text-primary-400 text-4xl font-serif">
+                            Discover
+                        </span>
+                        <div className="h-0.5 w-8 bg-yellow-400 rounded-full" />
+                    </motion.div>
                 </div>
 
                 <div className="overflow-hidden h-[60px]">
@@ -118,7 +123,7 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                             initial="enter"
                             animate="center"
                             exit="exit"
-                            className="text-4xl font-serif leading-tight"
+                            className="text-4xl font-serif leading-tight text-white/70"
                         >
                             {currentWonder.title}
                         </motion.h2>
@@ -127,16 +132,32 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
 
                 <motion.div
                     variants={itemVariants}
-                    className="mt-4"
+                    className="mt-4 relative z-50 pointer-events-auto"
                 >
                     <motion.button
-                        onClick={onStartJourney}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="group px-6 py-2 bg-yellow-400 text-black rounded-full hover:bg-yellow-300 transition-all hover:px-8 text-xs cursor-pointer"
+                        onClick={() => navigate('/explore-more')}
+                        whileHover={{
+                            scale: 1.05,
+                            boxShadow: "0 10px 20px rgba(0,0,0,0.2)"
+                        }}
+                        whileTap={{
+                            scale: 0.95,
+                            boxShadow: "0 5px 10px rgba(0,0,0,0.2)"
+                        }}
+                        className="group relative z-50 px-6 py-2 bg-gradient-to-r from-yellow-400 to-primary-400 text-black rounded-full hover:from-yellow-300 hover:to-primary-300 transition-all hover:px-8 text-xs cursor-pointer shadow-lg pointer-events-auto"
                     >
-                        <span className="font-medium tracking-wide">Start Your Journey</span>
-                        <span className="inline-block ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
+                        <span className="font-medium tracking-wide relative z-50">Learn More</span>
+                        <motion.span
+                            className="inline-block ml-2 relative z-50"
+                            animate={{ x: [0, 4, 0] }}
+                            transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                        >
+                            →
+                        </motion.span>
                     </motion.button>
                 </motion.div>
             </motion.div>
@@ -154,8 +175,11 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                 }}
             >
                 <motion.div variants={descriptionItemVariants} className="flex items-center gap-2 mb-2">
-                    <div className="w-0.5 h-4 bg-yellow-400/80 rounded-full" />
-                    <h3 className="text-xs font-medium uppercase tracking-wider text-yellow-400/90">About this Wonder</h3>
+                    <div className="flex items-center gap-1">
+                        <div className="w-0.5 h-4 bg-yellow-400/80 rounded-full" />
+                        <div className="w-0.5 h-4 bg-primary-400/80 rounded-full" />
+                    </div>
+                    <h3 className="text-xs font-medium uppercase tracking-wider text-primary-300">About this Wonder</h3>
                 </motion.div>
 
                 <AnimatePresence mode="wait">
@@ -165,7 +189,7 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="text-white/90 text-sm leading-relaxed pl-[10px]"
+                        className="text-white/70 text-sm leading-relaxed pl-[10px]"
                     >
                         {currentWonder.description}
                     </motion.p>
@@ -176,7 +200,7 @@ export function ContentPanels({ currentWonder, isInView, onStartJourney }: Conte
                     className="mt-3 pt-3 border-t border-white/10 pl-[10px]"
                 >
                     <motion.div
-                        className="flex items-center gap-1.5 text-white/70 hover:text-white/90 transition-colors"
+                        className="flex items-center gap-1.5 text-primary-300 hover:text-primary-200 transition-colors"
                         whileHover={{ x: 3 }}
                         transition={{ duration: 0.2 }}
                     >

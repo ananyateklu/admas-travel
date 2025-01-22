@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
-      return request.auth != null && request.auth.token.email in ['ananya.meseret@gmail.com'];
+      return request.auth != null && request.auth.token.email in ['ananya.meseret@gmail.com', 'admastravel@gmail.com'];
     }
 
     // Allow users to read and write their own data

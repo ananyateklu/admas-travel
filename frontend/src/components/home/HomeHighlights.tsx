@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Highlight } from '../../data/highlights';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
@@ -7,10 +8,25 @@ interface HighlightsProps {
 }
 
 export function Highlights({ highlights }: HighlightsProps) {
+    const navigate = useNavigate();
     const { ref: sectionRef, isInView } = useScrollAnimation({
         threshold: 0.2,
         once: true
     });
+
+    const handleHighlightClick = (highlight: Highlight) => {
+        switch (highlight.id) {
+            case 'natural-wonders':
+                navigate('/explore-more');
+                break;
+            case 'historical-tours':
+                navigate('/explore-more?category=historical');
+                break;
+            case 'wildlife-safari':
+                navigate('/explore-more?category=wildlife');
+                break;
+        }
+    };
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -80,7 +96,8 @@ export function Highlights({ highlights }: HighlightsProps) {
                         <motion.div
                             key={highlight.id}
                             variants={itemVariants}
-                            className="rounded-xl overflow-hidden aspect-[3/4] relative group"
+                            className="rounded-xl overflow-hidden aspect-[3/4] relative group cursor-pointer"
+                            onClick={() => handleHighlightClick(highlight)}
                         >
                             <motion.div
                                 whileHover={{ scale: 1.03 }}
@@ -114,10 +131,31 @@ export function Highlights({ highlights }: HighlightsProps) {
                                     </motion.h3>
                                     <motion.p
                                         variants={textVariants}
-                                        className="text-white/80 text-xs line-clamp-2"
+                                        className="text-white/80 text-xs line-clamp-2 mb-3"
                                     >
                                         {highlight.description}
                                     </motion.p>
+
+                                    {/* Explore More Button */}
+                                    <div className="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                        <motion.button
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="px-4 py-1.5 bg-primary-400 text-white text-xs rounded-full flex items-center gap-1.5"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleHighlightClick(highlight);
+                                            }}
+                                        >
+                                            Explore More
+                                            <motion.span
+                                                animate={{ x: [0, 3, 0] }}
+                                                transition={{ duration: 1.5, repeat: Infinity }}
+                                            >
+                                                →
+                                            </motion.span>
+                                        </motion.button>
+                                    </div>
                                 </div>
                             </motion.div>
                         </motion.div>

@@ -1,0 +1,22 @@
+.grecaptcha-badge {
+  left: 0 !important;
+  right: auto !important;
+  bottom: 20px !important;
+  z-index: 999 !important;
+  width: 70px !important;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.grecaptcha-badge:hover {
+  width: 256px !important;
+}
+
+/* Keep the icon visible but make it slightly transparent */
+.grecaptcha-badge > div:first-child {
+  opacity: 0.8;
+}
+
+.grecaptcha-badge:hover > div:first-child {
+  opacity: 1;
+}

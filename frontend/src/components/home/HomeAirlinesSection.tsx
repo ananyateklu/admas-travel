@@ -226,7 +226,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                         variants={contentVariants}
                         className="text-white/90 max-w-2xl text-xs drop-shadow-md"
                     >
-                        Experience exceptional service and worldwide connectivity with our carefully selected airline partners
+                        Experience exceptional service and worldwide connectivity with Admas Travel
                     </motion.p>
                 </div>
             </motion.div>

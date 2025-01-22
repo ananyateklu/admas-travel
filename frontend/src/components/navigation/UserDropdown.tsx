@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { User } from 'firebase/auth';
+import { ADMIN_EMAILS } from '../admin/types';
 
 interface UserDropdownProps {
     isOpen: boolean;
@@ -65,12 +66,12 @@ export function UserDropdown({ isOpen, onClose, user, onSignOut }: UserDropdownP
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute top-[72px] right-4 z-50 w-[200px]"
+                    className="absolute top-[68px] right-0 z-50 w-[200px]"
                 >
                     <motion.div
                         whileHover={{ scale: 1.01 }}
                         transition={{ duration: 0.2 }}
-                        className="bg-white/95 backdrop-blur-xl rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-gray-200/50 overflow-hidden"
+                        className="bg-white/95 backdrop-blur-xl rounded-[1.1rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-gray-200/50 overflow-hidden"
                     >
                         <motion.div
                             variants={itemVariants}
@@ -131,7 +132,7 @@ export function UserDropdown({ isOpen, onClose, user, onSignOut }: UserDropdownP
                                     </Link>
                                 </motion.div>
 
-                                {user.email === 'ananya.meseret@gmail.com' && (
+                                {user.email && ADMIN_EMAILS.includes(user.email) && (
                                     <motion.div variants={itemVariants}>
                                         <Link
                                             to="/admin"

@@ -19,6 +19,10 @@ export function NavLinks({ onLinkClick, hoveredLink, onHover, className = '', us
         if (link.path === '/bookings') {
             return user !== null;
         }
+        // Only show flight, hotel, and car booking links if user is logged in
+        if (link.path === '/book' || link.path === '/hotels' || link.path === '/car-booking') {
+            return user !== null;
+        }
         return true;
     });
 

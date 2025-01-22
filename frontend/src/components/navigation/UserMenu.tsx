@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { User } from 'firebase/auth';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Avatar } from '../common/ui';
 import { UserDropdown } from './UserDropdown';
 import { SignInDropdown } from '../SignInDropdown';
@@ -8,14 +8,39 @@ import { SignInDropdown } from '../SignInDropdown';
 interface UserMenuProps {
     user: User | null;
     onSignOut: () => Promise<void>;
+    isMenuOpen?: boolean;
 }
 
-export function UserMenu({ user, onSignOut }: UserMenuProps) {
+export function UserMenu({ user, onSignOut, isMenuOpen }: UserMenuProps) {
     const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
     const [isSignInOpen, setIsSignInOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdowns when nav menu opens
+    useEffect(() => {
+        if (isMenuOpen) {
+            setIsAccountMenuOpen(false);
+            setIsSignInOpen(false);
+        }
+    }, [isMenuOpen]);
+
+    // Handle click outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsAccountMenuOpen(false);
+                setIsSignInOpen(false);
+            }
+        }
+
+        if (isAccountMenuOpen || isSignInOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isAccountMenuOpen, isSignInOpen]);
 
     return (
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
             {user ? (
                 <div className="relative account-menu mr-3">
                     <motion.button
@@ -68,23 +93,10 @@ export function UserMenu({ user, onSignOut }: UserMenuProps) {
                     >
                         Sign In
                     </motion.button>
-                    <div className="absolute top-[calc(100%+0.5rem)] right-0 z-50">
-                        <AnimatePresence>
-                            {isSignInOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    transition={{ duration: 0.2 }}
-                                >
-                                    <SignInDropdown
-                                        isOpen={isSignInOpen}
-                                        onClose={() => setIsSignInOpen(false)}
-                                    />
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                    <SignInDropdown
+                        isOpen={isSignInOpen}
+                        onClose={() => setIsSignInOpen(false)}
+                    />
                 </div>
             )}
         </div>
