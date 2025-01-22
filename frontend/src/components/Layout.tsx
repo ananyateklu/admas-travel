@@ -124,7 +124,7 @@ export default function Layout() {
             </main>
 
             {/* Footer */}
-            <Footer />
+            <Footer user={user} />
 
             {/* Chat Widget */}
             <N8nChat webhookUrl={import.meta.env.VITE_N8N_WEBHOOK_URL ?? ''} />

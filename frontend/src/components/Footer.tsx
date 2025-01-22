@@ -1,10 +1,29 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { PolicyModal } from './modals/PolicyModal';
+import { User } from 'firebase/auth';
+import emailjs from '@emailjs/browser';
 
-export default function Footer() {
+interface FooterProps {
+    user: User | null;
+}
+
+interface FooterFormData {
+    name: string;
+    email: string;
+    message: string;
+}
+
+export default function Footer({ user }: FooterProps) {
     const [showTerms, setShowTerms] = useState(false);
     const [showPrivacy, setShowPrivacy] = useState(false);
+    const [formData, setFormData] = useState<FooterFormData>({
+        name: '',
+        email: '',
+        message: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
     const termsContent = `Terms of Service
 
@@ -69,13 +88,50 @@ We may update this policy periodically.
 8. Contact Us
 For privacy-related questions, please contact our support team.`;
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        try {
+            emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+            await emailjs.send(
+                import.meta.env.VITE_EMAILJS_SERVICE_ID,
+                import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+                {
+                    from_name: formData.name,
+                    from_email: formData.email,
+                    message: formData.message,
+                    to_email: "admastravel@gmail.com"
+                }
+            );
+
+            setSubmitStatus('success');
+            setFormData({ name: '', email: '', message: '' });
+            setTimeout(() => setSubmitStatus('idle'), 3000);
+        } catch (error) {
+            console.error('Failed to send email:', error);
+            setSubmitStatus('error');
+            setTimeout(() => setSubmitStatus('idle'), 3000);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
     return (
         <>
             <footer className="bg-gray-900 text-white mt-auto">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-8 gap-6">
                         {/* Company Info */}
-                        <div className="space-y-3">
+                        <div className="space-y-3 md:col-span-2">
                             <h3 className="text-base font-serif">Admas Travel</h3>
                             <p className="text-xs text-gray-400">
                                 Experience the beauty and culture of Ethiopia with our expertly curated travel experiences.
@@ -114,78 +170,121 @@ For privacy-related questions, please contact our support team.`;
                             </div>
                         </div>
 
-                        {/* Quick Links */}
-                        <div>
+                        {/* Quick Links & Support Combined */}
+                        <div className="md:col-span-3">
                             <h3 className="text-xs font-semibold mb-3">Quick Links</h3>
-                            <ul className="space-y-1.5">
-                                <li>
-                                    <Link to="/trips" className="text-xs text-gray-400 hover:text-white transition-colors">
-                                        Our Trips
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/about-us" className="text-xs text-gray-400 hover:text-white transition-colors">
-                                        About Us
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/book" className="text-xs text-gray-400 hover:text-white transition-colors">
-                                        Book
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/get-started" className="text-xs text-gray-400 hover:text-white transition-colors">
-                                        Get Started
-                                    </Link>
-                                </li>
-                            </ul>
+                            <div className="grid grid-cols-2 gap-4">
+                                <ul className="space-y-1.5">
+                                    <li>
+                                        <Link to="/" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                            Home
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/explore-more" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                            Explore Ethiopia
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/about-us" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                            About Us
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/contact" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                            Contact Us
+                                        </Link>
+                                    </li>
+                                    {user && (
+                                        <li>
+                                            <Link to="/bookings" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                                My Trips
+                                            </Link>
+                                        </li>
+                                    )}
+                                </ul>
+                                <ul className="space-y-1.5">
+                                    {user && (
+                                        <>
+                                            <li>
+                                                <Link to="/book" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                                    Flights
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link to="/hotels" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                                    Hotels
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link to="/car-booking" className="text-xs text-gray-400 hover:text-white transition-colors">
+                                                    Cars
+                                                </Link>
+                                            </li>
+                                        </>
+                                    )}
+                                    <li>
+                                        <button
+                                            onClick={() => setShowPrivacy(true)}
+                                            className="text-xs text-gray-400 hover:text-white transition-colors"
+                                        >
+                                            Privacy Policy
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            onClick={() => setShowTerms(true)}
+                                            className="text-xs text-gray-400 hover:text-white transition-colors"
+                                        >
+                                            Terms & Conditions
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
 
-                        {/* Support */}
-                        <div>
-                            <h3 className="text-xs font-semibold mb-3">Support</h3>
-                            <ul className="space-y-1.5">
-                                <li>
-                                    <Link to="/contact" className="text-xs text-gray-400 hover:text-white transition-colors">
-                                        Contact Us
-                                    </Link>
-                                </li>
-                                <li>
-                                    <button
-                                        onClick={() => setShowPrivacy(true)}
-                                        className="text-xs text-gray-400 hover:text-white transition-colors"
-                                    >
-                                        Privacy Policy
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        onClick={() => setShowTerms(true)}
-                                        className="text-xs text-gray-400 hover:text-white transition-colors"
-                                    >
-                                        Terms & Conditions
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Newsletter */}
-                        <div>
-                            <h3 className="text-xs font-semibold mb-3">Stay Updated</h3>
+                        {/* Contact Form */}
+                        <div className="md:col-span-3">
+                            <h3 className="text-xs font-semibold mb-3">Contact Us</h3>
                             <p className="text-xs text-gray-400 mb-3">
-                                Subscribe to our newsletter for travel updates and exclusive offers.
+                                Send us a message and we'll respond within 24 hours.
                             </p>
-                            <form className="space-y-1.5">
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white"
-                                />
+                            <form onSubmit={handleSubmit} className="space-y-1.5">
+                                <div className="grid grid-cols-2 gap-1.5">
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        placeholder="Your name"
+                                        className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                                        required
+                                    />
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        placeholder="Your email"
+                                        className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white"
+                                        required
+                                    />
+                                </div>
+                                <textarea
+                                    name="message"
+                                    value={formData.message}
+                                    onChange={handleInputChange}
+                                    placeholder="Your message"
+                                    rows={2}
+                                    className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white resize-none"
+                                    required
+                                ></textarea>
                                 <button
                                     type="submit"
-                                    className="w-full px-3 py-1.5 bg-white text-gray-900 rounded text-xs font-medium hover:bg-gray-100 transition-colors"
+                                    disabled={isSubmitting}
+                                    className="w-full px-3 py-1.5 bg-white text-gray-900 rounded text-xs font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
                                 >
-                                    Subscribe
+                                    {isSubmitting ? 'Sending...' : submitStatus === 'success' ? 'Message Sent!' : submitStatus === 'error' ? 'Failed to Send' : 'Send Message'}
                                 </button>
                             </form>
                         </div>
