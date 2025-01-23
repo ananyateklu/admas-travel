@@ -1,4 +1,5 @@
 // Re-export components from subdirectories
+export { BookingCard } from './shared/BookingCard';
 export * from './flight-booking-list/FlightListBookingIndex';
 export * from './flights';
 export * from './analytics/AdminIndex';

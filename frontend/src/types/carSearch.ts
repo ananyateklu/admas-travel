@@ -3,6 +3,8 @@ export interface CarSearchParams {
     pick_up_longitude: string;
     drop_off_latitude: string;
     drop_off_longitude: string;
+    pick_up_date: string;
+    drop_off_date: string;
     pick_up_time: string;
     drop_off_time: string;
     driver_age: string;

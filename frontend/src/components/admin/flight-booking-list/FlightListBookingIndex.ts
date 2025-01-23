@@ -1,4 +1,4 @@
-export { BookingCard } from './FlightListBookingCard';
+export { FlightListBookingCard } from './FlightListBookingCard';
 export { BookingDetails } from './FlightListBookingDetails';
 export { BookingStatusProgress } from './FlightListBookingStatusProgress';
 export { PassengerDetails } from './FlightListPassengerDetails';

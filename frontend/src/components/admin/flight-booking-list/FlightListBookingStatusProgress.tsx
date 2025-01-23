@@ -6,7 +6,7 @@ interface BookingStatusProgressProps {
     previousStatus?: string;
     bookingId: string;
     userId: string;
-    onStatusChange: (bookingId: string, newStatus: string, userId: string) => Promise<void>;
+    onStatusChange: (bookingId: string, newStatus: string, userId: string, previousStatus?: string) => Promise<void>;
     isLoading: boolean;
     isAdmin?: boolean;
 }
@@ -28,7 +28,7 @@ export function BookingStatusProgress({
                     const currentStepIndex = STATUS_OPTIONS.findIndex(opt => opt.value === currentStatus);
                     const isPassed = currentStepIndex > index;
                     const isUpcoming = currentStepIndex < index;
-                    const canChangeStatus = isAdmin || (currentStatus === 'pending' && option.value === 'cancelled');
+                    const canChangeStatus = isAdmin || (!isAdmin && currentStatus === 'pending' && option.value === 'cancelled');
 
                     // Get the button style based on status
                     const getButtonStyle = () => {
@@ -63,9 +63,17 @@ export function BookingStatusProgress({
                         <button
                             key={option.value}
                             type="button"
-                            disabled={isLoading || (!canChangeStatus && option.value !== 'cancelled')}
                             className={`relative flex items-center ${index > 0 ? 'ml-6' : ''} group/button outline-none focus:outline-none`}
-                            onClick={() => canChangeStatus && onStatusChange(bookingId, option.value, userId)}
+                            onClick={() => {
+                                if (canChangeStatus) {
+                                    // For cancelled status, we need to preserve the previous status
+                                    if (option.value === 'cancelled') {
+                                        onStatusChange(bookingId, option.value, userId, currentStatus);
+                                    } else {
+                                        onStatusChange(bookingId, option.value, userId);
+                                    }
+                                }
+                            }}
                             title={`Change status to ${option.label}`}
                             aria-label={option.label}
                         >
@@ -86,9 +94,8 @@ export function BookingStatusProgress({
                                                 const prevStatusIndex = STATUS_OPTIONS.findIndex(opt => opt.value === previousStatus);
                                                 return optionIndex <= prevStatusIndex ? 'bg-gradient-to-r from-rose-300/50 to-rose-300 scale-x-100' : 'scale-x-0';
                                             }
-                                            return isPassed ? 'bg-gradient-to-r from-gray-300/50 to-gray-300 scale-x-100' : 'scale-x-0';
-                                        })()
-                                            }`}
+                                            return isPassed ? 'bg-gradient-to-r from-forest-300/50 to-forest-300 scale-x-100' : 'scale-x-0';
+                                        })()}`}
                                         />
                                     </div>
                                 </div>
@@ -138,11 +145,11 @@ export function BookingStatusProgress({
                                         const prevStatusIndex = STATUS_OPTIONS.findIndex(opt => opt.value === previousStatus);
                                         return optionIndex <= prevStatusIndex ? 'text-rose-300' : 'text-gray-300';
                                     }
-                                    const currentColorLabel = STATUS_OPTIONS.find(opt => opt.value === currentStatus)?.colors.label ?? 'text-gray-500';
-                                    if (isActive) return currentColorLabel;
+                                    const currentOption = STATUS_OPTIONS.find(opt => opt.value === currentStatus);
+                                    if (!currentOption) return 'text-gray-500';
+                                    const currentColorLabel = currentOption.colors.active.replace('bg-', 'text-').replace('text-white', '');
                                     return isPassed ? `${currentColorLabel} opacity-75` : 'text-gray-500';
-                                })()
-                                    }`}>
+                                })()}`}>
                                     {option.label}
                                 </span>
                             </div>
@@ -163,8 +170,8 @@ export function BookingStatusProgress({
                             {/* Tooltip */}
                             {canChangeStatus && (
                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover/button:opacity-100 transition-all duration-300 pointer-events-none transform group-hover/button:-translate-y-1">
-                                    <div className="bg-white/95 text-gray-600 text-[10px] font-medium rounded-lg py-1.5 px-2.5 whitespace-nowrap shadow-lg border border-gray-100/50 backdrop-blur-sm">
-                                        Change to {option.label}
+                                    <div className="bg-white/95 backdrop-blur-sm px-2 py-1 rounded shadow-lg text-[11px] whitespace-nowrap">
+                                        Change status to {option.label}
                                         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-4 border-transparent border-t-white/95 filter drop-shadow-sm"></div>
                                     </div>
                                 </div>

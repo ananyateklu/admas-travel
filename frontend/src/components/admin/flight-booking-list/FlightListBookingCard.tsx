@@ -1,11 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookingData, BookingStatus } from '../types';
+import { FlightBookingData, BookingStatus, ADMIN_EMAILS } from '../types';
 import { BookingStatusProgress } from './FlightListBookingStatusProgress';
 import { BookingDateBadge } from './FlightListBookingDateBadge';
 import { BookingHeader } from '../shared/BookingHeader';
 import { JourneyDetails } from './FlightListJourneyDetails';
 import { PassengerAvatars } from './FlightListPassengerAvatars';
-import { BookingExpandedView } from './FlightListBookingExpandedView';
+import { FlightListBookingExpandedView } from './FlightListBookingExpandedView';
 
 const cardVariants = {
     hidden: {
@@ -45,8 +45,8 @@ const contentVariants = {
     }
 };
 
-interface BookingCardProps {
-    booking: BookingData;
+interface FlightListBookingCardProps {
+    booking: FlightBookingData;
     isExpanded: boolean;
     onToggleExpand: () => void;
     onStatusChange?: (bookingId: string, newStatus: string, userId: string, previousStatus?: string) => Promise<void>;
@@ -55,12 +55,12 @@ interface BookingCardProps {
     onDelete?: (bookingId: string) => Promise<void>;
     isDeleting?: boolean;
     currentUserId?: string;
-    onEdit?: (bookingId: string, updates: Partial<BookingData>) => Promise<void>;
+    onEdit?: (bookingId: string, updates: Partial<FlightBookingData>) => Promise<void>;
     onRatingSubmit?: (bookingId: string, rating: number, comment: string) => Promise<void>;
     isSubmittingRating?: boolean;
 }
 
-export function BookingCard({
+export function FlightListBookingCard({
     booking,
     isExpanded,
     onToggleExpand,
@@ -73,22 +73,21 @@ export function BookingCard({
     onEdit,
     onRatingSubmit,
     isSubmittingRating
-}: BookingCardProps) {
-    const canEdit = !isReadOnly && booking.status === 'pending' && currentUserId === booking.userId;
+}: FlightListBookingCardProps) {
+    const canEdit = !isReadOnly && (
+        ADMIN_EMAILS.includes(currentUserId ?? '') ||
+        (booking.status === 'pending' && currentUserId === booking.userId)
+    );
     const canDelete = currentUserId === booking.userId;
 
     const createdAt = typeof booking.createdAt === 'object' && 'toDate' in booking.createdAt
         ? booking.createdAt.toDate()
         : new Date(booking.createdAt);
 
-    const handleStatusChange = async (bookingId: string, newStatus: string, userId: string) => {
+    const handleStatusChange = async (bookingId: string, newStatus: string, userId: string, previousStatus?: string) => {
         if (onStatusChange) {
-            if (newStatus === 'cancelled') {
-                // Save the current status as previous status when cancelling
-                await onStatusChange(bookingId, newStatus, userId, booking.status);
-            } else {
-                await onStatusChange(bookingId, newStatus, userId);
-            }
+            // Always pass the current status as previous status for tracking
+            await onStatusChange(bookingId, newStatus, userId, previousStatus ?? booking.status);
         }
     };
 
@@ -139,6 +138,7 @@ export function BookingCard({
                                 userId={booking.userId}
                                 onStatusChange={handleStatusChange}
                                 isLoading={updateLoading === booking.bookingId}
+                                isAdmin={ADMIN_EMAILS.includes(currentUserId ?? '')}
                             />
                         ) : (
                             <BookingStatusProgress
@@ -148,6 +148,7 @@ export function BookingCard({
                                 userId={booking.userId}
                                 onStatusChange={handleStatusChange}
                                 isLoading={false}
+                                isAdmin={ADMIN_EMAILS.includes(currentUserId ?? '')}
                             />
                         )}
                         <div className="flex items-center">
@@ -166,7 +167,7 @@ export function BookingCard({
 
             <AnimatePresence>
                 {isExpanded && (
-                    <BookingExpandedView
+                    <FlightListBookingExpandedView
                         booking={booking}
                         onDelete={onDelete}
                         isDeleting={isDeleting}
