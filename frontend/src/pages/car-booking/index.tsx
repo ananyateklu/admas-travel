@@ -56,54 +56,32 @@ export default function CarBookingPage() {
         setSearchError(null);
 
         try {
-            // Format dates to match API requirements (YYYY-MM-DD)
-            const pickupDate = formData.pickupDate.toISOString().split('T')[0];
-            const dropoffDate = formData.dropoffDate.toISOString().split('T')[0];
+            // Format dates to YYYY-MM-DD
+            const formatDate = (date: Date) => {
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            };
 
             // Format times to ensure HH:mm format in 24-hour time
             const formatTime = (time: string) => {
                 const [hours, minutes] = time.split(':').map(Number);
-                const hour24 = String(hours).padStart(2, '0');
-                const mins = String(minutes).padStart(2, '0');
-                return `${hour24}:${mins}`;
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             };
 
+            const pickupDate = formatDate(new Date(formData.pickupDate));
+            const dropoffDate = formatDate(new Date(formData.dropoffDate));
             const pickupTime = formatTime(formData.pickupTime);
             const dropoffTime = formatTime(formData.dropoffTime);
 
-            // Create Date objects for comparison (using UTC to avoid timezone issues)
-            const pickupDateTime = new Date(Date.UTC(
-                parseInt(pickupDate.split('-')[0]),
-                parseInt(pickupDate.split('-')[1]) - 1,
-                parseInt(pickupDate.split('-')[2]),
-                parseInt(pickupTime.split(':')[0]),
-                parseInt(pickupTime.split(':')[1])
-            ));
+            // Create Date objects for validation only
+            const pickupDateTime = new Date(formData.pickupDate);
+            const dropoffDateTime = new Date(formData.dropoffDate);
 
-            const dropoffDateTime = new Date(Date.UTC(
-                parseInt(dropoffDate.split('-')[0]),
-                parseInt(dropoffDate.split('-')[1]) - 1,
-                parseInt(dropoffDate.split('-')[2]),
-                parseInt(dropoffTime.split(':')[0]),
-                parseInt(dropoffTime.split(':')[1])
-            ));
+            // Set the hours and minutes for validation
+            pickupDateTime.setHours(parseInt(pickupTime.split(':')[0]), parseInt(pickupTime.split(':')[1]));
+            dropoffDateTime.setHours(parseInt(dropoffTime.split(':')[0]), parseInt(dropoffTime.split(':')[1]));
 
-            console.log('Formatted dates:', {
-                pickupDateTime: pickupDateTime.toISOString(),
-                dropoffDateTime: dropoffDateTime.toISOString(),
-                pickupTime,
-                dropoffTime
-            });
-
-            // Check if pickup and dropoff times are the same
-            if (pickupDateTime.getTime() === dropoffDateTime.getTime()) {
-                throw new Error(JSON.stringify({
-                    message: "Pickup and drop-off times cannot be the same. Please select different times for your rental period."
-                }));
-            }
-
-            // Check if dropoff is before pickup
-            if (dropoffDateTime.getTime() < pickupDateTime.getTime()) {
+            // Validate times
+            if (pickupDateTime >= dropoffDateTime) {
                 throw new Error(JSON.stringify({
                     message: "Drop-off time must be after pickup time. Please adjust your rental period."
                 }));
@@ -114,15 +92,15 @@ export default function CarBookingPage() {
                 pick_up_longitude: String(parseFloat(formData.pickupLocation.longitude).toFixed(6)),
                 drop_off_latitude: String(parseFloat(formData.dropoffLocation.latitude).toFixed(6)),
                 drop_off_longitude: String(parseFloat(formData.dropoffLocation.longitude).toFixed(6)),
+                pick_up_date: pickupDate,
+                drop_off_date: dropoffDate,
                 pick_up_time: pickupTime,
                 drop_off_time: dropoffTime,
                 driver_age: formData.driverAge,
                 currency_code: 'USD'
             };
 
-            console.log('Search params:', searchParams);
-
-            // Validate coordinates before making the API call
+            // Validate coordinates
             if (!searchParams.pick_up_latitude || !searchParams.pick_up_longitude ||
                 !searchParams.drop_off_latitude || !searchParams.drop_off_longitude ||
                 isNaN(parseFloat(searchParams.pick_up_latitude)) || isNaN(parseFloat(searchParams.pick_up_longitude)) ||
@@ -132,7 +110,7 @@ export default function CarBookingPage() {
                 }));
             }
 
-            console.log('Making API call...');
+            console.log('Making API call with params:', searchParams);
             const response = await carService.searchCarRentals(searchParams);
             console.log('API response:', response);
 

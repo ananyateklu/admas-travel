@@ -255,13 +255,9 @@ export const carService = {
     searchCarRentals: async (params: CarSearchParams): Promise<CarSearchResponse> => {
         try {
             // Format dates to YYYY-MM-DD
-            const formatDate = (date: Date) => {
-                return date.toISOString().split('T')[0];
-            };
-
-            // Format times to HH:mm
-            const formatTime = (date: Date) => {
-                return date.toTimeString().slice(0, 5);
+            const formatDate = (dateStr: string) => {
+                const date = new Date(dateStr);
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
             };
 
             const formattedParams = {
@@ -269,10 +265,10 @@ export const carService = {
                 pick_up_longitude: params.pick_up_longitude,
                 drop_off_latitude: params.drop_off_latitude,
                 drop_off_longitude: params.drop_off_longitude,
-                pick_up_date: formatDate(new Date(params.pick_up_time)),
-                drop_off_date: formatDate(new Date(params.drop_off_time)),
-                pick_up_time: formatTime(new Date(params.pick_up_time)),
-                drop_off_time: formatTime(new Date(params.drop_off_time)),
+                pick_up_date: formatDate(params.pick_up_date),
+                drop_off_date: formatDate(params.drop_off_date),
+                pick_up_time: params.pick_up_time,
+                drop_off_time: params.drop_off_time,
                 driver_age: params.driver_age,
                 currency_code: params.currency_code ?? 'USD',
                 units: params.units ?? 'metric',

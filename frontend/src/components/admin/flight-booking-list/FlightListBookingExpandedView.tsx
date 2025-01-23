@@ -5,20 +5,20 @@ import { BookingTabs, TabType } from './FlightListBookingTabs';
 import { BookingDetails } from './FlightListBookingDetails';
 import { PassengerDetails } from './FlightListPassengerDetails';
 import { ContactDetails } from './FlightListContactDetails';
-import { BookingData } from '../types';
+import { FlightBookingData } from '../types';
 
-interface BookingExpandedViewProps {
-    booking: BookingData;
+interface FlightListBookingExpandedViewProps {
+    booking: FlightBookingData;
     onDelete?: (bookingId: string) => Promise<void>;
     isDeleting?: boolean;
     canDelete?: boolean;
     canEdit?: boolean;
-    onEdit?: (bookingId: string, updates: Partial<BookingData>) => Promise<void>;
+    onEdit?: (bookingId: string, updates: Partial<FlightBookingData>) => Promise<void>;
     onRatingSubmit?: (bookingId: string, rating: number, comment: string) => Promise<void>;
     isSubmittingRating?: boolean;
 }
 
-export function BookingExpandedView({
+export function FlightListBookingExpandedView({
     booking,
     onDelete,
     isDeleting,
@@ -27,7 +27,7 @@ export function BookingExpandedView({
     onEdit,
     onRatingSubmit,
     isSubmittingRating
-}: BookingExpandedViewProps) {
+}: FlightListBookingExpandedViewProps) {
     const [activeTab, setActiveTab] = useState<TabType>('details');
     const [isEditing, setIsEditing] = useState(false);
 

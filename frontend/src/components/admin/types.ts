@@ -1,18 +1,34 @@
 import { Airport } from '../../services/flightService';
 
-export interface BookingData {
+interface BaseBookingData {
     bookingId: string;
     userId: string;
+    status: string;
+    previousStatus?: string;
+    createdAt: string | { toDate: () => Date };
+    rating?: {
+        score: number;
+        comment: string;
+        createdAt: string | { toDate: () => Date };
+        updatedAt?: string | { toDate: () => Date };
+    };
+}
+
+export interface HotelLocation {
+    country: string;
+    city: string;
+    address: string;
+}
+
+export interface FlightBookingData extends BaseBookingData {
+    type: 'flight';
     bookingReference: string;
     destination: string;
     departureDate: string;
     departureTime?: string;
     returnDate?: string;
     returnTime?: string;
-    status: string;
-    previousStatus?: string;
     totalPassengers: number;
-    createdAt: string | { toDate: () => Date };
     from: Airport | null;
     to: Airport | null;
     tripType: string;
@@ -29,13 +45,66 @@ export interface BookingData {
         passportExpiry: string;
         nationality: string;
     }>;
-    rating?: {
-        score: number;
-        comment: string;
-        createdAt: string | { toDate: () => Date };
-        updatedAt?: string | { toDate: () => Date };
+}
+
+export interface HotelBookingData extends BaseBookingData {
+    type: 'hotel';
+    hotelId: string | number;
+    hotelName: string;
+    location: string | HotelLocation;
+    checkInDate: string;
+    checkOutDate: string;
+    dates: {
+        checkIn: string;
+        checkOut: string;
+        numberOfNights: number;
+    };
+    guests: Array<{
+        type: string;
+        fullName: string;
+        dateOfBirth?: string;
+    }>;
+    numberOfGuests: number;
+    numberOfRooms: number;
+    numberOfNights: number;
+    room: {
+        description: string;
+        amenities: string[];
+        name: string;
+        price: {
+            amount: number;
+            currency: string;
+        };
+        id: string;
+    };
+    roomType: string;
+    totalPrice: {
+        amount: number;
+        currency: string;
+    };
+    contactName: string;
+    contactEmail: string;
+    contactPhone: string;
+    specialRequests?: string;
+}
+
+export interface CarBookingData extends BaseBookingData {
+    type: 'car';
+    vehicle_id: string;
+    bookingReference: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    search_key: string;
+    specialRequests?: string;
+    totalPrice: {
+        amount: number;
+        currency: string;
     };
 }
+
+export type BookingData = FlightBookingData | HotelBookingData | CarBookingData;
 
 export const ADMIN_EMAILS = [
     import.meta.env.VITE_ADMIN_EMAIL_1,
