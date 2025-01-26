@@ -73,7 +73,7 @@ export function CarDetailsModal({
                     <div className="space-y-4">
                         <div>
                             <h3 className="text-base font-medium text-gray-900 mb-2">Vehicle Information</h3>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <p className="text-xs font-medium text-gray-500">Type</p>
                                     <p className="text-sm text-gray-900">{vehicle_info.type}</p>
@@ -126,7 +126,7 @@ export function CarDetailsModal({
                     <div className="space-y-4">
                         <div>
                             <h3 className="text-base font-medium text-gray-900 mb-3">Vehicle Features</h3>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 {vehicle_info.features.map((feature) => (
                                     <div key={`feature-${feature}`} className="flex items-center gap-2">
                                         <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,7 +140,7 @@ export function CarDetailsModal({
 
                         <div>
                             <h3 className="text-base font-medium text-gray-900 mb-3">Luggage Capacity</h3>
-                            <div className="flex gap-6">
+                            <div className="flex flex-col sm:flex-row gap-4">
                                 <div className="flex items-center gap-2">
                                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -197,7 +197,7 @@ export function CarDetailsModal({
 
                         <div>
                             <h3 className="text-base font-medium text-gray-900 mb-3">Included in Price</h3>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 {pricing.included_features.map((feature) => (
                                     <div key={`included-${feature}`} className="flex items-center gap-2">
                                         <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,7 +289,7 @@ export function CarDetailsModal({
                             exit: { opacity: 0, scale: 0.95, y: 20 }
                         }}
                         transition={{ type: "spring", duration: 0.5 }}
-                        className="w-[95%] md:w-[70%] lg:w-[55%] xl:w-[50%] min-w-[800px] max-w-[1200px] bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden"
+                        className="w-full max-w-[95%] sm:max-w-[85%] md:max-w-[75%] lg:max-w-[65%] bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Close button */}
@@ -303,8 +303,8 @@ export function CarDetailsModal({
                         </button>
 
                         {/* Hero Section */}
-                        <div className="relative flex items-center justify-between p-5 border-b">
-                            <div className="flex-1">
+                        <div className="relative flex flex-col md:flex-row items-start justify-between p-5 border-b">
+                            <div className="flex-1 mb-4 md:mb-0">
                                 <h2 className="text-xl font-serif mb-1 text-gray-900">{vehicle_info.name}</h2>
                                 <div className="space-y-1">
                                     <p className="text-sm text-gray-600">
@@ -319,7 +319,7 @@ export function CarDetailsModal({
                                     </p>
                                 </div>
                             </div>
-                            <div className="w-64 h-40 ml-6 rounded-lg overflow-hidden flex-shrink-0">
+                            <div className="w-full md:w-64 h-40 rounded-lg overflow-hidden">
                                 <img
                                     src={vehicle_info.image_url}
                                     alt={vehicle_info.name}
@@ -331,7 +331,7 @@ export function CarDetailsModal({
                         {/* Content */}
                         <div className="p-5 space-y-6">
                             {/* Price and Book Button - Top Section */}
-                            <div className="flex items-center justify-between pb-3 border-b">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b gap-4">
                                 <div>
                                     <div className="text-lg font-bold text-primary">
                                         {formatPrice(pricing.total_price.amount, pricing.total_price.currency)}
@@ -345,21 +345,22 @@ export function CarDetailsModal({
                                         onClose();
                                         onBook();
                                     }}
-                                    className="px-4 py-1.5 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark transition-colors"
+                                    className="w-full sm:w-auto px-4 py-1.5 bg-primary text-white text-sm rounded-lg hover:bg-primary-dark transition-colors"
                                 >
                                     Book Now
                                 </motion.button>
                             </div>
 
                             {/* Tabs */}
-                            <div className="flex space-x-4 border-b">
+                            <div className="flex space-x-4 border-b overflow-x-auto">
                                 {(['overview', 'features', 'pricing', 'supplier'] as const).map((tab) => (
                                     <button
                                         key={tab}
                                         onClick={() => handleTabChange(tab)}
-                                        className={`pb-2 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
-                                            ? 'border-primary text-primary'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                                        className={`pb-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap
+                                            ${activeTab === tab
+                                                ? 'border-primary text-primary'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700'
                                             }`}
                                     >
                                         {tab.charAt(0).toUpperCase() + tab.slice(1)}

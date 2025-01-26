@@ -14,13 +14,11 @@ const Home = React.lazy(() => import('./pages/Home'));
 const Book = React.lazy(() => import('./pages/FlightBook').then(module => ({ default: module.Book })));
 const Admin = React.lazy(() => import('./pages/Admin'));
 const Bookings = React.lazy(() => import('./pages/FlightBookingsList').then(module => ({ default: module.Bookings })));
-const BookingConfirmation = React.lazy(() => import('./pages/FlightBookingConfirmation'));
 const AboutUs = React.lazy(() => import('./pages/AboutUs'));
 const Contact = React.lazy(() => import('./pages/Contact'));
 const GetStarted = React.lazy(() => import('./pages/GetStarted'));
 const Account = React.lazy(() => import('./pages/Account'));
 const HotelSearchPage = React.lazy(() => import('./pages/hotels/HotelSearchPage'));
-const HotelBookingPage = React.lazy(() => import('./pages/hotels/HotelBookingPage'));
 const BookingDetailsPage = React.lazy(() => import('./pages/bookings/BookingDetailsPage'));
 const CarBookingPage = React.lazy(() => import('./pages/car-booking'));
 const ExploreMoreNaturalWonders = React.lazy(() => import('./pages/ExploreMore'));
@@ -47,12 +45,10 @@ function App() {
                   <Route index element={<Home />} />
                   <Route path="book" element={<Book />} />
                   <Route path="hotels" element={<HotelSearchPage />} />
-                  <Route path="hotels/:hotelId/book" element={<HotelBookingPage />} />
                   <Route path="car-booking" element={<CarBookingPage />} />
                   <Route path="admin" element={<Admin />} />
                   <Route path="bookings" element={<Bookings />} />
                   <Route path="bookings/:bookingId" element={<BookingDetailsPage />} />
-                  <Route path="booking-confirmation/:bookingId" element={<BookingConfirmation />} />
                   <Route path="about-us" element={<AboutUs />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="get-started" element={<GetStarted />} />

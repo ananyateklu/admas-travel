@@ -4,7 +4,7 @@ import { useAuth } from '../../lib/firebase/useAuth';
 import { HotelBookingForm } from './HotelBookingForm';
 import { hotelService } from '../../lib/api/hotelService';
 import { HotelDetailsResponse, HotelDetails } from '../../types/hotelDetails';
-import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase/firebase';
 import { createPortal } from 'react-dom';
 
@@ -13,7 +13,7 @@ interface UserProfile {
     nationality?: string;
     idNumber?: string;
     idExpiry?: string;
-    phoneNumber?: string;
+    phone?: string;
 }
 
 interface HotelBookingFormData {
@@ -121,6 +121,16 @@ function transformToHotelDetails(response: HotelDetailsResponse): HotelDetails {
     };
 }
 
+// Add function to generate booking reference
+function generateBookingReference(): string {
+    const prefix = 'ADMAS'; // Full company name prefix
+    const year = new Date().getFullYear().toString().slice(-2); // Last 2 digits of year
+    const month = (new Date().getMonth() + 1).toString().padStart(2, '0'); // Current month
+    const random = Math.random().toString(36).substring(2, 5).toUpperCase(); // 3 random chars
+    const sequence = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // 3 digit sequence
+    return `${prefix}-${year}${month}-${random}${sequence}`;
+}
+
 export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingComplete }: HotelBookingModalProps) {
     const [hotel, setHotel] = useState<HotelDetails | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -188,7 +198,13 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
 
     const handleSubmit = async (formData: HotelBookingFormData) => {
         try {
-            if (!hotel || !user) return;
+            if (!hotel || !user) {
+                throw new Error('Missing hotel or user data');
+            }
+
+            // Generate booking reference
+            const bookingReference = generateBookingReference();
+            console.log('Generated booking reference:', bookingReference);
 
             // Calculate number of nights
             const checkIn = new Date(formData.checkInDate);
@@ -207,6 +223,7 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                 ...formData,
                 hotelId: hotel.hotel_id,
                 hotelName: hotel.property.name,
+                bookingReference,
                 totalPrice: {
                     amount: totalPrice,
                     currency: selectedRoom.price.currency
@@ -242,11 +259,22 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
 
             // Add booking to Firestore
             const bookingRef = await addDoc(collection(db, 'bookings'), bookingData);
-            onBookingComplete(bookingRef.id);
-            onClose();
+            console.log('Booking saved with ID:', bookingRef.id);
+
+            // Add booking to user's bookings subcollection
+            const userBookingRef = doc(db, 'users', user.uid, 'bookings', bookingRef.id);
+            await setDoc(userBookingRef, bookingData);
+            console.log('Booking added to user subcollection');
+
+            // Return the result without closing the modal
+            return {
+                bookingId: bookingRef.id,
+                bookingReference
+            };
         } catch (err) {
             console.error('Error creating booking:', err);
             setError('Failed to create booking');
+            throw err;
         }
     };
 
@@ -369,6 +397,8 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                                         }}
                                         onSubmit={handleSubmit}
                                         showAutoFill={!!user}
+                                        onClose={onClose}
+                                        onBookingComplete={onBookingComplete}
                                         onAutoFillGuest={() => {
                                             if (!user || !userProfile) return null;
                                             return {
@@ -380,17 +410,23 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                                             };
                                         }}
                                         onAutoFillContact={(field) => {
-                                            if (!user || !userProfile) return '';
+                                            if (!user || !userProfile) {
+                                                console.log('No user or profile data for auto-fill');
+                                                return '';
+                                            }
                                             console.log('Auto-fill contact field:', field, 'userProfile:', userProfile);
+
                                             switch (field) {
                                                 case 'name':
                                                     return user.displayName ?? '';
                                                 case 'email':
                                                     return user.email ?? '';
-                                                case 'phone':
-                                                    const phone = userProfile.phone ?? user.phoneNumber ?? '';
-                                                    console.log('Returning phone value:', phone);
-                                                    return phone;
+                                                case 'phone': {
+                                                    // Try userProfile.phone first, then user.phoneNumber, then empty string
+                                                    const phoneNumber = userProfile.phone || user.phoneNumber || '';
+                                                    console.log('Auto-filling phone number:', phoneNumber);
+                                                    return phoneNumber;
+                                                }
                                                 default:
                                                     return '';
                                             }

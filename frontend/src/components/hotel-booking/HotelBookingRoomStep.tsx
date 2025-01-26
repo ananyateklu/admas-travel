@@ -6,9 +6,10 @@ interface RoomStepProps {
     hotel: HotelDetails;
     formData: HotelBookingFormData;
     onChange: (data: Partial<HotelBookingFormData>) => void;
+    errors?: Record<string, string>;
 }
 
-export function RoomStep({ hotel, formData, onChange }: RoomStepProps) {
+export function HotelBookingRoomStep({ hotel, formData, onChange, errors }: RoomStepProps) {
     return (
         <div className="space-y-4">
             <div className="bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-colors">
@@ -31,6 +32,9 @@ export function RoomStep({ hotel, formData, onChange }: RoomStepProps) {
                         selectedRoomId={formData.roomType}
                         onSelect={(roomId) => onChange({ ...formData, roomType: roomId })}
                     />
+                    {errors?.roomType && (
+                        <p className="mt-1 text-xs text-red-500">{errors.roomType}</p>
+                    )}
 
                     {/* Room and Guest Selection - One line on mobile */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
@@ -41,7 +45,7 @@ export function RoomStep({ hotel, formData, onChange }: RoomStepProps) {
                             <select
                                 value={formData.numberOfRooms}
                                 onChange={(e) => onChange({ ...formData, numberOfRooms: parseInt(e.target.value) })}
-                                className="w-full px-3 py-1.5 text-[11px] sm:text-xs border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                className={`w-full px-3 py-1.5 text-[11px] sm:text-xs border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors?.numberOfRooms ? 'border-red-500' : ''}`}
                             >
                                 {[1, 2, 3, 4, 5].map((num) => (
                                     <option key={num} value={num}>
@@ -49,6 +53,9 @@ export function RoomStep({ hotel, formData, onChange }: RoomStepProps) {
                                     </option>
                                 ))}
                             </select>
+                            {errors?.numberOfRooms && (
+                                <p className="mt-1 text-xs text-red-500">{errors.numberOfRooms}</p>
+                            )}
                         </div>
 
                         <div className="space-y-1">
@@ -58,7 +65,7 @@ export function RoomStep({ hotel, formData, onChange }: RoomStepProps) {
                             <select
                                 value={formData.numberOfGuests}
                                 onChange={(e) => onChange({ ...formData, numberOfGuests: parseInt(e.target.value) })}
-                                className="w-full px-3 py-1.5 text-[11px] sm:text-xs border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                className={`w-full px-3 py-1.5 text-[11px] sm:text-xs border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors?.numberOfGuests ? 'border-red-500' : ''}`}
                             >
                                 {[1, 2, 3, 4, 5].map((num) => (
                                     <option key={num} value={num}>
@@ -66,6 +73,9 @@ export function RoomStep({ hotel, formData, onChange }: RoomStepProps) {
                                     </option>
                                 ))}
                             </select>
+                            {errors?.numberOfGuests && (
+                                <p className="mt-1 text-xs text-red-500">{errors.numberOfGuests}</p>
+                            )}
                         </div>
 
                         {/* Check-in and Nights - One line on mobile */}
@@ -78,8 +88,11 @@ export function RoomStep({ hotel, formData, onChange }: RoomStepProps) {
                                 value={formData.checkInDate}
                                 onChange={(e) => onChange({ ...formData, checkInDate: e.target.value })}
                                 min={new Date().toISOString().split('T')[0]}
-                                className="w-full px-3 py-1.5 text-[11px] sm:text-xs border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                className={`w-full px-3 py-1.5 text-[11px] sm:text-xs border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors?.checkInDate ? 'border-red-500' : ''}`}
                             />
+                            {errors?.checkInDate && (
+                                <p className="mt-1 text-xs text-red-500">{errors.checkInDate}</p>
+                            )}
                         </div>
 
                         <div className="space-y-1">

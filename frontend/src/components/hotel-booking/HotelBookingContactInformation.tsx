@@ -6,6 +6,7 @@ interface HotelContactInformationProps {
     onChange: (updates: Partial<HotelBookingFormData>) => void;
     onAutoFill?: (field: 'name' | 'email' | 'phone') => string;
     showAutoFill?: boolean;
+    errors?: Record<string, string>;
 }
 
 export function HotelContactInformation({

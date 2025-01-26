@@ -5,6 +5,7 @@ import { formatDate } from '../../utils/dateUtils';
 interface HotelBookingReviewProps {
     hotel: HotelDetails;
     formData: HotelBookingFormData;
+    errors?: Record<string, string>;
 }
 
 export function HotelBookingReview({ hotel, formData }: HotelBookingReviewProps) {

@@ -5,9 +5,10 @@ import { motion } from 'framer-motion';
 interface GuestInformationProps {
     hotel: HotelDetails;
     formData: HotelBookingFormData;
-    onChange: (data: Partial<HotelBookingFormData>) => void;
+    onChange: (updates: Partial<HotelBookingFormData>) => void;
     onAutoFill?: () => GuestInfo | null;
     showAutoFill?: boolean;
+    errors?: Record<string, string>;
 }
 
 export function GuestInformation({
