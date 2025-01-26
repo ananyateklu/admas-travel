@@ -368,33 +368,45 @@ Passenger ${i + 1}:
                 <section className="py-6 bg-gray-50 mt-[25px]">
                     <div className="max-w-5xl mx-auto px-4">
                         <div className="bg-white border border-gray-300 hover:border-gray-400 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md p-4">
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-4 group">
-                                    <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
-                                        <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
+                            {/* Support Cards */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                                <div className="relative overflow-hidden bg-gradient-to-br from-white to-gray-50/80 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgb(0,0,0,0.08)] transition-all duration-300 p-4 group">
+                                    <div className="relative z-10">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 flex items-center justify-center bg-gradient-to-br from-gold/20 to-gold/5 rounded-xl group-hover:scale-110 group-hover:from-gold/30 group-hover:to-gold/10 transition-all duration-500 shadow-sm">
+                                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2 text-gray-900 group-hover:text-gray-800">Email Support</h3>
+                                        <p className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-700 transition-colors">admastravel@gmail.com</p>
                                     </div>
-                                    <h3 className="text-base font-semibold mb-1.5 text-gray-900">Email Support</h3>
-                                    <p className="text-xs text-gray-600 hover:text-gray-900 transition-colors">admastravel@gmail.com</p>
+                                    <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                 </div>
-                                <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-4 group">
-                                    <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
-                                        <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                        </svg>
+
+                                <div className="relative overflow-hidden bg-gradient-to-br from-white to-gray-50/80 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgb(0,0,0,0.08)] transition-all duration-300 p-4 group">
+                                    <div className="relative z-10">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 flex items-center justify-center bg-gradient-to-br from-gold/20 to-gold/5 rounded-xl group-hover:scale-110 group-hover:from-gold/30 group-hover:to-gold/10 transition-all duration-500 shadow-sm">
+                                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2 text-gray-900 group-hover:text-gray-800">Phone Support</h3>
+                                        <p className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-700 transition-colors">+1 (612) 743-7243</p>
                                     </div>
-                                    <h3 className="text-base font-semibold mb-1.5 text-gray-900">Phone Support</h3>
-                                    <p className="text-xs text-gray-600 hover:text-gray-900 transition-colors">+1 (612) 743-7243</p>
+                                    <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                 </div>
-                                <div className="text-center bg-white rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md p-4 group">
-                                    <div className="w-10 h-10 mx-auto mb-3 flex items-center justify-center bg-gold/10 rounded-full group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
-                                        <svg className="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+
+                                <div className="relative overflow-hidden bg-gradient-to-br from-white to-gray-50/80 rounded-xl border border-gray-200/80 shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgb(0,0,0,0.08)] transition-all duration-300 p-4 group">
+                                    <div className="relative z-10">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 flex items-center justify-center bg-gradient-to-br from-gold/20 to-gold/5 rounded-xl group-hover:scale-110 group-hover:from-gold/30 group-hover:to-gold/10 transition-all duration-500 shadow-sm">
+                                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2 text-gray-900 group-hover:text-gray-800">Business Hours</h3>
+                                        <p className="text-xs sm:text-sm text-gray-500 group-hover:text-gray-700 transition-colors">Mon-Fri: 9AM-6PM CST</p>
                                     </div>
-                                    <h3 className="text-base font-semibold mb-1.5 text-gray-900">Business Hours</h3>
-                                    <p className="text-xs text-gray-600 hover:text-gray-900 transition-colors">Mon-Fri: 9AM-6PM CST</p>
+                                    <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                 </div>
                             </div>
                         </div>

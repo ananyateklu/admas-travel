@@ -47,7 +47,8 @@ export function FlightDetails({
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            {/* From and To inputs - Always in two columns on desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
                     <div className="relative">
@@ -85,34 +86,33 @@ export function FlightDetails({
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                <div className="grid grid-cols-5 gap-4">
-                    <div className="col-span-3">
-                        <label className="block text-[10px] font-medium text-gray-600 mb-1">Departure Date</label>
-                        <input
-                            type="date"
-                            value={departureDate}
-                            onChange={(e) => onDepartureDateChange(e.target.value)}
-                            min={getMinDate()}
-                            className="w-full px-3 py-1.5 text-xs border rounded-lg border-gray-300 hover:border-forest-400 focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 focus:outline-none transition-colors"
-                            required
-                        />
-                    </div>
-                    <div className="col-span-2">
-                        <label className="block text-[10px] font-medium text-gray-600 mb-1">Time</label>
-                        <input
-                            type="time"
-                            value={departureTime}
-                            onChange={(e) => onDepartureTimeChange(e.target.value)}
-                            className="w-full px-3 py-1.5 text-xs border rounded-lg border-gray-300 hover:border-forest-400 focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 focus:outline-none transition-colors"
-                            required
-                        />
-                    </div>
+            {/* All date/time inputs in one line on desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">Departure Date</label>
+                    <input
+                        type="date"
+                        value={departureDate}
+                        onChange={(e) => onDepartureDateChange(e.target.value)}
+                        min={getMinDate()}
+                        className="w-full px-3 py-1.5 text-xs border rounded-lg border-gray-300 hover:border-forest-400 focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 focus:outline-none transition-colors"
+                        required
+                    />
+                </div>
+                <div>
+                    <label className="block text-[10px] font-medium text-gray-600 mb-1">Departure Time</label>
+                    <input
+                        type="time"
+                        value={departureTime}
+                        onChange={(e) => onDepartureTimeChange(e.target.value)}
+                        className="w-full px-3 py-1.5 text-xs border rounded-lg border-gray-300 hover:border-forest-400 focus:ring-1 focus:ring-forest-400/30 focus:border-forest-400 focus:outline-none transition-colors"
+                        required
+                    />
                 </div>
 
                 {isRoundTrip && (
-                    <div className="grid grid-cols-5 gap-4">
-                        <div className="col-span-3">
+                    <>
+                        <div>
                             <label className="block text-[10px] font-medium text-gray-600 mb-1">Return Date</label>
                             <input
                                 type="date"
@@ -123,8 +123,8 @@ export function FlightDetails({
                                 required
                             />
                         </div>
-                        <div className="col-span-2">
-                            <label className="block text-[10px] font-medium text-gray-600 mb-1">Time</label>
+                        <div>
+                            <label className="block text-[10px] font-medium text-gray-600 mb-1">Return Time</label>
                             <input
                                 type="time"
                                 value={returnTime}
@@ -133,7 +133,7 @@ export function FlightDetails({
                                 required
                             />
                         </div>
-                    </div>
+                    </>
                 )}
             </div>
         </div>

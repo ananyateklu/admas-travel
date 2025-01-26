@@ -4,6 +4,7 @@ import { HotelDetails } from '../../types/hotelDetails';
 import { GuestInformation } from './HotelBookingGuestInformation';
 import { HotelContactInformation } from './HotelBookingContactInformation';
 import { HotelBookingReview } from './HotelBookingReview';
+import { RoomStep } from './HotelBookingRoomStep';
 
 interface HotelBookingFormProps {
     hotel: HotelDetails;
@@ -44,6 +45,7 @@ export interface HotelBookingFormData {
 }
 
 const steps = [
+    { id: 'room', label: 'Room Selection' },
     { id: 'guest-info', label: 'Guest Information' },
     { id: 'contact', label: 'Contact Details' },
     { id: 'review', label: 'Review & Book' }
@@ -120,15 +122,15 @@ export function HotelBookingForm({
                         <React.Fragment key={step.id}>
                             <div className="flex flex-col items-center">
                                 <div
-                                    className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-medium
+                                    className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-[10px] sm:text-[11px] font-medium
                                         ${index <= currentStep ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'}`}
                                 >
                                     {index + 1}
                                 </div>
-                                <span className="mt-1 text-[10px] text-gray-600">{step.label}</span>
+                                <span className="mt-1 text-[9px] sm:text-[10px] text-gray-600 text-center max-w-[60px] sm:max-w-none">{step.label}</span>
                             </div>
                             {index < steps.length - 1 && (
-                                <div className="flex-1 h-0.5 bg-gray-200">
+                                <div className="flex-1 mx-2 sm:mx-4 h-0.5 bg-gray-200">
                                     <div
                                         className="h-full bg-primary transition-all duration-300"
                                         style={{ width: index < currentStep ? '100%' : '0%' }}
@@ -143,6 +145,14 @@ export function HotelBookingForm({
             {/* Step Content */}
             <div className="mt-4">
                 {currentStep === 0 && (
+                    <RoomStep
+                        hotel={hotel}
+                        formData={formData}
+                        onChange={updateFormData}
+                    />
+                )}
+
+                {currentStep === 1 && (
                     <GuestInformation
                         hotel={hotel}
                         formData={formData}
@@ -152,8 +162,8 @@ export function HotelBookingForm({
                     />
                 )}
 
-                {currentStep === 1 && (
-                    <div className="space-y-4">
+                {currentStep === 2 && (
+                    <div className="space-y-3">
                         <HotelContactInformation
                             formData={formData}
                             onChange={updateFormData}
@@ -163,7 +173,7 @@ export function HotelBookingForm({
                     </div>
                 )}
 
-                {currentStep === 2 && (
+                {currentStep === 3 && (
                     <HotelBookingReview
                         hotel={hotel}
                         formData={formData}
@@ -172,12 +182,12 @@ export function HotelBookingForm({
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between pt-4 border-t border-gray-200">
+            <div className="flex justify-between items-center pt-3 sm:pt-4 border-t border-gray-200">
                 {currentStep > 0 && (
                     <button
                         type="button"
                         onClick={handleBack}
-                        className="px-3 py-1.5 text-[11px] font-medium text-gray-700 hover:text-gray-900"
+                        className="px-3 py-1.5 text-[11px] sm:text-xs font-medium text-gray-700 hover:text-gray-900"
                     >
                         Back
                     </button>
@@ -186,7 +196,7 @@ export function HotelBookingForm({
                     type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="ml-auto px-3 py-1.5 bg-primary text-white text-[11px] rounded-lg hover:bg-primary-dark disabled:opacity-50"
+                    className="ml-auto px-4 py-2 bg-primary text-white text-[11px] sm:text-xs rounded-lg hover:bg-primary-dark disabled:opacity-50"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (

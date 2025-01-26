@@ -319,7 +319,7 @@ export function BookingForm({
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm">
             {/* Progress Bar */}
             <div className="border-b border-gray-200">
-                <div className="px-4 py-2">
+                <div className="px-2 md:px-4 py-2">
                     <div className="flex items-center justify-between relative">
                         {FORM_STEPS.map((step, index) => {
                             const stepIndex = FORM_STEPS.findIndex(s => s.id === currentStep);
@@ -328,7 +328,7 @@ export function BookingForm({
 
                             return (
                                 <React.Fragment key={step.id}>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-col md:flex-row items-center md:gap-2">
                                         <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${getStepClassName(isActive, isCompleted)}`}>
                                             {isCompleted ? (
                                                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -338,17 +338,29 @@ export function BookingForm({
                                                 <span className="text-xs font-medium">{index + 1}</span>
                                             )}
                                         </div>
-                                        <div>
-                                            <div className={`text-xs font-medium ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>
+                                        <div className="mt-1 md:mt-0 text-center md:text-left">
+                                            <div className={`text-[10px] md:text-xs font-medium ${isActive ? 'text-gray-900' : 'text-gray-500'}`}>
                                                 {step.title}
                                             </div>
-                                            <div className="text-[10px] text-gray-400 hidden md:block">
+                                            <div className="hidden md:block text-[10px] text-gray-400">
                                                 {step.description}
                                             </div>
                                         </div>
                                     </div>
                                     {index < FORM_STEPS.length - 1 && (
-                                        <div className="flex-1 h-0.5 bg-gray-200 relative mx-3">
+                                        <div className="hidden md:block flex-1 h-0.5 bg-gray-200 relative mx-3">
+                                            <div
+                                                className="absolute inset-0 bg-forest-400 transition-all duration-300"
+                                                style={{
+                                                    transform: `scaleX(${isCompleted ? 1 : 0})`,
+                                                    transformOrigin: 'left'
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Mobile connector line */}
+                                    {index < FORM_STEPS.length - 1 && (
+                                        <div className="md:hidden w-12 h-0.5 bg-gray-200 relative">
                                             <div
                                                 className="absolute inset-0 bg-forest-400 transition-all duration-300"
                                                 style={{
@@ -366,7 +378,7 @@ export function BookingForm({
             </div>
 
             {/* Form Content */}
-            <div className="p-2">
+            <div className="p-2 md:p-4">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentStep}
@@ -377,14 +389,14 @@ export function BookingForm({
                         className="space-y-3"
                     >
                         {currentStep === 'trip' && (
-                            <div className="grid grid-cols-12 gap-6">
-                                <div className="col-span-12 lg:col-span-3">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-6">
+                                <div className="lg:col-span-3">
                                     <TripTypeSelector
                                         value={formData.tripType}
                                         onChange={(value) => updateFormData({ tripType: value })}
                                     />
                                 </div>
-                                <div className="col-span-12 lg:col-span-9">
+                                <div className="lg:col-span-9">
                                     <FlightDetails
                                         from={formData.from}
                                         to={formData.to}
@@ -407,8 +419,8 @@ export function BookingForm({
 
                         {currentStep === 'passengers' && (
                             <div className="space-y-4">
-                                <div className="grid grid-cols-12 gap-4">
-                                    <div className="col-span-12 lg:col-span-4">
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
+                                    <div className="lg:col-span-4">
                                         <PassengerCount
                                             adults={formData.adults}
                                             childCount={formData.children}
@@ -424,22 +436,22 @@ export function BookingForm({
                                                 updateFormData({ adults: count, passengers: [...newPassengers, ...formData.passengers.slice(count).filter(p => p.type === 'child')] });
                                             }}
                                             onChildrenChange={(count) => {
-                                                const adultPassengers = formData.passengers.filter(p => p.type === 'adult');
-                                                const newChildPassengers: PassengerInfo[] = Array(count).fill(null).map((_, i) => ({
+                                                const existingAdults = formData.passengers.filter(p => p.type === 'adult');
+                                                const newChildren: PassengerInfo[] = Array(count).fill(null).map((_, i) => ({
                                                     type: 'child',
-                                                    fullName: formData.passengers[i + adultPassengers.length]?.fullName || '',
-                                                    dateOfBirth: formData.passengers[i + adultPassengers.length]?.dateOfBirth || '',
-                                                    passportNumber: formData.passengers[i + adultPassengers.length]?.passportNumber || '',
-                                                    passportExpiry: formData.passengers[i + adultPassengers.length]?.passportExpiry || '',
-                                                    nationality: formData.passengers[i + adultPassengers.length]?.nationality || ''
+                                                    fullName: formData.passengers[i + formData.adults]?.fullName || '',
+                                                    dateOfBirth: formData.passengers[i + formData.adults]?.dateOfBirth || '',
+                                                    passportNumber: formData.passengers[i + formData.adults]?.passportNumber || '',
+                                                    passportExpiry: formData.passengers[i + formData.adults]?.passportExpiry || '',
+                                                    nationality: formData.passengers[i + formData.adults]?.nationality || ''
                                                 }));
-                                                updateFormData({ children: count, passengers: [...adultPassengers, ...newChildPassengers] });
+                                                updateFormData({ children: count, passengers: [...existingAdults, ...newChildren] });
                                             }}
                                             cabinClass={formData.class}
                                             onCabinClassChange={(value) => updateFormData({ class: value })}
                                         />
                                     </div>
-                                    <div className="col-span-12 lg:col-span-8">
+                                    <div className="lg:col-span-8">
                                         <PassengerInformation
                                             passengers={formData.passengers}
                                             onPassengerChange={handlePassengerChange}
@@ -453,8 +465,8 @@ export function BookingForm({
                         )}
 
                         {currentStep === 'contact' && (
-                            <div className="grid grid-cols-12 gap-4">
-                                <div className="col-span-5">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
+                                <div className="lg:col-span-5">
                                     <ContactInformation
                                         contactName={formData.contactName}
                                         contactEmail={formData.contactEmail}
@@ -465,7 +477,7 @@ export function BookingForm({
                                         errors={validationErrors}
                                     />
                                 </div>
-                                <div className="col-span-7">
+                                <div className="lg:col-span-7">
                                     <SpecialRequests
                                         value={formData.specialRequests ?? ''}
                                         onChange={(value) => updateFormData({ specialRequests: value })}
@@ -475,7 +487,7 @@ export function BookingForm({
                         )}
 
                         {currentStep === 'review' && (
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 <BookingReview formData={formData} />
                             </div>
                         )}
@@ -484,7 +496,7 @@ export function BookingForm({
             </div>
 
             {/* Navigation Buttons */}
-            <div className="px-4 py-2 border-t border-gray-200 flex justify-between items-center">
+            <div className="px-2 md:px-4 py-2 border-t border-gray-200 flex justify-between items-center">
                 <motion.button
                     type="button"
                     onClick={handleBack}

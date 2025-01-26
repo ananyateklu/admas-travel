@@ -202,8 +202,9 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                                 }}
                                                 style={{
                                                     position: 'absolute',
-                                                    width: `${100 / 4}%`,
-                                                    left: `${(index * 100) / 4}%`,
+                                                    width: '100%',
+                                                    maxWidth: '300px',
+                                                    left: `${(index * 320)}px`,
                                                     top: '1rem',
                                                     bottom: '1rem',
                                                     padding: '0 0.5rem'
@@ -305,7 +306,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                         </motion.button>
 
                         {/* Navigation Dots */}
-                        <nav className="flex justify-center gap-1.5 mt-4 pointer-events-auto" aria-label="Destination pages">
+                        <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex justify-center gap-1.5 z-20">
                             {Array.from({ length: Math.ceil(destinations.length / 4) }).map((_, index) => (
                                 <motion.button
                                     key={`destination-page-${index + 1}`}
@@ -314,9 +315,9 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                         setSlideDirection(index * 4 > currentDestinationIndex ? 1 : -1);
                                         setCurrentDestinationIndex(index * 4);
                                     }}
-                                    className={`h-1.5 rounded-full transition-all ${Math.floor(currentDestinationIndex / 4) === index
-                                        ? 'bg-gold w-6'
-                                        : 'bg-gray-300 hover:bg-gray-400 w-1.5'
+                                    className={`h-1 md:h-1.5 rounded-full transition-all ${Math.floor(currentDestinationIndex / 4) === index
+                                        ? 'bg-gold w-4 md:w-6'
+                                        : 'bg-white/50 hover:bg-white/80 w-1 md:w-1.5'
                                         }`}
                                     whileHover={{ scale: 1.2 }}
                                     whileTap={{ scale: 0.9 }}
@@ -324,7 +325,7 @@ export function FeaturedDestinations({ destinations }: FeaturedDestinationsProps
                                     aria-current={Math.floor(currentDestinationIndex / 4) === index ? 'true' : 'false'}
                                 />
                             ))}
-                        </nav>
+                        </div>
                     </div>
                 </motion.div>
             </div>

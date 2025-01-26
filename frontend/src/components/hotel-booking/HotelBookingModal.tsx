@@ -135,7 +135,9 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                 const userDocRef = doc(db, 'users', user.uid);
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
-                    setUserProfile(userDoc.data());
+                    const data = userDoc.data();
+                    console.log('Fetched user profile:', data);
+                    setUserProfile(data);
                 }
             } catch (err) {
                 console.error('Error fetching user profile:', err);
@@ -261,17 +263,17 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 style={{ zIndex: 99999 }}
-                className="fixed inset-0 bg-black/50 overflow-y-auto flex items-center justify-center"
+                className="fixed inset-0 bg-black/50 overflow-y-auto"
                 onClick={onClose}
             >
-                <div className="min-h-[calc(100vh-4rem)] w-full flex items-center justify-center p-4">
+                <div className="min-h-screen py-8 px-4 flex items-start justify-center">
                     <motion.div
                         initial="hidden"
                         animate="visible"
                         exit="exit"
                         variants={modalVariants}
                         transition={{ type: "spring", duration: 0.5 }}
-                        className="w-[95%] lg:w-[70%] bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden"
+                        className="w-[95%] lg:w-[70%] bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] relative"
                         onClick={e => e.stopPropagation()}
                     >
                         {/* Close button */}
@@ -316,7 +318,7 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                             <>
                                 {/* Hero Image */}
                                 <div className="relative h-56 sm:h-64 w-full">
-                                    <div className="absolute inset-0">
+                                    <div className="absolute inset-0 rounded-t-2xl overflow-hidden">
                                         <img
                                             src={hotel.property.photoUrls[0]}
                                             alt={hotel.property.name}
@@ -379,13 +381,16 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                                         }}
                                         onAutoFillContact={(field) => {
                                             if (!user || !userProfile) return '';
+                                            console.log('Auto-fill contact field:', field, 'userProfile:', userProfile);
                                             switch (field) {
                                                 case 'name':
                                                     return user.displayName ?? '';
                                                 case 'email':
                                                     return user.email ?? '';
                                                 case 'phone':
-                                                    return userProfile.phoneNumber ?? user.phoneNumber ?? '';
+                                                    const phone = userProfile.phone ?? user.phoneNumber ?? '';
+                                                    console.log('Returning phone value:', phone);
+                                                    return phone;
                                                 default:
                                                     return '';
                                             }
