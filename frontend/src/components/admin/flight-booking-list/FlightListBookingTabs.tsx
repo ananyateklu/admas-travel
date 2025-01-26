@@ -67,7 +67,7 @@ export function BookingTabs({
                             </motion.button>
                         ))}
                     </div>
-                    {activeTab === 'details' && canEdit && onEditToggle && (
+                    {canEdit && onEditToggle && (
                         <motion.button
                             onClick={onEditToggle}
                             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isEditing

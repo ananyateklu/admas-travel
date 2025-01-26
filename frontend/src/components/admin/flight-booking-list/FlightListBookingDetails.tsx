@@ -1,17 +1,11 @@
-import { BookingData } from '../types';
+import { FlightBookingData } from '../types';
 import { useState } from 'react';
 import { getStatusStyle } from '../utils';
 import { RatingComponent } from '../../flight-booking/FlightRatingComponent';
-import { motion } from 'framer-motion';
 
 interface BookingDetailsProps {
-    booking: BookingData;
-    onDelete?: (bookingId: string) => Promise<void>;
-    isDeleting?: boolean;
-    canDelete?: boolean;
+    booking: FlightBookingData;
     isEditing?: boolean;
-    onEdit?: (bookingId: string, updates: Partial<BookingData>) => Promise<void>;
-    onEditComplete?: () => void;
     onRatingSubmit?: (bookingId: string, rating: number, comment: string) => Promise<void>;
     isSubmittingRating?: boolean;
 }
@@ -23,13 +17,17 @@ interface AirportType {
 }
 
 interface RouteDetailsProps {
-    booking: BookingData;
-    editForm: Partial<BookingData>;
+    booking: FlightBookingData;
+    editForm: Partial<FlightBookingData>;
     isEditing: boolean;
-    onInputChange: (field: keyof BookingData, value: string | AirportType | null) => void;
+    onInputChange: (field: keyof FlightBookingData, value: AirportType | string | null) => void;
 }
 
 function RouteDetails({ booking, editForm, isEditing, onInputChange }: RouteDetailsProps) {
+    const formatDateForInput = (dateString: string) => {
+        return dateString ? new Date(dateString).toISOString().slice(0, 16) : '';
+    };
+
     return (
         <div className="flex items-center gap-2">
             {/* Departure */}
@@ -52,16 +50,10 @@ function RouteDetails({ booking, editForm, isEditing, onInputChange }: RouteDeta
                                 />
                                 <div className="flex gap-2 mt-1">
                                     <input
-                                        type="date"
-                                        value={editForm.departureDate}
+                                        type="datetime-local"
+                                        value={formatDateForInput(editForm.departureDate as string)}
                                         onChange={(e) => onInputChange('departureDate', e.target.value)}
                                         className="flex-1 px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
-                                    />
-                                    <input
-                                        type="time"
-                                        value={editForm.departureTime}
-                                        onChange={(e) => onInputChange('departureTime', e.target.value)}
-                                        className="w-24 px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
                                     />
                                 </div>
                             </div>
@@ -121,16 +113,10 @@ function RouteDetails({ booking, editForm, isEditing, onInputChange }: RouteDeta
                                 {editForm.tripType === 'roundtrip' && (
                                     <div className="flex gap-2 mt-1">
                                         <input
-                                            type="date"
-                                            value={editForm.returnDate}
+                                            type="datetime-local"
+                                            value={formatDateForInput(editForm.returnDate as string)}
                                             onChange={(e) => onInputChange('returnDate', e.target.value)}
                                             className="flex-1 px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
-                                        />
-                                        <input
-                                            type="time"
-                                            value={editForm.returnTime}
-                                            onChange={(e) => onInputChange('returnTime', e.target.value)}
-                                            className="w-24 px-2 py-1 text-xs border rounded focus:ring-2 focus:ring-gold focus:border-transparent"
                                         />
                                     </div>
                                 )}
@@ -183,20 +169,15 @@ const formatCreatedAt = (createdAt: string | { toDate: () => Date }) => {
 
 export function BookingDetails({
     booking,
-    onDelete,
-    isDeleting,
-    canDelete,
     isEditing = false,
-    onEdit,
-    onEditComplete,
     onRatingSubmit,
     isSubmittingRating = false
 }: BookingDetailsProps) {
-    const [editForm, setEditForm] = useState<Partial<BookingData>>({
-        departureDate: booking.departureDate,
-        departureTime: booking.departureTime,
-        returnDate: booking.returnDate,
-        returnTime: booking.returnTime,
+    const [editForm, setEditForm] = useState<Partial<FlightBookingData>>({
+        departureDate: booking.departureDate ? new Date(booking.departureDate).toISOString().slice(0, 16) : '',
+        departureTime: booking.departureTime ?? '',
+        returnDate: booking.returnDate ? new Date(booking.returnDate).toISOString().slice(0, 16) : '',
+        returnTime: booking.returnTime ?? '',
         class: booking.class,
         tripType: booking.tripType,
         from: booking.from,
@@ -204,18 +185,11 @@ export function BookingDetails({
         specialRequests: booking.specialRequests
     });
 
-    const handleInputChange = (field: keyof BookingData, value: string | AirportType | null) => {
+    const handleInputChange = (field: keyof FlightBookingData, value: AirportType | string | null) => {
         setEditForm(prev => ({
             ...prev,
             [field]: value
         }));
-    };
-
-    const handleSave = async () => {
-        if (onEdit) {
-            await onEdit(booking.bookingId, editForm);
-            onEditComplete?.();
-        }
     };
 
     return (
@@ -305,25 +279,6 @@ export function BookingDetails({
                         />
                     </div>
                 </div>
-
-                {isEditing && (
-                    <div className="flex justify-end gap-2 mt-4">
-                        <button
-                            type="button"
-                            onClick={onEditComplete}
-                            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleSave}
-                            className="px-4 py-2 text-sm text-white bg-forest-500 hover:bg-forest-600 rounded-lg shadow-sm"
-                        >
-                            Save Changes
-                        </button>
-                    </div>
-                )}
             </div>
 
             {/* Travel Dates */}
@@ -435,66 +390,20 @@ export function BookingDetails({
                         </p>
                     </div>
 
-                    {isEditing ? (
-                        <div className="space-y-3">
-                            <div className="form-group">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Special Requests</label>
-                                <textarea
-                                    value={editForm.specialRequests ?? ''}
-                                    onChange={(e) => handleInputChange('specialRequests', e.target.value)}
-                                    className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
-                                    rows={3}
-                                />
-                            </div>
-                            <div className="flex justify-end gap-2 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={onEditComplete}
-                                    className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handleSave}
-                                    className="px-3 py-1 text-sm text-white bg-forest-500 hover:bg-forest-600 rounded-lg shadow-sm"
-                                >
-                                    Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <>
-                            {booking.specialRequests && (
-                                <div className="p-2 bg-forest-50/50 backdrop-blur-sm rounded-lg border border-forest-100/50 transition-all duration-200 hover:shadow-sm">
-                                    <span className="text-gray-600">Special Requests</span>
-                                    <p className="mt-1 text-gray-900 whitespace-pre-wrap">{booking.specialRequests}</p>
-                                </div>
-                            )}
-                            {canDelete && onDelete && (
-                                <div className="pt-2 mt-2 border-t border-forest-100/50">
-                                    <motion.button
-                                        className="w-full inline-flex items-center justify-center px-2 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 text-xs transition-all duration-300 disabled:opacity-50"
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => onDelete(booking.bookingId)}
-                                        disabled={isDeleting}
-                                    >
-                                        {isDeleting ? (
-                                            'Deleting...'
-                                        ) : (
-                                            <>
-                                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                                Delete Booking
-                                            </>
-                                        )}
-                                    </motion.button>
-                                </div>
-                            )}
-                        </>
-                    )}
+                    <div className="p-2 bg-forest-50/50 backdrop-blur-sm rounded-lg border border-forest-100/50 transition-all duration-200 hover:shadow-sm">
+                        <span className="text-gray-600">Special Requests</span>
+                        {isEditing ? (
+                            <textarea
+                                value={editForm.specialRequests ?? ''}
+                                onChange={(e) => handleInputChange('specialRequests', e.target.value)}
+                                className="w-full mt-1 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
+                                rows={3}
+                                placeholder="Enter any special requests..."
+                            />
+                        ) : booking.specialRequests ? (
+                            <p className="mt-1 text-gray-900 whitespace-pre-wrap">{booking.specialRequests}</p>
+                        ) : null}
+                    </div>
                 </div>
             </div>
 

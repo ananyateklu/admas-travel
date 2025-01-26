@@ -17,7 +17,10 @@ import { Airport } from '../services/flightService';
 import { AdminSettings } from '../components/admin/settings';
 import { motion } from 'framer-motion';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { BookingData, ADMIN_EMAILS } from '../components/admin/types';
+import { BookingData, FlightBookingData, HotelBookingData } from '../components/admin/types';
+import { CarBookingData } from '../components/admin/types';
+
+import { ADMIN_EMAILS } from '../components/admin/types';
 
 // Add type guard for Airport
 const isAirport = (value: unknown): value is Airport => {
@@ -243,19 +246,57 @@ export default function Admin() {
         return booking.status === filter;
     };
 
+    const isFlightBooking = (booking: BookingData): booking is FlightBookingData => booking.type === 'flight';
+    const isHotelBooking = (booking: BookingData): booking is HotelBookingData => booking.type === 'hotel';
+    const isCarBooking = (booking: BookingData): booking is CarBookingData => booking.type === 'car';
+
     const matchesSearchTerm = (booking: BookingData, term: string) => {
         if (!term) return true;
         const searchLower = term.toLowerCase();
-        const locationMatch = (
-            getLocationSearchText(booking.from) +
-            getLocationSearchText(booking.to)
-        ).includes(searchLower);
 
-        const detailsMatch = (
-            (booking.contactName ?? '').toLowerCase() +
-            (booking.contactEmail ?? '').toLowerCase() +
-            (booking.bookingReference ?? '').toLowerCase()
-        ).includes(searchLower);
+        // Location search
+        const locationMatch = (() => {
+            if (isFlightBooking(booking)) {
+                return booking.from && booking.to ?
+                    (getLocationSearchText(booking.from) + getLocationSearchText(booking.to)).includes(searchLower) :
+                    false;
+            } else if (isHotelBooking(booking)) {
+                const hotelLocation = typeof booking.location === 'string'
+                    ? booking.location
+                    : `${booking.location.city}, ${booking.location.country}`;
+                return hotelLocation.toLowerCase().includes(searchLower);
+            } else if (isCarBooking(booking)) {
+                const searchKey = JSON.parse(atob(booking.search_key));
+                return (
+                    searchKey.pickUpLocation.toLowerCase().includes(searchLower) ||
+                    searchKey.dropOffLocation.toLowerCase().includes(searchLower)
+                );
+            }
+            return false;
+        })();
+
+        // Details search
+        const detailsMatch = (() => {
+            const searchableFields = [];
+
+            // Common fields
+            searchableFields.push(booking.bookingId.toLowerCase());
+            searchableFields.push(booking.status.toLowerCase());
+
+            // Type-specific fields
+            if (isFlightBooking(booking)) {
+                searchableFields.push(booking.contactName.toLowerCase());
+                searchableFields.push(booking.bookingReference.toLowerCase());
+            } else if (isHotelBooking(booking)) {
+                searchableFields.push(booking.contactName.toLowerCase());
+                searchableFields.push(booking.hotelName.toLowerCase());
+            } else if (isCarBooking(booking)) {
+                searchableFields.push(`${booking.firstName} ${booking.lastName}`.toLowerCase());
+                searchableFields.push(booking.vehicle_id.toLowerCase());
+            }
+
+            return searchableFields.some(field => field.includes(searchLower));
+        })();
 
         return locationMatch || detailsMatch;
     };
@@ -263,6 +304,7 @@ export default function Admin() {
     const matchesAdvancedFilters = (booking: BookingData, filters: Partial<AdvancedFilters>) => {
         if (Object.keys(filters).length === 0) return true;
 
+        // Date range filter applies to all booking types
         if (filters.dateRange) {
             const bookingDate = getBookingDate(booking);
             const startDate = new Date(filters.dateRange.start);
@@ -270,12 +312,27 @@ export default function Admin() {
             if (bookingDate < startDate || bookingDate > endDate) return false;
         }
 
-        if (filters.class && booking.class !== filters.class) return false;
-        if (filters.tripType && booking.tripType !== filters.tripType) return false;
-
-        if (filters.passengerCount) {
-            const count = booking.totalPassengers;
-            if (count < filters.passengerCount.min || count > filters.passengerCount.max) return false;
+        // Type-specific filters
+        if (isFlightBooking(booking)) {
+            if (filters.class && booking.class !== filters.class) return false;
+            if (filters.tripType && booking.tripType !== filters.tripType) return false;
+            if (filters.passengerCount) {
+                const count = booking.totalPassengers;
+                if (count < filters.passengerCount.min || count > filters.passengerCount.max) return false;
+            }
+        } else if (isHotelBooking(booking)) {
+            if (filters.class && booking.roomType !== filters.class) return false;
+            if (filters.passengerCount) {
+                const count = booking.numberOfGuests;
+                if (count < filters.passengerCount.min || count > filters.passengerCount.max) return false;
+            }
+        } else if (isCarBooking(booking)) {
+            const searchKey = JSON.parse(atob(booking.search_key));
+            if (filters.passengerCount) {
+                // For cars, we might want to filter by vehicle capacity instead
+                const capacity = searchKey.vehicleCapacity ?? 4; // default to 4 if not specified
+                if (capacity < filters.passengerCount.min || capacity > filters.passengerCount.max) return false;
+            }
         }
 
         return true;
@@ -326,8 +383,11 @@ export default function Admin() {
                     return bookingDate >= startDate && bookingDate < endDate;
                 })
                 .reduce((total, booking) => {
-                    const amount = TICKET_PRICE * (Array.isArray(booking.passengers) ? booking.passengers.length : 0);
-                    return total + amount;
+                    if (isFlightBooking(booking)) {
+                        const amount = TICKET_PRICE * (Array.isArray(booking.passengers) ? booking.passengers.length : 0);
+                        return total + amount;
+                    }
+                    return total;
                 }, 0);
         };
 
@@ -920,7 +980,9 @@ export default function Admin() {
                                                         scale: 1.02,
                                                         transition: { duration: 0.2 }
                                                     }}
-                                                    onClick={() => handleStatClick('Recent Bookings', booking.bookingReference)}
+                                                    onClick={() => handleStatClick('Recent Bookings',
+                                                        isFlightBooking(booking) ? booking.bookingReference : booking.bookingId
+                                                    )}
                                                 >
                                                     <div className="flex items-center gap-2">
                                                         <motion.div
@@ -929,40 +991,59 @@ export default function Admin() {
                                                             transition={{ type: "spring", stiffness: 400, damping: 10 }}
                                                         >
                                                             <span className="text-forest-300 text-sm font-semibold">
-                                                                {booking.contactName?.charAt(0) ?? '?'}
+                                                                {isCarBooking(booking)
+                                                                    ? `${booking.firstName[0]}${booking.lastName[0]}`
+                                                                    : booking.contactName?.charAt(0) ?? '?'}
                                                             </span>
                                                         </motion.div>
                                                         <div>
                                                             <div className="text-white text-xs font-medium">
-                                                                {booking.contactName ?? 'Anonymous'}
+                                                                {isCarBooking(booking)
+                                                                    ? `${booking.firstName} ${booking.lastName}`
+                                                                    : booking.contactName ?? 'Anonymous'}
                                                             </div>
                                                             <div className="text-white/70 text-[10px]">
-                                                                {booking.contactPhone ?? 'No phone'}
+                                                                {isHotelBooking(booking)
+                                                                    ? booking.contactPhone ?? 'No phone'
+                                                                    : 'No phone'}
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-4">
                                                         <div className="text-right">
                                                             <div className="text-white text-xs font-medium flex items-center gap-1.5">
-                                                                <span>{booking.from?.city ?? 'Unknown'}</span>
-                                                                <motion.svg
-                                                                    className="w-3 h-3 text-forest-300"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    viewBox="0 0 24 24"
-                                                                    animate={{ x: [0, 4, 0] }}
-                                                                    transition={{
-                                                                        duration: 2,
-                                                                        repeat: Infinity,
-                                                                        ease: "easeInOut"
-                                                                    }}
-                                                                >
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                                                </motion.svg>
-                                                                <span>{booking.to?.city ?? 'Unknown'}</span>
+                                                                {isFlightBooking(booking) ? (
+                                                                    <>
+                                                                        <span>{booking.from?.city ?? 'Unknown'}</span>
+                                                                        <motion.svg
+                                                                            className="w-3 h-3 text-forest-300"
+                                                                            fill="none"
+                                                                            stroke="currentColor"
+                                                                            viewBox="0 0 24 24"
+                                                                            animate={{ x: [0, 4, 0] }}
+                                                                            transition={{
+                                                                                duration: 2,
+                                                                                repeat: Infinity,
+                                                                                ease: "easeInOut"
+                                                                            }}
+                                                                        >
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                                                        </motion.svg>
+                                                                        <span>{booking.to?.city ?? 'Unknown'}</span>
+                                                                    </>
+                                                                ) : (
+                                                                    <span>Location details unavailable</span>
+                                                                )}
                                                             </div>
                                                             <div className="text-white/70 text-[10px]">
-                                                                {formatDateShort(new Date(booking.departureDate))}
+                                                                {isFlightBooking(booking)
+                                                                    ? formatDateShort(new Date(booking.departureDate))
+                                                                    : isHotelBooking(booking)
+                                                                        ? formatDateShort(new Date(booking.checkInDate))
+                                                                        : isCarBooking(booking)
+                                                                            ? formatDateShort(new Date(JSON.parse(atob(booking.search_key)).pickUpDate))
+                                                                            : 'No date'
+                                                                }
                                                             </div>
                                                         </div>
                                                         <motion.div
@@ -971,11 +1052,15 @@ export default function Admin() {
                                                             transition={{ type: "spring", stiffness: 400, damping: 10 }}
                                                         >
                                                             <span className="text-[10px] font-medium">
-                                                                {booking.totalPassengers} passengers
+                                                                {isFlightBooking(booking)
+                                                                    ? `${booking.passengers?.length ?? 0} passengers`
+                                                                    : isHotelBooking(booking)
+                                                                        ? `${booking.numberOfGuests} guests`
+                                                                        : isCarBooking(booking)
+                                                                            ? `${JSON.parse(atob(booking.search_key)).passengers} passengers`
+                                                                            : 'No passengers'
+                                                                }
                                                             </span>
-                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                            </svg>
                                                         </motion.div>
                                                     </div>
                                                 </motion.div>

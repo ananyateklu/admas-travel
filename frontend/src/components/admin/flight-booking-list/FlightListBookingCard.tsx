@@ -6,6 +6,7 @@ import { BookingHeader } from '../shared/BookingHeader';
 import { JourneyDetails } from './FlightListJourneyDetails';
 import { PassengerAvatars } from './FlightListPassengerAvatars';
 import { FlightListBookingExpandedView } from './FlightListBookingExpandedView';
+import { BookingData } from '../types';
 
 const cardVariants = {
     hidden: {
@@ -55,7 +56,7 @@ interface FlightListBookingCardProps {
     onDelete?: (bookingId: string) => Promise<void>;
     isDeleting?: boolean;
     currentUserId?: string;
-    onEdit?: (bookingId: string, updates: Partial<FlightBookingData>) => Promise<void>;
+    onEdit?: (bookingId: string, updates: Partial<BookingData>) => Promise<void>;
     onRatingSubmit?: (bookingId: string, rating: number, comment: string) => Promise<void>;
     isSubmittingRating?: boolean;
 }

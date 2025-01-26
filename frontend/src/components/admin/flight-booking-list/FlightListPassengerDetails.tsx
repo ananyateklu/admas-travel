@@ -1,39 +1,27 @@
-import { BookingData } from '../types';
-import { useState } from 'react';
+import { FlightBookingData } from '../types';
+
+export type PassengerInfo = {
+    type: string;
+    fullName: string;
+    dateOfBirth: string;
+    passportNumber: string;
+    passportExpiry: string;
+    nationality: string;
+};
 
 interface PassengerDetailsProps {
-    booking: BookingData;
-    isEditing?: boolean;
-    onEdit?: (bookingId: string, updates: Partial<BookingData>) => Promise<void>;
-    onEditComplete?: () => void;
+    booking: FlightBookingData;
+    isEditing: boolean;
+    editForm?: Partial<FlightBookingData>;
+    onInputChange: (field: keyof FlightBookingData, value: string | PassengerInfo[] | null) => void;
 }
 
 export function PassengerDetails({
     booking,
-    isEditing = false,
-    onEdit,
-    onEditComplete
+    isEditing,
+    editForm,
+    onInputChange
 }: PassengerDetailsProps) {
-    const [editForm, setEditForm] = useState({
-        passengers: booking.passengers.map(p => ({ ...p }))
-    });
-
-    const handlePassengerChange = (index: number, field: keyof typeof booking.passengers[0], value: string) => {
-        const newPassengers = [...editForm.passengers];
-        newPassengers[index] = {
-            ...newPassengers[index],
-            [field]: value
-        };
-        setEditForm({ passengers: newPassengers });
-    };
-
-    const handleSave = async () => {
-        if (onEdit) {
-            await onEdit(booking.bookingId, { passengers: editForm.passengers });
-            onEditComplete?.();
-        }
-    };
-
     const formatDate = (date: string) => {
         const d = new Date(date);
         return d.toLocaleDateString(undefined, {
@@ -89,7 +77,7 @@ export function PassengerDetails({
 
             {/* Compact Passenger Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {(isEditing ? editForm.passengers : booking.passengers).map((passenger, index) => {
+                {(isEditing ? editForm?.passengers ?? booking.passengers : booking.passengers).map((passenger, index) => {
                     const passportStatus = getPassportStatus(passenger.passportExpiry);
                     return (
                         <div
@@ -108,8 +96,8 @@ export function PassengerDetails({
                                         </div>
                                         <div className="absolute -bottom-0.5 -right-0.5">
                                             <span className={`text-[9px] px-1 py-0.5 rounded-full font-medium ${passenger.type === 'adult'
-                                                    ? 'bg-forest-100 text-forest-700'
-                                                    : 'bg-forest-50 text-forest-600'
+                                                ? 'bg-forest-100 text-forest-700'
+                                                : 'bg-forest-50 text-forest-600'
                                                 }`}>
                                                 {index + 1}
                                             </span>
@@ -120,7 +108,11 @@ export function PassengerDetails({
                                             <input
                                                 type="text"
                                                 value={passenger.fullName}
-                                                onChange={(e) => handlePassengerChange(index, 'fullName', e.target.value)}
+                                                onChange={(e) => onInputChange('passengers', [
+                                                    ...(editForm?.passengers ?? booking.passengers).slice(0, index),
+                                                    { ...passenger, fullName: e.target.value },
+                                                    ...(editForm?.passengers ?? booking.passengers).slice(index + 1)
+                                                ])}
                                                 className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                                 placeholder="Full Name"
                                             />
@@ -134,7 +126,11 @@ export function PassengerDetails({
                                             <input
                                                 type="text"
                                                 value={passenger.nationality}
-                                                onChange={(e) => handlePassengerChange(index, 'nationality', e.target.value)}
+                                                onChange={(e) => onInputChange('passengers', [
+                                                    ...(editForm?.passengers ?? booking.passengers).slice(0, index),
+                                                    { ...passenger, nationality: e.target.value },
+                                                    ...(editForm?.passengers ?? booking.passengers).slice(index + 1)
+                                                ])}
                                                 className="w-full px-2 py-1 mt-1 text-[11px] border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                                 placeholder="Nationality"
                                             />
@@ -160,7 +156,11 @@ export function PassengerDetails({
                                         <input
                                             type="text"
                                             value={passenger.passportNumber}
-                                            onChange={(e) => handlePassengerChange(index, 'passportNumber', e.target.value)}
+                                            onChange={(e) => onInputChange('passengers', [
+                                                ...(editForm?.passengers ?? booking.passengers).slice(0, index),
+                                                { ...passenger, passportNumber: e.target.value },
+                                                ...(editForm?.passengers ?? booking.passengers).slice(index + 1)
+                                            ])}
                                             className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                             placeholder="Passport Number"
                                         />
@@ -174,7 +174,11 @@ export function PassengerDetails({
                                         <input
                                             type="date"
                                             value={passenger.dateOfBirth}
-                                            onChange={(e) => handlePassengerChange(index, 'dateOfBirth', e.target.value)}
+                                            onChange={(e) => onInputChange('passengers', [
+                                                ...(editForm?.passengers ?? booking.passengers).slice(0, index),
+                                                { ...passenger, dateOfBirth: e.target.value },
+                                                ...(editForm?.passengers ?? booking.passengers).slice(index + 1)
+                                            ])}
                                             className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                         />
                                     ) : (
@@ -188,7 +192,11 @@ export function PassengerDetails({
                                         <input
                                             type="date"
                                             value={passenger.passportExpiry}
-                                            onChange={(e) => handlePassengerChange(index, 'passportExpiry', e.target.value)}
+                                            onChange={(e) => onInputChange('passengers', [
+                                                ...(editForm?.passengers ?? booking.passengers).slice(0, index),
+                                                { ...passenger, passportExpiry: e.target.value },
+                                                ...(editForm?.passengers ?? booking.passengers).slice(index + 1)
+                                            ])}
                                             className="w-full px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                         />
                                     ) : (
@@ -203,25 +211,6 @@ export function PassengerDetails({
                     );
                 })}
             </div>
-
-            {isEditing && (
-                <div className="flex justify-end gap-2 mt-4">
-                    <button
-                        type="button"
-                        onClick={onEditComplete}
-                        className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleSave}
-                        className="px-4 py-2 text-sm text-white bg-forest-500 hover:bg-forest-600 rounded-lg shadow-sm"
-                    >
-                        Save Changes
-                    </button>
-                </div>
-            )}
         </div>
     );
 } 

@@ -5,7 +5,55 @@ import { BookingTabs, TabType } from './FlightListBookingTabs';
 import { BookingDetails } from './FlightListBookingDetails';
 import { PassengerDetails } from './FlightListPassengerDetails';
 import { ContactDetails } from './FlightListContactDetails';
-import { FlightBookingData } from '../types';
+import { FlightBookingData, BookingData } from '../types';
+import { Airport } from '../../../services/flightService';
+import { PassengerInfo } from './FlightListPassengerDetails';
+
+function SaveCancelButtons({
+    onSave,
+    onCancel,
+    onDelete,
+    isDeleting,
+    canDelete
+}: {
+    onSave: () => void;
+    onCancel: () => void;
+    onDelete?: () => void;
+    isDeleting?: boolean;
+    canDelete?: boolean;
+}) {
+    return (
+        <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+            {canDelete && onDelete && (
+                <motion.button
+                    onClick={onDelete}
+                    disabled={isDeleting}
+                    className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg disabled:opacity-50"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                >
+                    {isDeleting ? 'Deleting...' : 'Delete Booking'}
+                </motion.button>
+            )}
+            <motion.button
+                onClick={onCancel}
+                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+            >
+                Cancel
+            </motion.button>
+            <motion.button
+                onClick={onSave}
+                className="px-4 py-2 text-sm font-medium text-white bg-forest-600 hover:bg-forest-700 border border-forest-600 rounded-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+            >
+                Save Changes
+            </motion.button>
+        </div>
+    );
+}
 
 interface FlightListBookingExpandedViewProps {
     booking: FlightBookingData;
@@ -13,7 +61,7 @@ interface FlightListBookingExpandedViewProps {
     isDeleting?: boolean;
     canDelete?: boolean;
     canEdit?: boolean;
-    onEdit?: (bookingId: string, updates: Partial<FlightBookingData>) => Promise<void>;
+    onEdit?: (bookingId: string, updates: Partial<BookingData>) => Promise<void>;
     onRatingSubmit?: (bookingId: string, rating: number, comment: string) => Promise<void>;
     isSubmittingRating?: boolean;
 }
@@ -30,6 +78,7 @@ export function FlightListBookingExpandedView({
 }: FlightListBookingExpandedViewProps) {
     const [activeTab, setActiveTab] = useState<TabType>('details');
     const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState<Partial<FlightBookingData>>({});
 
     const handleShare = async () => {
         const shareData = {
@@ -47,6 +96,23 @@ export function FlightListBookingExpandedView({
                 }
             }
         }
+    };
+
+    const handleInputChange = (field: keyof FlightBookingData, value: string | Airport | PassengerInfo[] | null) => {
+        setEditForm(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleEditComplete = async () => {
+        if (onEdit && Object.keys(editForm).length > 0) {
+            await onEdit(booking.bookingId, editForm);
+            setEditForm({});
+        }
+        setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        setIsEditing(false);
+        setEditForm({});
     };
 
     return (
@@ -71,7 +137,14 @@ export function FlightListBookingExpandedView({
                     onTabChange={setActiveTab}
                     canEdit={canEdit}
                     isEditing={isEditing}
-                    onEditToggle={() => setIsEditing(!isEditing)}
+                    onEditToggle={() => {
+                        if (isEditing) {
+                            handleEditComplete();
+                        } else {
+                            setIsEditing(true);
+                            setEditForm({});
+                        }
+                    }}
                 />
 
                 <AnimatePresence mode="wait">
@@ -85,15 +158,19 @@ export function FlightListBookingExpandedView({
                         >
                             <BookingDetails
                                 booking={booking}
-                                onDelete={onDelete}
-                                isDeleting={isDeleting}
-                                canDelete={canDelete}
-                                onEdit={onEdit}
+                                isEditing={isEditing}
                                 onRatingSubmit={onRatingSubmit}
                                 isSubmittingRating={isSubmittingRating}
-                                isEditing={isEditing}
-                                onEditComplete={() => setIsEditing(false)}
                             />
+                            {isEditing && (
+                                <SaveCancelButtons
+                                    onSave={handleEditComplete}
+                                    onCancel={handleCancel}
+                                    onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
+                                    isDeleting={isDeleting}
+                                    canDelete={canDelete}
+                                />
+                            )}
                         </motion.div>
                     )}
 
@@ -108,9 +185,18 @@ export function FlightListBookingExpandedView({
                             <PassengerDetails
                                 booking={booking}
                                 isEditing={isEditing}
-                                onEdit={onEdit}
-                                onEditComplete={() => setIsEditing(false)}
+                                editForm={editForm}
+                                onInputChange={handleInputChange}
                             />
+                            {isEditing && (
+                                <SaveCancelButtons
+                                    onSave={handleEditComplete}
+                                    onCancel={handleCancel}
+                                    onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
+                                    isDeleting={isDeleting}
+                                    canDelete={canDelete}
+                                />
+                            )}
                         </motion.div>
                     )}
 
@@ -125,9 +211,18 @@ export function FlightListBookingExpandedView({
                             <ContactDetails
                                 booking={booking}
                                 isEditing={isEditing}
-                                onEdit={onEdit}
-                                onEditComplete={() => setIsEditing(false)}
+                                editForm={editForm}
+                                onInputChange={handleInputChange}
                             />
+                            {isEditing && (
+                                <SaveCancelButtons
+                                    onSave={handleEditComplete}
+                                    onCancel={handleCancel}
+                                    onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
+                                    isDeleting={isDeleting}
+                                    canDelete={canDelete}
+                                />
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>

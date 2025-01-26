@@ -53,15 +53,33 @@ export function BookingCard(props: BookingCardProps) {
 
     // Render the appropriate card based on booking type
     if (isFlightBooking(booking)) {
-        return <FlightListBookingCard {...props} booking={{ ...booking, type: 'flight' }} />;
+        return <FlightListBookingCard
+            {...props}
+            booking={{ ...booking, type: 'flight' }}
+            onEdit={props.onEdit ? async (bookingId, updates) => {
+                await props.onEdit?.(bookingId, { ...updates, type: 'flight' });
+            } : undefined}
+        />;
     }
 
     if (isHotelBooking(booking)) {
-        return <HotelListBookingCard {...props} booking={{ ...booking, type: 'hotel' }} />;
+        return <HotelListBookingCard
+            {...props}
+            booking={{ ...booking, type: 'hotel' }}
+            onEdit={props.onEdit ? async (bookingId, updates) => {
+                await props.onEdit?.(bookingId, { ...updates, type: 'hotel' });
+            } : undefined}
+        />;
     }
 
     if (isCarBooking(booking)) {
-        return <CarListBookingCard {...props} booking={{ ...booking, type: 'car' }} />;
+        return <CarListBookingCard
+            {...props}
+            booking={{ ...booking, type: 'car' }}
+            onEdit={props.onEdit ? async (bookingId, updates) => {
+                await props.onEdit?.(bookingId, { ...updates, type: 'car' });
+            } : undefined}
+        />;
     }
 
     // Default case - unknown booking type
