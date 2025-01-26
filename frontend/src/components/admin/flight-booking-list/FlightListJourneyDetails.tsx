@@ -1,11 +1,18 @@
 import { motion } from 'framer-motion';
-import { BookingData } from '../types';
+import { BookingData, FlightBookingData } from '../types';
 
 interface JourneyDetailsProps {
     booking: BookingData;
 }
 
+// Add type guard function
+function isFlightBooking(booking: BookingData): booking is FlightBookingData {
+    return 'departureTime' in booking;
+}
+
 export function JourneyDetails({ booking }: JourneyDetailsProps) {
+    if (!isFlightBooking(booking)) return null;
+
     return (
         <motion.div
             className="flex items-center gap-2 bg-white/40 backdrop-blur-sm rounded-xl p-1.5 relative overflow-hidden group/journey min-w-[500px] w-full border border-gray-100/50 shadow-sm"
@@ -22,19 +29,20 @@ export function JourneyDetails({ booking }: JourneyDetailsProps) {
                             {booking.departureTime ?
                                 new Date(`2000-01-01T${booking.departureTime}`).toLocaleTimeString(undefined, {
                                     hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
-                                }).split(' ')[0]
-                                : '00:00'}
+                                    minute: '2-digit'
+                                })
+                                : '--:--'
+                            }
                         </p>
                         <p className="text-[10px] font-medium text-gray-500 ml-1">
                             {booking.departureTime ?
                                 new Date(`2000-01-01T${booking.departureTime}`).toLocaleTimeString(undefined, {
-                                    hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
+                                    hour12: true,
+                                    hour: undefined,
+                                    minute: undefined
                                 }).split(' ')[1]
-                                : 'AM'}
+                                : ''
+                            }
                         </p>
                     </div>
                     <motion.div
@@ -125,19 +133,20 @@ export function JourneyDetails({ booking }: JourneyDetailsProps) {
                             {booking.returnTime ?
                                 new Date(`2000-01-01T${booking.returnTime}`).toLocaleTimeString(undefined, {
                                     hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
-                                }).split(' ')[0]
-                                : '00:00'}
+                                    minute: '2-digit'
+                                })
+                                : '--:--'
+                            }
                         </p>
                         <p className="text-[10px] font-medium text-gray-500 ml-1">
                             {booking.returnTime ?
                                 new Date(`2000-01-01T${booking.returnTime}`).toLocaleTimeString(undefined, {
-                                    hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
+                                    hour12: true,
+                                    hour: undefined,
+                                    minute: undefined
                                 }).split(' ')[1]
-                                : 'AM'}
+                                : ''
+                            }
                         </p>
                     </div>
                     <motion.div

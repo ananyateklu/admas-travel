@@ -14,7 +14,7 @@ import {
     Scale,
     CoreScaleOptions
 } from 'chart.js';
-import { BookingData } from '../types';
+import { BookingData, FlightBookingData } from '../types';
 
 ChartJS.register(
     CategoryScale,
@@ -50,6 +50,10 @@ const DATE_PRESETS: DatePreset[] = [
     { label: '90 Days', value: '90d', days: 90 },
     { label: '1 Year', value: '1y', days: 365 },
 ];
+
+function isFlightBooking(booking: BookingData): booking is FlightBookingData {
+    return 'passengers' in booking;
+}
 
 export function BookingTrendsChart({ bookings }: BookingTrendsChartProps) {
     // Initialize with last 30 days
@@ -93,7 +97,7 @@ export function BookingTrendsChart({ bookings }: BookingTrendsChartProps) {
             );
 
             if (dayIndex !== -1) {
-                const amount = 40 * (Array.isArray(booking.passengers) ? booking.passengers.length : 0);
+                const amount = isFlightBooking(booking) ? 40 * (booking.passengers?.length ?? 0) : 40;
                 dailyRevenue[dayIndex] += amount;
                 dailyBookings[dayIndex] += 1;
             }

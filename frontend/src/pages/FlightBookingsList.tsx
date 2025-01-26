@@ -5,40 +5,10 @@ import { db } from '../lib/firebase/firebase';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import mountainTwo from '../assets/mountain-two.jpg';
-import { Airport } from '../services/flightService';
 import { BookingCard } from '../components/admin';
 import { toast } from 'react-hot-toast';
 import { NotificationToggle } from '../components/notifications/NotificationToggle';
-
-interface BookingData {
-    bookingId: string;
-    userId: string;
-    bookingReference: string;
-    destination: string;
-    departureDate: string;
-    returnDate?: string;
-    status: string;
-    previousStatus?: string;
-    totalPassengers: number;
-    createdAt: string | {
-        toDate: () => Date;
-    };
-    from: Airport | null;
-    to: Airport | null;
-    tripType: string;
-    class: string;
-    contactName: string;
-    contactEmail: string;
-    contactPhone: string;
-    passengers: Array<{
-        type: string;
-        fullName: string;
-        dateOfBirth: string;
-        passportNumber: string;
-        passportExpiry: string;
-        nationality: string;
-    }>;
-}
+import { BookingData } from '../components/admin/types';
 
 type BookingStatus = 'upcoming' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
@@ -317,31 +287,35 @@ export function Bookings() {
     // Filter bookings based on selected status
     const filteredBookings = useMemo(() => {
         const now = new Date();
+        return bookings
+            .filter((booking) => {
+                let bookingDate: Date;
 
-        return bookings.filter((booking) => {
-            const bookingDate = new Date(booking.departureDate);
-            const dbStatus = booking.status;
+                if ('departureDate' in booking) { // Flight booking
+                    bookingDate = new Date(booking.departureDate);
+                } else if ('checkInDate' in booking) { // Hotel booking
+                    bookingDate = new Date(booking.checkInDate);
+                } else { // Car booking
+                    bookingDate = new Date(); // Car bookings don't have a specific date in the type
+                }
 
-            switch (selectedStatus) {
-                case 'upcoming':
-                    // Show all future bookings regardless of status
-                    return bookingDate > now;
-                case 'completed':
-                    // Show bookings with status 'completed'
-                    return dbStatus === 'completed';
-                case 'confirmed':
-                    // Show bookings with status 'confirmed'
-                    return dbStatus === 'confirmed';
-                case 'pending':
-                    // Show pending bookings
-                    return dbStatus === 'pending';
-                case 'cancelled':
-                    // Show cancelled bookings
-                    return dbStatus === 'cancelled';
-                default:
-                    return true;
-            }
-        });
+                const dbStatus = booking.status;
+
+                switch (selectedStatus) {
+                    case 'upcoming':
+                        return bookingDate > now;
+                    case 'completed':
+                        return dbStatus === 'completed';
+                    case 'confirmed':
+                        return dbStatus === 'confirmed';
+                    case 'pending':
+                        return dbStatus === 'pending';
+                    case 'cancelled':
+                        return dbStatus === 'cancelled';
+                    default:
+                        return true;
+                }
+            });
     }, [bookings, selectedStatus]);
 
     const containerVariants = {

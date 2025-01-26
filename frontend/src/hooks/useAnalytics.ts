@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { BookingData } from '../components/admin/types';
+import { BookingData, FlightBookingData } from '../components/admin/types';
 
 interface DateRanges {
     now: Date;
@@ -42,6 +42,10 @@ interface AnalyticsData {
         totalRatings: number;
         monthlyRatings: number;
     };
+}
+
+function isFlightBooking(booking: BookingData): booking is FlightBookingData {
+    return 'passengers' in booking && booking.type === 'flight';
 }
 
 export function useAnalytics(bookings: BookingData[]): AnalyticsData {
@@ -126,7 +130,7 @@ export function useAnalytics(bookings: BookingData[]): AnalyticsData {
             if (!bookingDate) return acc;
 
             const periods = getBookingPeriods(bookingDate, dateRanges);
-            const amount = TICKET_PRICE * (Array.isArray(booking.passengers) ? booking.passengers.length : 0);
+            const amount = TICKET_PRICE * (isFlightBooking(booking) ? booking.passengers?.length ?? 0 : 1);
 
             return {
                 total: acc.total + amount,
@@ -190,13 +194,15 @@ export function useAnalytics(bookings: BookingData[]): AnalyticsData {
     }, [bookings]);
 
     const popularDestinations = useMemo(() => {
-        const destinations = bookings.reduce((acc: Record<string, number>, booking) => {
-            const dest = typeof booking.to === 'object' && booking.to ? booking.to.city : booking.to;
-            if (dest && typeof dest === 'string') {
-                acc[dest] = (acc[dest] || 0) + 1;
-            }
-            return acc;
-        }, {});
+        const destinations = bookings
+            .filter(isFlightBooking)
+            .reduce((acc: Record<string, number>, booking) => {
+                const dest = typeof booking.to === 'object' && booking.to ? booking.to.city : booking.to;
+                if (dest && typeof dest === 'string') {
+                    acc[dest] = (acc[dest] || 0) + 1;
+                }
+                return acc;
+            }, {});
 
         return Object.entries(destinations)
             .sort((a, b) => b[1] - a[1])
