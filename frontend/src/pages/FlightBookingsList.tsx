@@ -8,7 +8,7 @@ import mountainTwo from '../assets/mountain-two.jpg';
 import { BookingCard } from '../components/admin';
 import { toast } from 'react-hot-toast';
 import { NotificationToggle } from '../components/notifications/NotificationToggle';
-import { BookingData } from '../components/admin/types';
+import { BookingData, FlightBookingData } from '../components/admin/types';
 
 type BookingStatus = 'upcoming' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
@@ -193,20 +193,26 @@ export function Bookings() {
         }
     };
 
-    const handleEdit = async (bookingId: string, updates: Partial<BookingData>) => {
+    const handleEdit = async (bookingId: string, updates: Partial<FlightBookingData>) => {
         if (!user) {
             toast.error('Please sign in to edit your booking');
             return;
         }
 
         try {
+            // Ensure type is flight and dates are strings
+            const processedUpdates = {
+                ...updates,
+                type: 'flight' as const
+            };
+
             // Update in both collections
             const bookingRef = doc(db, 'bookings', bookingId);
             const userBookingRef = doc(db, `users/${user.uid}/bookings`, bookingId);
 
             await Promise.all([
-                setDoc(bookingRef, updates, { merge: true }),
-                setDoc(userBookingRef, updates, { merge: true })
+                setDoc(bookingRef, processedUpdates, { merge: true }),
+                setDoc(userBookingRef, processedUpdates, { merge: true })
             ]);
 
             toast.success('Booking updated successfully!');
@@ -463,22 +469,26 @@ export function Bookings() {
                                     exit={{ opacity: 0 }}
                                     className="grid grid-cols-1 gap-6 md:gap-8"
                                 >
-                                    {filteredBookings.map((booking) => (
-                                        <BookingCard
-                                            key={booking.bookingId}
-                                            booking={booking}
-                                            isExpanded={expandedBookingId === booking.bookingId}
-                                            onToggleExpand={() => toggleBookingDetails(booking.bookingId)}
-                                            onStatusChange={handleStatusChange}
-                                            updateLoading={updateLoading}
-                                            onDelete={handleDelete}
-                                            isDeleting={isDeleting === booking.bookingId}
-                                            currentUserId={user?.uid}
-                                            onEdit={handleEdit}
-                                            onRatingSubmit={handleRatingSubmit}
-                                            isSubmittingRating={isSubmittingRating === booking.bookingId}
-                                        />
-                                    ))}
+                                    {filteredBookings.map((booking) => {
+                                        // Since we filtered for flight bookings only in useEffect
+                                        const flightBooking = booking as FlightBookingData;
+                                        return (
+                                            <BookingCard
+                                                key={flightBooking.bookingId}
+                                                booking={flightBooking}
+                                                isExpanded={expandedBookingId === flightBooking.bookingId}
+                                                onToggleExpand={() => toggleBookingDetails(flightBooking.bookingId)}
+                                                onStatusChange={handleStatusChange}
+                                                updateLoading={updateLoading}
+                                                onDelete={handleDelete}
+                                                isDeleting={isDeleting === flightBooking.bookingId}
+                                                currentUserId={user?.uid}
+                                                onEdit={(id, updates) => handleEdit(id, updates as Partial<FlightBookingData>)}
+                                                onRatingSubmit={handleRatingSubmit}
+                                                isSubmittingRating={isSubmittingRating === flightBooking.bookingId}
+                                            />
+                                        );
+                                    })}
 
                                     {filteredBookings.length === 0 && (
                                         <motion.div

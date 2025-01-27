@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { User } from 'firebase/auth';
 import { useAuth } from '../../lib/firebase/useAuth';
-import { ADMIN_EMAILS } from '../admin/types';
+import { navLinks } from './navConfig';
 
 interface NavMenuProps {
     isOpen: boolean;
@@ -69,62 +69,13 @@ export function NavMenu({ isOpen, onClose, user }: NavMenuProps) {
         }
     };
 
-    const allNavLinks = [
-        {
-            path: user?.email && ADMIN_EMAILS.includes(user.email) ? '/admin' : '/bookings',
-            label: user?.email && ADMIN_EMAILS.includes(user.email) ? 'Admin Dashboard' : 'My Bookings',
-            description: user?.email && ADMIN_EMAILS.includes(user.email) ? 'Manage your site' : 'View your trips',
-            icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {user?.email && ADMIN_EMAILS.includes(user.email) ? (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    ) : (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 4h-1V3a1 1 0 00-2 0v1H8V3a1 1 0 00-2 0v1H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z" />
-                    )}
-                </svg>
-            ),
-            color: user?.email && ADMIN_EMAILS.includes(user.email) ? 'purple' : 'blue',
-            requiresAuth: true
-        },
-        {
-            path: '/about-us',
-            label: 'About',
-            description: 'Learn about us',
-            icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            ),
-            color: 'purple',
-            requiresAuth: false
-        },
-        {
-            path: '/book',
-            label: 'Book',
-            description: 'Book your trip',
-            icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            ),
-            color: 'green',
-            requiresAuth: true
-        },
-        {
-            path: '/contact',
-            label: 'Contact',
-            description: 'Get in touch',
-            icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-            ),
-            color: 'amber',
-            requiresAuth: false
+    // Filter links based on auth status
+    const filteredNavLinks = navLinks.filter(link => {
+        if (link.path === '/bookings' || link.path === '/book') {
+            return user !== null;
         }
-    ] as const;
-
-    const navLinks = allNavLinks.filter(link => !link.requiresAuth || user !== null);
+        return true;
+    });
 
     return (
         <AnimatePresence>
@@ -146,14 +97,14 @@ export function NavMenu({ isOpen, onClose, user }: NavMenuProps) {
                         initial="hidden"
                         animate="visible"
                         exit="exit"
-                        className="fixed top-[96px] left-4 z-50 w-[540px]"
+                        className="fixed top-[96px] left-4 right-4 z-50 md:left-4 md:right-auto md:w-[540px]"
                     >
                         <motion.div
                             whileHover={{ scale: 1.01 }}
                             transition={{ duration: 0.2 }}
                             className="bg-white/95 backdrop-blur-xl rounded-[1.1rem] shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-gray-200/50 overflow-hidden"
                         >
-                            <div className="grid grid-cols-2 gap-px bg-gray-100/50 p-1">
+                            <div className="flex flex-col md:grid md:grid-cols-2 gap-px bg-gray-100/50 p-1">
                                 {/* Navigation Links */}
                                 <motion.div
                                     variants={itemVariants}
@@ -168,41 +119,54 @@ export function NavMenu({ isOpen, onClose, user }: NavMenuProps) {
                                         />
                                     </div>
                                     <nav className="grid grid-cols-2 gap-1.5">
-                                        {navLinks.map((link) => (
-                                            <motion.div
-                                                key={link.path}
-                                                variants={itemVariants}
-                                                whileHover={{ scale: 1.02 }}
-                                                whileTap={{ scale: 0.98 }}
-                                            >
-                                                <Link
-                                                    to={link.path}
-                                                    onClick={onClose}
-                                                    className={`flex flex-col gap-1 p-2 rounded-lg transition-all group hover:bg-gray-50 ${location.pathname === link.path
-                                                        ? 'bg-gray-50/80 shadow-sm'
-                                                        : ''
-                                                        }`}
+                                        {filteredNavLinks.map((link) => (
+                                            <div key={link.path}>
+                                                <motion.div
+                                                    variants={itemVariants}
+                                                    whileHover={{ scale: 1.02 }}
+                                                    whileTap={{ scale: 0.98 }}
                                                 >
-                                                    <motion.span
-                                                        className={`p-1.5 rounded-lg w-fit bg-primary-50 text-primary group-hover:bg-primary-100 transition-colors relative overflow-hidden`}
-                                                        whileHover={{ scale: 1.1 }}
-                                                        whileTap={{ scale: 0.9 }}
+                                                    <Link
+                                                        to={link.path}
+                                                        onClick={onClose}
+                                                        className={`flex flex-col gap-1 p-2 rounded-lg transition-all group hover:bg-gray-50 ${location.pathname === link.path ? 'bg-gray-50/80 shadow-sm' : ''
+                                                            }`}
                                                     >
-                                                        <motion.div
-                                                            animate={location.pathname === link.path ? {
-                                                                scale: [1, 1.2, 1],
-                                                                rotate: [0, 10, -10, 0],
-                                                            } : {}}
-                                                            transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
-                                                            className="w-4 h-4"
+                                                        <motion.span
+                                                            className="p-1.5 rounded-lg w-fit bg-primary-50 text-primary group-hover:bg-primary-100 transition-colors relative overflow-hidden"
+                                                            whileHover={{ scale: 1.1 }}
+                                                            whileTap={{ scale: 0.9 }}
                                                         >
                                                             {link.icon}
-                                                        </motion.div>
-                                                    </motion.span>
-                                                    <span className="text-xs font-medium text-gray-900">{link.label}</span>
-                                                    <span className="text-[9px] text-gray-500">{link.description}</span>
-                                                </Link>
-                                            </motion.div>
+                                                        </motion.span>
+                                                        <span className="text-xs font-medium text-gray-900">{link.label}</span>
+                                                        <span className="text-[9px] text-gray-500">{link.description}</span>
+                                                    </Link>
+                                                </motion.div>
+                                                {/* Dropdown Items */}
+                                                {link.dropdown && (
+                                                    <div className="pl-4 mt-1 space-y-1">
+                                                        {link.dropdown.map((item) => (
+                                                            <motion.div
+                                                                key={item.path}
+                                                                variants={itemVariants}
+                                                                whileHover={{ scale: 1.02 }}
+                                                                whileTap={{ scale: 0.98 }}
+                                                            >
+                                                                <Link
+                                                                    to={item.path}
+                                                                    onClick={onClose}
+                                                                    className={`flex items-center gap-2 p-2 rounded-lg text-sm transition-all hover:bg-gray-50 ${location.pathname === item.path ? 'bg-gray-50/80 shadow-sm' : ''
+                                                                        }`}
+                                                                >
+                                                                    <span className="w-4 h-4 text-primary">{item.icon}</span>
+                                                                    <span className="text-xs text-gray-700">{item.label}</span>
+                                                                </Link>
+                                                            </motion.div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         ))}
                                     </nav>
                                 </motion.div>

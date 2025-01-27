@@ -57,7 +57,11 @@ export function BookingCard(props: BookingCardProps) {
             {...props}
             booking={{ ...booking, type: 'flight' }}
             onEdit={props.onEdit ? async (bookingId, updates) => {
-                await props.onEdit?.(bookingId, { ...updates, type: 'flight' });
+                const flightUpdates = updates as Partial<FlightBookingData>;
+                await props.onEdit?.(bookingId, {
+                    ...flightUpdates,
+                    type: 'flight' as const
+                });
             } : undefined}
         />;
     }
