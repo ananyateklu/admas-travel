@@ -545,10 +545,10 @@ export default function Admin() {
                                         >
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="h-10 w-10 bg-white/30 rounded-lg animate-pulse"></div>
-                                                <div className="h-4 w-20 bg-white/30 rounded animate-pulse"></div>
+                                                <div className="h-4 w-24 bg-white/30 rounded animate-pulse"></div>
                                             </div>
-                                            <div className="h-6 w-16 bg-white/30 rounded mb-2 animate-pulse"></div>
-                                            <div className="h-4 w-24 bg-white/30 rounded animate-pulse"></div>
+                                            <div className="h-7 w-20 bg-white/30 rounded mb-2 animate-pulse"></div>
+                                            <div className="h-4 w-28 bg-white/30 rounded animate-pulse"></div>
                                         </motion.div>
                                     ))}
                                 </div>
@@ -653,8 +653,8 @@ export default function Admin() {
                     </div>
                 </div>
                 <div className="relative flex flex-col justify-center pt-[160px]">
-                    <div className="w-full max-w-[1800px] mx-auto px-5">
-                        <div className="w-[72%] max-w-[1800px] mx-auto">
+                    <div className="w-full max-w-[1800px] mx-auto px-2">
+                        <div className="w-full max-w-[1800px] mx-auto">
                             <div className="flex flex-col items-center text-center mb-8">
                                 <motion.div
                                     className="flex-shrink-0 mb-4 relative group"
@@ -848,7 +848,7 @@ export default function Admin() {
                                     ].map((stat, index) => (
                                         <motion.div
                                             key={stat.label}
-                                            className="bg-white/20 backdrop-blur-md border border-white/20 rounded-md p-2 relative group hover:shadow-lg hover:bg-white/30 transition-all duration-200 cursor-pointer"
+                                            className="bg-white/20 backdrop-blur-md border border-white/20 rounded-xl p-4 relative group hover:shadow-lg hover:bg-white/30 transition-all duration-200 cursor-pointer"
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             transition={{
@@ -862,18 +862,18 @@ export default function Admin() {
                                             }}
                                             onClick={() => handleStatClick(stat.label)}
                                         >
-                                            <div className="flex items-start justify-between mb-1.5">
+                                            <div className="flex items-start justify-between mb-4">
                                                 <motion.div
-                                                    className="p-1.5 bg-white/30 backdrop-blur-sm rounded-md"
+                                                    className="h-10 w-10 bg-white/30 backdrop-blur-sm rounded-lg flex items-center justify-center"
                                                     whileHover={{ scale: 1.05 }}
                                                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
                                                 >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         {stat.icon.props.children}
                                                     </svg>
                                                 </motion.div>
                                                 <motion.div
-                                                    className="flex items-center text-[9px] font-medium ml-1"
+                                                    className="flex items-center text-xs font-medium"
                                                     initial={{ opacity: 0 }}
                                                     animate={{ opacity: 1 }}
                                                     transition={{ duration: 0.3, delay: index * 0.05 + 0.1 }}
@@ -891,11 +891,11 @@ export default function Admin() {
                                                             }}
                                                         >
                                                             {stat.trendUp ? (
-                                                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                                                 </svg>
                                                             ) : (
-                                                                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
                                                                 </svg>
                                                             )}
@@ -905,7 +905,7 @@ export default function Admin() {
                                                 </motion.div>
                                             </div>
                                             <motion.div
-                                                className="text-base font-bold text-white mb-0.5"
+                                                className="text-lg font-bold text-white mb-2"
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ duration: 0.3, delay: index * 0.05 + 0.2 }}
@@ -915,7 +915,7 @@ export default function Admin() {
                                                     : stat.value}
                                             </motion.div>
                                             <motion.div
-                                                className="text-[9px] text-white/70"
+                                                className="text-xs text-white/70"
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 transition={{ duration: 0.3, delay: index * 0.05 + 0.3 }}
@@ -1177,7 +1177,7 @@ export default function Admin() {
 
             {/* Main Content */}
             <div className="bg-gray-50/80 backdrop-blur-xl -mt-6 pt-8 relative">
-                <div className="max-w-[85%] mx-auto px-4 pb-8 relative">
+                <div className="max-w-[95%] mx-auto px-2 sm:px-4 pb-8 relative">
                     {error && (
                         <div className="bg-red-50/95 backdrop-blur-xl border border-red-200 text-red-600 rounded-lg p-3 mb-5 shadow-lg animate-fade-in text-sm">
                             {error}

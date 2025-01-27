@@ -76,18 +76,18 @@ export function PassengerDetails({
             </div>
 
             {/* Compact Passenger Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
                 {(isEditing ? editForm?.passengers ?? booking.passengers : booking.passengers).map((passenger, index) => {
                     const passportStatus = getPassportStatus(passenger.passportExpiry);
                     return (
                         <div
                             key={`${passenger.passportNumber}-${passenger.fullName}`}
-                            className="group bg-forest-50/50 backdrop-blur-sm rounded-lg p-3 hover:shadow-md transition-all duration-200 border border-forest-100/50"
+                            className="group bg-forest-50/50 backdrop-blur-sm rounded-lg p-2 sm:p-3 hover:shadow-md transition-all duration-200 border border-forest-100/50"
                         >
                             {/* Passenger Header - More Compact */}
                             <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="relative">
+                                <div className="flex items-center gap-2 min-w-0 flex-1">
+                                    <div className="relative shrink-0">
                                         <div className="absolute inset-0 bg-forest-400/10 rounded-full blur-[2px]" />
                                         <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-forest-400/20 to-forest-400/5 border border-forest-400/20 flex items-center justify-center">
                                             <span className="text-xs font-medium text-forest-700">
@@ -103,7 +103,7 @@ export function PassengerDetails({
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 flex-1">
                                         {isEditing ? (
                                             <input
                                                 type="text"
@@ -117,9 +117,9 @@ export function PassengerDetails({
                                                 placeholder="Full Name"
                                             />
                                         ) : (
-                                            <div className="flex items-center gap-1">
+                                            <div className="flex items-center gap-1 min-w-0">
                                                 <p className="font-medium text-gray-900 text-sm truncate">{passenger.fullName}</p>
-                                                <span className="text-[10px] text-gray-500">({passenger.type})</span>
+                                                <span className="text-[10px] text-gray-500 shrink-0">({passenger.type})</span>
                                             </div>
                                         )}
                                         {isEditing ? (
@@ -142,8 +142,8 @@ export function PassengerDetails({
                             </div>
 
                             {/* Passenger Details - Compact Grid */}
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className="col-span-2 bg-white/80 backdrop-blur-sm rounded-lg p-1.5 border border-forest-100/50">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                <div className="col-span-1 sm:col-span-2 bg-white/80 backdrop-blur-sm rounded-lg p-1.5 border border-forest-100/50">
                                     <div className="flex items-center justify-between">
                                         <p className="text-[10px] text-gray-500">Passport</p>
                                         {!isEditing && (

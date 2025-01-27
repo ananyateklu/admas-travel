@@ -23,6 +23,15 @@
   .animate-flight {
     animation: flight 3s ease-in-out infinite;
   }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
 }
 
 /* ... existing styles ... */

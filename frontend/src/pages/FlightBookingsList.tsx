@@ -357,141 +357,145 @@ export function Bookings() {
 
     return (
         <div className="min-h-screen">
-            {/* Hero Section */}
-            <motion.div
-                className="relative h-[40vh] bg-gray-900"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6 }}
-            >
-                <div className="absolute inset-0">
-                    <img
-                        src={mountainTwo}
-                        alt="Mountain Landscape"
-                        className="w-full h-full object-cover object-center"
-                    />
-                    <div className="absolute inset-0 bg-black/50" />
-                </div>
-                <div className="relative h-full flex items-center justify-center text-center pt-16">
-                    <div className="max-w-4xl mx-auto px-4">
-                        <h1 className="text-4xl md:text-5xl font-serif text-white mb-4">Your Travel Journey</h1>
-                        <p className="text-xl text-white/90">Track and manage your upcoming adventures</p>
+            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6">
+                {/* Hero Section */}
+                <motion.div
+                    className="bg-white/95 rounded-xl shadow-sm border border-gray-200/60 backdrop-blur-sm backdrop-saturate-150 mb-4 sm:mb-6"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <div className="relative h-[40vh] bg-gray-900">
+                        <div className="absolute inset-0">
+                            <img
+                                src={mountainTwo}
+                                alt="Mountain Landscape"
+                                className="w-full h-full object-cover object-center"
+                            />
+                            <div className="absolute inset-0 bg-black/50" />
+                        </div>
+                        <div className="relative h-full flex items-center justify-center text-center pt-16">
+                            <div className="max-w-4xl mx-auto px-4">
+                                <h1 className="text-4xl md:text-5xl font-serif text-white mb-4">Your Travel Journey</h1>
+                                <p className="text-xl text-white/90">Track and manage your upcoming adventures</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
 
-            <div className="bg-gray-50">
-                <div className="max-w-[90%] mx-auto px-6 -mt-20 pb-8 relative z-10">
-                    {/* Status Filter */}
-                    <motion.div
-                        className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg shadow-black/5 mb-8"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <div className="flex justify-between items-center px-8">
-                            <nav className="flex space-x-12" aria-label="Booking status">
+                {/* Status Filter */}
+                <motion.div
+                    className="bg-white/95 backdrop-blur-xl rounded-xl shadow-lg shadow-black/5 mb-8 overflow-hidden"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <div className="flex justify-between items-center px-4 md:px-6">
+                        <div className="w-full overflow-x-auto no-scrollbar py-2">
+                            <nav className="flex space-x-4 md:space-x-8 min-w-max" aria-label="Booking status">
                                 {STATUS_OPTIONS.map((status) => (
                                     <motion.button
                                         key={status.value}
                                         onClick={() => setSelectedStatus(status.value)}
                                         className={`
-                                            py-5 px-1 border-b-2 font-medium text-sm whitespace-nowrap flex items-center gap-2
+                                            py-3 px-2 border-b-2 font-medium text-sm whitespace-nowrap flex items-center gap-1.5 md:gap-2
                                             ${selectedStatus === status.value
                                                 ? 'border-gold text-gold'
                                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                             }
                                         `}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
                                     >
-                                        {status.icon}
-                                        {status.label}
+                                        <div className="w-4 h-4 md:w-5 md:h-5">
+                                            {status.icon}
+                                        </div>
+                                        <span className="text-xs md:text-sm">{status.label}</span>
                                     </motion.button>
                                 ))}
                             </nav>
-                            <NotificationToggle className="py-2" />
                         </div>
-                    </motion.div>
+                        <NotificationToggle className="py-2 ml-4 flex-shrink-0" />
+                    </div>
+                </motion.div>
 
-                    {/* Bookings List */}
-                    <motion.div
-                        className="grid grid-cols-1 gap-6 md:gap-8"
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                    >
-                        <AnimatePresence mode="wait">
-                            {isLoading ? (
-                                <motion.div
-                                    key="loading"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    className="grid grid-cols-1 gap-6 md:gap-8"
-                                >
-                                    {[1, 2, 3].map((i) => (
-                                        <div key={i} className="bg-white rounded-xl shadow-sm p-8 animate-pulse">
-                                            <div className="flex items-start justify-between gap-6">
-                                                <div className="flex items-start gap-6">
-                                                    <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
-                                                    <div className="space-y-4">
-                                                        <div className="h-6 w-32 bg-gray-200 rounded"></div>
-                                                        <div className="h-4 w-48 bg-gray-200 rounded"></div>
-                                                        <div className="h-4 w-40 bg-gray-200 rounded"></div>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-6">
-                                                    <div className="w-24 h-8 bg-gray-200 rounded-full"></div>
-                                                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                {/* Bookings List */}
+                <motion.div
+                    className="grid grid-cols-1 gap-4 sm:gap-6"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                >
+                    <AnimatePresence mode="wait">
+                        {isLoading ? (
+                            <motion.div
+                                key="loading"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="grid grid-cols-1 gap-6 md:gap-8"
+                            >
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="bg-white rounded-xl shadow-sm p-8 animate-pulse">
+                                        <div className="flex items-start justify-between gap-6">
+                                            <div className="flex items-start gap-6">
+                                                <div className="w-16 h-16 bg-gray-200 rounded-lg"></div>
+                                                <div className="space-y-4">
+                                                    <div className="h-6 w-32 bg-gray-200 rounded"></div>
+                                                    <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                                                    <div className="h-4 w-40 bg-gray-200 rounded"></div>
                                                 </div>
                                             </div>
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-24 h-8 bg-gray-200 rounded-full"></div>
+                                                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                                            </div>
                                         </div>
-                                    ))}
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="content"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    className="grid grid-cols-1 gap-6 md:gap-8"
-                                >
-                                    {filteredBookings.map((booking) => (
-                                        <BookingCard
-                                            key={booking.bookingId}
-                                            booking={booking}
-                                            isExpanded={expandedBookingId === booking.bookingId}
-                                            onToggleExpand={() => toggleBookingDetails(booking.bookingId)}
-                                            onStatusChange={handleStatusChange}
-                                            updateLoading={updateLoading}
-                                            onDelete={handleDelete}
-                                            isDeleting={isDeleting === booking.bookingId}
-                                            currentUserId={user?.uid}
-                                            onEdit={handleEdit}
-                                            onRatingSubmit={handleRatingSubmit}
-                                            isSubmittingRating={isSubmittingRating === booking.bookingId}
-                                        />
-                                    ))}
+                                    </div>
+                                ))}
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="content"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="grid grid-cols-1 gap-6 md:gap-8"
+                            >
+                                {filteredBookings.map((booking) => (
+                                    <BookingCard
+                                        key={booking.bookingId}
+                                        booking={booking}
+                                        isExpanded={expandedBookingId === booking.bookingId}
+                                        onToggleExpand={() => toggleBookingDetails(booking.bookingId)}
+                                        onStatusChange={handleStatusChange}
+                                        updateLoading={updateLoading}
+                                        onDelete={handleDelete}
+                                        isDeleting={isDeleting === booking.bookingId}
+                                        currentUserId={user?.uid}
+                                        onEdit={handleEdit}
+                                        onRatingSubmit={handleRatingSubmit}
+                                        isSubmittingRating={isSubmittingRating === booking.bookingId}
+                                    />
+                                ))}
 
-                                    {filteredBookings.length === 0 && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 20 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="bg-white rounded-xl shadow-sm p-12 text-center"
-                                        >
-                                            <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                            <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                                            <p className="text-gray-600">There are no {selectedStatus} bookings to display.</p>
-                                        </motion.div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
-                </div>
+                                {filteredBookings.length === 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="bg-white rounded-xl shadow-sm p-12 text-center"
+                                    >
+                                        <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
+                                        <p className="text-gray-600">There are no {selectedStatus} bookings to display.</p>
+                                    </motion.div>
+                                )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </motion.div>
             </div>
         </div>
     );

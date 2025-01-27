@@ -14,7 +14,7 @@ export function ContactDetails({
     onInputChange
 }: ContactDetailsProps) {
     return (
-        <div className="space-y-4">
+        <div className="bg-white/95 backdrop-blur-sm rounded-xl p-3 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-forest-100/50">
             <div className="flex items-center gap-2 mb-3 pb-2 border-b border-forest-100/50">
                 <div className="relative">
                     <div className="absolute inset-0 bg-forest-400/10 rounded-lg blur-[2px]" />
@@ -32,9 +32,9 @@ export function ContactDetails({
 
             <div className="space-y-2 text-sm">
                 {/* Contact Name */}
-                <div className="flex items-center justify-between p-2 bg-forest-50/50 backdrop-blur-sm rounded-lg border border-forest-100/50 transition-all duration-200 hover:shadow-sm">
-                    <div className="flex items-center gap-2">
-                        <div className="relative">
+                <div className="flex flex-col sm:flex-row sm:items-center p-2 bg-forest-50/50 backdrop-blur-sm rounded-lg border border-forest-100/50 transition-all duration-200 hover:shadow-sm">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="relative shrink-0">
                             <div className="absolute inset-0 bg-forest-400/10 rounded-lg blur-[2px]" />
                             <div className="relative p-1.5 bg-gradient-to-br from-forest-400/20 to-forest-400/5 rounded-lg border border-forest-400/20">
                                 <div className="w-6 h-6 rounded-lg bg-forest-100 flex items-center justify-center text-[10px] font-medium text-forest-600">
@@ -42,26 +42,26 @@ export function ContactDetails({
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <span className="text-gray-600">Contact Name</span>
+                        <div className="min-w-0 flex-1">
+                            <span className="text-gray-600 block sm:inline">Contact Name</span>
                             {isEditing ? (
                                 <input
                                     type="text"
                                     value={editForm?.contactName ?? booking.contactName ?? ''}
                                     onChange={(e) => onInputChange('contactName', e.target.value)}
-                                    className="block w-full mt-1 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
+                                    className="w-full mt-1 sm:mt-0 sm:ml-2 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                 />
                             ) : (
-                                <p className="font-medium text-gray-900 text-sm">{booking.contactName}</p>
+                                <p className="font-medium text-gray-900 text-sm truncate mt-0.5 sm:mt-0 sm:ml-2">{booking.contactName}</p>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {/* Contact Email */}
-                <div className="flex items-center justify-between p-2 bg-forest-50/50 backdrop-blur-sm rounded-lg border border-forest-100/50 transition-all duration-200 hover:shadow-sm">
-                    <div className="flex items-center gap-2">
-                        <div className="relative">
+                <div className="flex flex-col sm:flex-row sm:items-center p-2 bg-forest-50/50 backdrop-blur-sm rounded-lg border border-forest-100/50 transition-all duration-200 hover:shadow-sm">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="relative shrink-0">
                             <div className="absolute inset-0 bg-forest-400/10 rounded-lg blur-[2px]" />
                             <div className="relative p-1.5 bg-gradient-to-br from-forest-400/20 to-forest-400/5 rounded-lg border border-forest-400/20">
                                 <svg className="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,26 +69,26 @@ export function ContactDetails({
                                 </svg>
                             </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <span className="text-gray-600">Contact Email</span>
+                        <div className="min-w-0 flex-1">
+                            <span className="text-gray-600 block sm:inline">Contact Email</span>
                             {isEditing ? (
                                 <input
                                     type="email"
                                     value={editForm?.contactEmail ?? booking.contactEmail ?? ''}
                                     onChange={(e) => onInputChange('contactEmail', e.target.value)}
-                                    className="block w-full mt-1 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
+                                    className="w-full mt-1 sm:mt-0 sm:ml-2 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                 />
                             ) : (
-                                <p className="font-medium text-gray-900 text-sm truncate">{booking.contactEmail}</p>
+                                <p className="font-medium text-gray-900 text-sm truncate mt-0.5 sm:mt-0 sm:ml-2">{booking.contactEmail}</p>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {/* Contact Phone */}
-                <div className="flex items-center justify-between p-2 bg-forest-50/50 backdrop-blur-sm rounded-lg border border-forest-100/50 transition-all duration-200 hover:shadow-sm">
-                    <div className="flex items-center gap-2">
-                        <div className="relative">
+                <div className="flex flex-col sm:flex-row sm:items-center p-2 bg-forest-50/50 backdrop-blur-sm rounded-lg border border-forest-100/50 transition-all duration-200 hover:shadow-sm">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="relative shrink-0">
                             <div className="absolute inset-0 bg-forest-400/10 rounded-lg blur-[2px]" />
                             <div className="relative p-1.5 bg-gradient-to-br from-forest-400/20 to-forest-400/5 rounded-lg border border-forest-400/20">
                                 <svg className="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,17 +96,17 @@ export function ContactDetails({
                                 </svg>
                             </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <span className="text-gray-600">Contact Phone</span>
+                        <div className="min-w-0 flex-1">
+                            <span className="text-gray-600 block sm:inline">Contact Phone</span>
                             {isEditing ? (
                                 <input
                                     type="tel"
                                     value={editForm?.contactPhone ?? booking.contactPhone ?? ''}
                                     onChange={(e) => onInputChange('contactPhone', e.target.value)}
-                                    className="block w-full mt-1 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
+                                    className="w-full mt-1 sm:mt-0 sm:ml-2 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-forest-400 focus:border-transparent bg-white"
                                 />
                             ) : (
-                                <p className="font-medium text-gray-900 text-sm truncate">{booking.contactPhone}</p>
+                                <p className="font-medium text-gray-900 text-sm truncate mt-0.5 sm:mt-0 sm:ml-2">{booking.contactPhone}</p>
                             )}
                         </div>
                     </div>

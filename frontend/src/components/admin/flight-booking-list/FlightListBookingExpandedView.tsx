@@ -123,7 +123,7 @@ export function FlightListBookingExpandedView({
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
             className="border-t border-gray-100/50"
         >
-            <div className="px-4 py-3 lg:px-6 lg:py-4 bg-gradient-to-b from-gray-50/30 to-white">
+            <div className="px-2 py-2 sm:px-4 lg:px-6 lg:py-4 bg-gradient-to-b from-gray-50/30 to-white">
                 <BookingQuickActions
                     bookingReference={booking.bookingReference}
                     contactPhone={booking.contactPhone}
@@ -132,100 +132,106 @@ export function FlightListBookingExpandedView({
                     onShare={handleShare}
                 />
 
-                <BookingTabs
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                    canEdit={canEdit}
-                    isEditing={isEditing}
-                    onEditToggle={() => {
-                        if (isEditing) {
-                            handleEditComplete();
-                        } else {
-                            setIsEditing(true);
-                            setEditForm({});
-                        }
-                    }}
-                />
+                <div className="mt-4">
+                    <BookingTabs
+                        activeTab={activeTab}
+                        onTabChange={setActiveTab}
+                        canEdit={canEdit}
+                        isEditing={isEditing}
+                        onEditToggle={() => {
+                            if (isEditing) {
+                                handleEditComplete();
+                            } else {
+                                setIsEditing(true);
+                                setEditForm({});
+                            }
+                        }}
+                    />
+                </div>
 
-                <AnimatePresence mode="wait">
-                    {activeTab === 'details' && (
-                        <motion.div
-                            key="details"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                        >
-                            <BookingDetails
-                                booking={booking}
-                                isEditing={isEditing}
-                                onRatingSubmit={onRatingSubmit}
-                                isSubmittingRating={isSubmittingRating}
-                            />
-                            {isEditing && (
-                                <SaveCancelButtons
-                                    onSave={handleEditComplete}
-                                    onCancel={handleCancel}
-                                    onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
-                                    isDeleting={isDeleting}
-                                    canDelete={canDelete}
+                <div className="mt-4">
+                    <AnimatePresence mode="wait">
+                        {activeTab === 'details' && (
+                            <motion.div
+                                key="details"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                            >
+                                <BookingDetails
+                                    booking={booking}
+                                    isEditing={isEditing}
+                                    onRatingSubmit={onRatingSubmit}
+                                    isSubmittingRating={isSubmittingRating}
                                 />
-                            )}
-                        </motion.div>
-                    )}
+                                {isEditing && (
+                                    <SaveCancelButtons
+                                        onSave={handleEditComplete}
+                                        onCancel={handleCancel}
+                                        onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
+                                        isDeleting={isDeleting}
+                                        canDelete={canDelete}
+                                    />
+                                )}
+                            </motion.div>
+                        )}
 
-                    {activeTab === 'passengers' && (
-                        <motion.div
-                            key="passengers"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                        >
-                            <PassengerDetails
-                                booking={booking}
-                                isEditing={isEditing}
-                                editForm={editForm}
-                                onInputChange={handleInputChange}
-                            />
-                            {isEditing && (
-                                <SaveCancelButtons
-                                    onSave={handleEditComplete}
-                                    onCancel={handleCancel}
-                                    onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
-                                    isDeleting={isDeleting}
-                                    canDelete={canDelete}
+                        {activeTab === 'passengers' && (
+                            <motion.div
+                                key="passengers"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                                className="space-y-4"
+                            >
+                                <PassengerDetails
+                                    booking={booking}
+                                    isEditing={isEditing}
+                                    editForm={editForm}
+                                    onInputChange={handleInputChange}
                                 />
-                            )}
-                        </motion.div>
-                    )}
+                                {isEditing && (
+                                    <SaveCancelButtons
+                                        onSave={handleEditComplete}
+                                        onCancel={handleCancel}
+                                        onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
+                                        isDeleting={isDeleting}
+                                        canDelete={canDelete}
+                                    />
+                                )}
+                            </motion.div>
+                        )}
 
-                    {activeTab === 'contact' && (
-                        <motion.div
-                            key="contact"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                        >
-                            <ContactDetails
-                                booking={booking}
-                                isEditing={isEditing}
-                                editForm={editForm}
-                                onInputChange={handleInputChange}
-                            />
-                            {isEditing && (
-                                <SaveCancelButtons
-                                    onSave={handleEditComplete}
-                                    onCancel={handleCancel}
-                                    onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
-                                    isDeleting={isDeleting}
-                                    canDelete={canDelete}
+                        {activeTab === 'contact' && (
+                            <motion.div
+                                key="contact"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                                className="space-y-4"
+                            >
+                                <ContactDetails
+                                    booking={booking}
+                                    isEditing={isEditing}
+                                    editForm={editForm}
+                                    onInputChange={handleInputChange}
                                 />
-                            )}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                                {isEditing && (
+                                    <SaveCancelButtons
+                                        onSave={handleEditComplete}
+                                        onCancel={handleCancel}
+                                        onDelete={canDelete && onDelete ? () => onDelete(booking.bookingId) : undefined}
+                                        isDeleting={isDeleting}
+                                        canDelete={canDelete}
+                                    />
+                                )}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
         </motion.div>
     );

@@ -36,19 +36,19 @@ export function BookingTabs({
 }: BookingTabsProps) {
     return (
         <motion.div
-            className="bg-white/95 rounded-xl shadow-[0_-1px_4px_-2px_rgba(0,0,0,0.05),0_4px_6px_-1px_rgba(0,0,0,0.05)] mb-4 border border-gray-100/50 ring-1 ring-black/[0.02]"
+            className="bg-white/95 rounded-xl shadow-[0_-1px_4px_-2px_rgba(0,0,0,0.05),0_4px_6px_-1px_rgba(0,0,0,0.05)] mb-4 border border-gray-100/50 ring-1 ring-black/[0.02] overflow-hidden"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
         >
             <div className="border-b border-gray-100/80">
-                <nav className="flex justify-between items-center px-6" aria-label="Booking Information">
-                    <div className="flex space-x-8">
+                <nav className="flex justify-between items-center px-2 sm:px-6" aria-label="Booking Information">
+                    <div className="flex space-x-4 sm:space-x-8 overflow-x-auto no-scrollbar">
                         {['details', 'passengers', 'contact'].map((tab) => (
                             <motion.button
                                 key={tab}
                                 onClick={() => onTabChange(tab as TabType)}
-                                className={`py-3 px-2 border-b-2 font-medium text-sm tracking-wide whitespace-nowrap relative ${activeTab === tab
+                                className={`py-3 px-1.5 sm:px-2 border-b-2 font-medium text-xs sm:text-sm tracking-wide whitespace-nowrap relative ${activeTab === tab
                                     ? 'border-forest-400 text-forest-500'
                                     : 'border-transparent text-gray-400 hover:text-gray-600 hover:border-gray-200'
                                     }`}
@@ -70,7 +70,7 @@ export function BookingTabs({
                     {canEdit && onEditToggle && (
                         <motion.button
                             onClick={onEditToggle}
-                            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isEditing
+                            className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 ${isEditing
                                 ? 'text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200'
                                 : 'text-forest-700 bg-forest-50 hover:bg-forest-100 border border-forest-200 hover:border-forest-300'
                                 }`}
@@ -79,7 +79,7 @@ export function BookingTabs({
                             whileTap="tap"
                         >
                             <svg
-                                className={`w-4 h-4 ${isEditing ? 'text-gray-500' : 'text-forest-600'}`}
+                                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isEditing ? 'text-gray-500' : 'text-forest-600'}`}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
