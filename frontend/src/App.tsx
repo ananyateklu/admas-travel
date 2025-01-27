@@ -8,12 +8,14 @@ import { AuthProvider } from './lib/firebase/AuthContext';
 import { RecaptchaProvider } from './lib/recaptcha/RecaptchaProvider';
 import './styles/animations.css';
 import './styles/recaptcha.css';
+import { HotelBookings } from './pages/HotelBookingsList';
 
 // Lazy load pages
 const Home = React.lazy(() => import('./pages/Home'));
 const Book = React.lazy(() => import('./pages/FlightBook').then(module => ({ default: module.Book })));
 const Admin = React.lazy(() => import('./pages/Admin'));
 const Bookings = React.lazy(() => import('./pages/FlightBookingsList').then(module => ({ default: module.Bookings })));
+const CarBookings = React.lazy(() => import('./pages/CarBookingsList'));
 const AboutUs = React.lazy(() => import('./pages/AboutUs'));
 const Contact = React.lazy(() => import('./pages/Contact'));
 const GetStarted = React.lazy(() => import('./pages/GetStarted'));
@@ -49,6 +51,8 @@ function App() {
                   <Route path="admin" element={<Admin />} />
                   <Route path="bookings" element={<Bookings />} />
                   <Route path="bookings/:bookingId" element={<BookingDetailsPage />} />
+                  <Route path="bookings/hotels" element={<HotelBookings />} />
+                  <Route path="bookings/cars" element={<CarBookings />} />
                   <Route path="about-us" element={<AboutUs />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="get-started" element={<GetStarted />} />

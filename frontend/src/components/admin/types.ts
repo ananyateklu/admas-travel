@@ -1,4 +1,5 @@
 import { Airport } from '../../services/flightService';
+import { Timestamp } from 'firebase/firestore';
 
 interface BaseBookingData {
     bookingId: string;
@@ -101,6 +102,19 @@ export interface CarBookingData extends BaseBookingData {
     totalPrice: {
         amount: number;
         currency: string;
+    };
+    pickupDate: Date | string;
+    returnDate: Date | string;
+    pickupLocation: string;
+    returnLocation: string;
+    carModel: string;
+    carType: string;
+    numberOfDays: number;
+    rating?: {
+        score: number;
+        comment: string;
+        createdAt: Timestamp;
+        updatedAt: Timestamp;
     };
 }
 

@@ -8,7 +8,7 @@ import mountainTwo from '../assets/mountain-two.jpg';
 import { BookingCard } from '../components/admin';
 import { toast } from 'react-hot-toast';
 import { NotificationToggle } from '../components/notifications/NotificationToggle';
-import { BookingData } from '../components/admin/types';
+import { BookingData, CarBookingData } from '../components/admin/types';
 
 type BookingStatus = 'upcoming' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
@@ -72,9 +72,9 @@ const STATUS_OPTIONS: StatusOption[] = [
             </svg>
         ),
         colors: {
-            active: 'border-emerald-500 bg-emerald-500 text-white',
-            completed: 'border-emerald-500 bg-emerald-50 text-emerald-600',
-            connector: 'emerald-500'
+            active: 'border-green-500 bg-green-500 text-white',
+            completed: 'border-green-500 bg-green-50 text-green-600',
+            connector: 'green-500'
         }
     },
     {
@@ -107,9 +107,9 @@ const STATUS_OPTIONS: StatusOption[] = [
     }
 ];
 
-export function Bookings() {
+export default function CarBookings() {
     const { user } = useAuth();
-    const [bookings, setBookings] = useState<BookingData[]>([]);
+    const [bookings, setBookings] = useState<CarBookingData[]>([]);
     const [selectedStatus, setSelectedStatus] = useState<BookingStatus>('upcoming');
     const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -119,51 +119,70 @@ export function Bookings() {
     const [updateLoading, setUpdateLoading] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!user) return;
+        if (!user) {
+            setIsLoading(false);
+            return;
+        }
 
-        setIsLoading(true);
-        const bookingsRef = collection(db, 'bookings');
+        console.log('Setting up real-time listener for user:', user.uid);
+
+        const bookingsRef = collection(db, `users/${user.uid}/bookings`);
         const q = query(bookingsRef, orderBy('createdAt', 'desc'));
 
         const unsubscribe = onSnapshot(q,
             (snapshot) => {
                 const bookingsData = snapshot.docs.map(doc => {
                     const data = doc.data();
-                    const createdAtDate = typeof data.createdAt === 'string'
-                        ? new Date(data.createdAt)
-                        : data.createdAt?.toDate?.() || new Date();
+                    console.log('Received booking update:', doc.id, data);
 
-                    // Only process flight bookings
-                    if (data.type === 'flight') {
+                    // Only process car bookings
+                    if (data.type === 'car') {
+                        const createdAtDate = typeof data.createdAt === 'string'
+                            ? new Date(data.createdAt)
+                            : data.createdAt?.toDate?.() || new Date();
+
+                        const pickupDate = typeof data.pickupDate === 'string'
+                            ? new Date(data.pickupDate)
+                            : data.pickupDate?.toDate?.() || new Date();
+
+                        const returnDate = typeof data.returnDate === 'string'
+                            ? new Date(data.returnDate)
+                            : data.returnDate?.toDate?.() || new Date();
+
                         return {
                             ...data,
                             bookingId: doc.id,
                             createdAt: createdAtDate,
-                            type: 'flight',
-                            departureDate: data.departureDate || '',
-                            returnDate: data.returnDate || '',
-                            passengers: data.passengers || [],
-                            from: data.from || null,
-                            to: data.to || null,
-                            tripType: data.tripType || 'oneway',
-                            class: data.class || 'economy',
+                            type: 'car',
+                            pickupDate: pickupDate,
+                            returnDate: returnDate,
+                            carModel: data.carModel || '',
+                            carType: data.carType || '',
+                            pickupLocation: data.pickupLocation || '',
+                            returnLocation: data.returnLocation || '',
+                            numberOfDays: data.numberOfDays || 1,
+                            totalPrice: data.totalPrice || { amount: 0, currency: 'USD' },
                             status: mapStatusFromDb(data.status || 'pending')
-                        } as BookingData;
+                        } as CarBookingData;
                     }
                     return null;
-                }).filter((booking): booking is BookingData => booking !== null);
+                }).filter((booking): booking is CarBookingData => booking !== null);
 
+                console.log('Updated car bookings:', bookingsData);
                 setBookings(bookingsData);
                 setIsLoading(false);
             },
-            (error) => {
-                console.error('Error fetching bookings:', error);
-                setError('Failed to load bookings');
+            (err) => {
+                console.error('Error fetching bookings:', err);
+                setError('Failed to load bookings. Please try again later.');
                 setIsLoading(false);
             }
         );
 
-        return () => unsubscribe();
+        return () => {
+            console.log('Cleaning up listener');
+            unsubscribe();
+        };
     }, [user]);
 
     const handleDelete = async (bookingId: string) => {
@@ -183,10 +202,10 @@ export function Bookings() {
 
             // Update local state
             setBookings(prev => prev.filter(b => b.bookingId !== bookingId));
+            toast.success('Booking deleted successfully');
         } catch (err) {
             console.error('Error deleting booking:', err);
             setError('Failed to delete booking. Please try again.');
-            // Don't update the local state if deletion failed
             return;
         } finally {
             setIsDeleting(null);
@@ -194,13 +213,9 @@ export function Bookings() {
     };
 
     const handleEdit = async (bookingId: string, updates: Partial<BookingData>) => {
-        if (!user) {
-            toast.error('Please sign in to edit your booking');
-            return;
-        }
+        if (!user) return;
 
         try {
-            // Update in both collections
             const bookingRef = doc(db, 'bookings', bookingId);
             const userBookingRef = doc(db, `users/${user.uid}/bookings`, bookingId);
 
@@ -251,11 +266,14 @@ export function Bookings() {
     const handleStatusChange = async (bookingId: string, newStatus: string, userId: string, previousStatus?: string) => {
         if (!user) return;
 
-        setUpdateLoading(bookingId);
         try {
+            setUpdateLoading(bookingId);
+            setError(null);
+
             const updateData = {
                 status: newStatus,
-                previousStatus: previousStatus ?? undefined
+                previousStatus: previousStatus ?? undefined,
+                updatedAt: serverTimestamp()
             };
 
             // Update both the main booking and user's booking copy
@@ -268,7 +286,7 @@ export function Bookings() {
             setBookings(prevBookings =>
                 prevBookings.map(booking =>
                     booking.bookingId === bookingId
-                        ? { ...booking, ...updateData }
+                        ? { ...booking, status: newStatus, previousStatus: previousStatus ?? undefined }
                         : booking
                 )
             );
@@ -287,21 +305,13 @@ export function Bookings() {
         const now = new Date();
         return bookings
             .filter((booking) => {
-                let bookingDate: Date;
-
-                if ('departureDate' in booking) { // Flight booking
-                    bookingDate = new Date(booking.departureDate);
-                } else if ('checkInDate' in booking) { // Hotel booking
-                    bookingDate = new Date(booking.checkInDate);
-                } else { // Car booking
-                    bookingDate = new Date(); // Car bookings don't have a specific date in the type
-                }
-
+                const pickupDate = new Date(booking.pickupDate);
                 const dbStatus = booking.status;
 
                 switch (selectedStatus) {
                     case 'upcoming':
-                        return bookingDate > now;
+                        // Show bookings that are in the future and not cancelled
+                        return pickupDate >= now && dbStatus !== 'cancelled' && dbStatus !== 'completed';
                     case 'completed':
                         return dbStatus === 'completed';
                     case 'confirmed':
@@ -313,11 +323,19 @@ export function Bookings() {
                     default:
                         return true;
                 }
+            })
+            .sort((a, b) => {
+                // Sort by pickup date, with upcoming dates first
+                const dateA = new Date(a.pickupDate);
+                const dateB = new Date(b.pickupDate);
+                return dateA.getTime() - dateB.getTime();
             });
     }, [bookings, selectedStatus]);
 
     const containerVariants = {
-        hidden: { opacity: 0 },
+        hidden: {
+            opacity: 0
+        },
         visible: {
             opacity: 1,
             transition: {
@@ -374,8 +392,8 @@ export function Bookings() {
                         </div>
                         <div className="relative h-full flex items-center justify-center text-center pt-16">
                             <div className="max-w-4xl mx-auto px-4">
-                                <h1 className="text-4xl md:text-5xl font-serif text-white mb-4">Your Travel Bookings</h1>
-                                <p className="text-xl text-white/90">Track and manage all your travel reservations</p>
+                                <h1 className="text-4xl md:text-5xl font-serif text-white mb-4">Your Car Rentals</h1>
+                                <p className="text-xl text-white/90">Track and manage your car rental reservations</p>
                             </div>
                         </div>
                     </div>
@@ -490,7 +508,7 @@ export function Bookings() {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                             <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                                            <p className="text-gray-600">There are no {selectedStatus} bookings to display.</p>
+                                            <p className="text-gray-600">There are no {selectedStatus} car rentals to display.</p>
                                         </motion.div>
                                     )}
                                 </motion.div>
