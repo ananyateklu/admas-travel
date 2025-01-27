@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { wonders } from '../components/home/discover-section/home-types';
 
 interface Wonder {
@@ -49,7 +48,7 @@ function ExploreMoreModal({ wonder, isOpen, onClose }: ExploreMoreModalProps) {
                                 stiffness: 300
                             }}
                         >
-                            <div className="grid grid-cols-[1.2fr,1fr] relative">
+                            <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,1fr] relative">
                                 <button
                                     onClick={onClose}
                                     className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors z-50"
@@ -58,7 +57,7 @@ function ExploreMoreModal({ wonder, isOpen, onClose }: ExploreMoreModalProps) {
                                 </button>
                                 <motion.div
                                     layoutId={`wonder-image-${wonder.id}`}
-                                    className="relative h-full"
+                                    className="relative h-[30vh] lg:h-full"
                                 >
                                     <motion.img
                                         layoutId={`wonder-img-${wonder.id}`}
@@ -71,32 +70,32 @@ function ExploreMoreModal({ wonder, isOpen, onClose }: ExploreMoreModalProps) {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="p-8 space-y-6 overflow-y-auto max-h-[90vh]"
+                                    className="p-3 lg:p-8 space-y-2 lg:space-y-6 overflow-y-auto max-h-[70vh] lg:max-h-[90vh]"
                                 >
                                     <motion.div
                                         layoutId={`wonder-location-${wonder.id}`}
-                                        className="flex items-center gap-2"
+                                        className="flex items-center gap-1 lg:gap-2"
                                     >
-                                        <div className="h-0.5 w-4 rounded-full bg-yellow-400" />
-                                        <span className="text-xs font-medium text-gray-500">
+                                        <div className="h-0.5 w-3 lg:w-4 rounded-full bg-yellow-400" />
+                                        <span className="text-[10px] lg:text-xs font-medium text-gray-500">
                                             Ethiopia
                                         </span>
                                     </motion.div>
                                     <motion.h2
                                         layoutId={`wonder-title-${wonder.id}`}
-                                        className="text-2xl font-serif"
+                                        className="text-lg lg:text-2xl font-serif"
                                     >
                                         {wonder.title}
                                     </motion.h2>
 
                                     {/* Overview Section */}
-                                    <div className="space-y-3">
+                                    <div className="space-y-1.5 lg:space-y-3">
                                         <motion.p
                                             initial={{ opacity: 0, y: 20 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 20 }}
                                             transition={{ delay: 0.2 }}
-                                            className="text-gray-600 leading-relaxed text-sm"
+                                            className="text-xs lg:text-sm text-gray-600 leading-relaxed"
                                         >
                                             {wonder.description}
                                         </motion.p>
@@ -107,15 +106,15 @@ function ExploreMoreModal({ wonder, isOpen, onClose }: ExploreMoreModalProps) {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.3 }}
-                                        className="grid grid-cols-2 gap-4 py-3 border-t border-gray-100"
+                                        className="grid grid-cols-2 gap-2 lg:gap-4 py-1.5 lg:py-3 border-t border-gray-100"
                                     >
                                         <div>
-                                            <h4 className="text-xs font-medium text-gray-900 mb-0.5">Best Time to Visit</h4>
-                                            <p className="text-xs text-gray-600">October to May (Dry Season)</p>
+                                            <h4 className="text-[10px] lg:text-xs font-medium text-gray-900 mb-0.5">Best Time to Visit</h4>
+                                            <p className="text-[10px] lg:text-xs text-gray-600">October to May (Dry Season)</p>
                                         </div>
                                         <div>
-                                            <h4 className="text-xs font-medium text-gray-900 mb-0.5">Elevation</h4>
-                                            <p className="text-xs text-gray-600">{wonder.elevation ?? "Varies by location"}</p>
+                                            <h4 className="text-[10px] lg:text-xs font-medium text-gray-900 mb-0.5">Elevation</h4>
+                                            <p className="text-[10px] lg:text-xs text-gray-600">{wonder.elevation ?? "Varies by location"}</p>
                                         </div>
                                     </motion.div>
 
@@ -124,9 +123,9 @@ function ExploreMoreModal({ wonder, isOpen, onClose }: ExploreMoreModalProps) {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.4 }}
-                                        className="border-t border-gray-100 pt-3"
+                                        className="border-t border-gray-100 pt-1.5 lg:pt-3"
                                     >
-                                        <h3 className="text-sm font-medium text-gray-900 mb-2">Activities & Experiences</h3>
+                                        <h3 className="text-xs lg:text-sm font-medium text-gray-900 mb-1.5 lg:mb-2">Activities & Experiences</h3>
                                         <div className="grid grid-cols-2 gap-3">
                                             {(wonder.activities ?? [
                                                 "Hiking",
@@ -193,30 +192,6 @@ function ExploreMoreModal({ wonder, isOpen, onClose }: ExploreMoreModalProps) {
 
 export default function NaturalWonders() {
     const [selectedWonder, setSelectedWonder] = useState<Wonder | null>(null);
-    const { ref: pageRef, isInView } = useScrollAnimation({
-        threshold: 0.1,
-        once: true
-    });
-
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2,
-                delayChildren: 0.1
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.6 }
-        }
-    };
 
     return (
         <LayoutGroup>
@@ -276,10 +251,9 @@ export default function NaturalWonders() {
 
                 {/* Wonders Grid */}
                 <motion.section
-                    ref={pageRef}
-                    initial="hidden"
-                    animate={isInView ? "visible" : "hidden"}
-                    variants={containerVariants}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4 }}
                     className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
                 >
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -287,7 +261,9 @@ export default function NaturalWonders() {
                             <motion.div
                                 layoutId={`wonder-card-${wonder.id}`}
                                 key={wonder.id}
-                                variants={itemVariants}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.4 }}
                                 whileHover={{
                                     y: -8,
                                     scale: 1.02,
