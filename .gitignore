@@ -38,3 +38,9 @@ yarn-error.log*
 .Trashes
 ehthumbs.db
 Thumbs.db 
+frontend/src/types/multipleFlightResults.json
+frontend/src/types/flightResults.json
+frontend/src/components/hotel-booking/searchHotelsData.json
+frontend/src/components/car-booking/VehicleObject.json
+frontend/src/components/car-booking/CarBookingData.json
+.cursorrules

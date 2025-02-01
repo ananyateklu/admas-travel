@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { wonders } from '../components/home/discover-section/home-types';
+import { useNavigate } from 'react-router-dom';
 
 interface Wonder {
     id: string;
@@ -19,6 +20,7 @@ interface ExploreMoreModalProps {
 }
 
 function ExploreMoreModal({ wonder, isOpen, onClose }: ExploreMoreModalProps) {
+    const navigate = useNavigate();
     const handleContentClick = (e: React.MouseEvent) => {
         e.stopPropagation();
     };
@@ -175,6 +177,7 @@ function ExploreMoreModal({ wonder, isOpen, onClose }: ExploreMoreModalProps) {
                                         className="pt-3 border-t border-gray-100"
                                     >
                                         <button
+                                            onClick={() => { onClose(); navigate('/book', { state: { to: { id: "ADD", name: "Addis Ababa Bole International Airport", city: "Addis Ababa", country: "Ethiopia", airportCode: "ADD" } } }); }}
                                             className="w-full bg-primary-400 hover:bg-primary-500 text-white py-2 rounded-lg transition-colors font-medium text-sm"
                                         >
                                             Plan Your Visit
