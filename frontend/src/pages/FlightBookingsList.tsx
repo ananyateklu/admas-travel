@@ -107,6 +107,28 @@ const STATUS_OPTIONS: StatusOption[] = [
     }
 ];
 
+// Helper to parse Firestore date fields
+const parseFirestoreDate = (date: any): Date | null => {
+    if (!date) return null;
+
+    try {
+        // If it's already a Date object
+        if (date instanceof Date) return date;
+
+        // If it's a Firestore timestamp with toDate method
+        if (date.toDate && typeof date.toDate === 'function') {
+            return date.toDate();
+        }
+
+        // If it's an ISO string or other date string
+        const parsedDate = new Date(date);
+        return isNaN(parsedDate.getTime()) ? null : parsedDate;
+    } catch (error) {
+        console.error('Error parsing date:', error);
+        return null;
+    }
+};
+
 export function Bookings() {
     const { user } = useAuth();
     const [bookings, setBookings] = useState<BookingData[]>([]);
@@ -122,43 +144,138 @@ export function Bookings() {
         if (!user) return;
 
         setIsLoading(true);
+        setError(null);
+
+        // First, try to get bookings from the root 'bookings' collection
         const bookingsRef = collection(db, 'bookings');
-        const q = query(bookingsRef, orderBy('createdAt', 'desc'));
+        const q = query(
+            bookingsRef,
+            orderBy('createdAt', 'desc')
+        );
 
         const unsubscribe = onSnapshot(q,
             (snapshot) => {
+                // Consider a booking as a flight booking if it has flight-specific fields
+                // even if the type field is not explicitly set to 'flight'
                 const bookingsData = snapshot.docs.map(doc => {
                     const data = doc.data();
-                    const createdAtDate = typeof data.createdAt === 'string'
-                        ? new Date(data.createdAt)
-                        : data.createdAt?.toDate?.() || new Date();
 
-                    // Only process flight bookings
-                    if (data.type === 'flight') {
-                        return {
-                            ...data,
-                            bookingId: doc.id,
-                            createdAt: createdAtDate,
-                            type: 'flight',
-                            departureDate: data.departureDate || '',
-                            returnDate: data.returnDate || '',
-                            passengers: data.passengers || [],
-                            from: data.from || null,
-                            to: data.to || null,
-                            tripType: data.tripType || 'oneway',
-                            class: data.class || 'economy',
-                            status: mapStatusFromDb(data.status || 'pending')
-                        } as BookingData;
+                    // Consider a booking as a flight booking if it has flight-specific fields
+                    const isFlightBooking = data.type === 'flight' ||
+                        (data.departureDate && data.from && data.to);
+
+                    if (!isFlightBooking) {
+                        return null;
                     }
-                    return null;
-                }).filter((booking): booking is BookingData => booking !== null);
 
-                setBookings(bookingsData);
-                setIsLoading(false);
+                    // Skip if belongs to a different user
+                    if (data.userId && data.userId !== user.uid) {
+                        return null;
+                    }
+
+                    // Force status to be one of the allowed values
+                    let processedStatus = data.status ? String(data.status).toLowerCase() : 'pending';
+                    if (!['upcoming', 'pending', 'confirmed', 'completed', 'cancelled'].includes(processedStatus)) {
+                        processedStatus = 'pending';
+                    }
+
+                    const mappedStatus = mapStatusFromDb(processedStatus);
+                    const createdAtDate = parseFirestoreDate(data.createdAt) || new Date();
+                    const departureDateObj = parseFirestoreDate(data.departureDate);
+
+                    return {
+                        ...data,
+                        bookingId: doc.id,
+                        createdAt: createdAtDate.toISOString(),
+                        type: 'flight',
+                        departureDate: departureDateObj ? departureDateObj.toISOString() : data.departureDate || '',
+                        returnDate: data.returnDate || '',
+                        passengers: data.passengers || [],
+                        from: data.from || null,
+                        to: data.to || null,
+                        tripType: data.tripType || 'oneway',
+                        class: data.class || 'economy',
+                        status: mappedStatus,
+                        userId: data.userId || user.uid,
+                        bookingReference: data.bookingReference || `REF${Math.floor(Math.random() * 100000)}`,
+                        destination: data.to?.name || data.destination || 'Unknown Destination',
+                        totalPassengers: data.totalPassengers || (data.passengers?.length || 1),
+                        contactName: data.contactName || user.displayName || 'Guest',
+                        contactEmail: data.contactEmail || user.email || '',
+                        contactPhone: data.contactPhone || ''
+                    } as FlightBookingData;
+                }).filter((booking): booking is FlightBookingData => booking !== null);
+
+                // If we found bookings in the main collection, use those
+                if (bookingsData.length > 0) {
+                    setBookings(bookingsData);
+                    setIsLoading(false);
+                    return;
+                }
+
+                // If no bookings found in main collection, try the user's subcollection
+                const userBookingsRef = collection(db, `users/${user.uid}/bookings`);
+                const userBookingsQuery = query(userBookingsRef, orderBy('createdAt', 'desc'));
+
+                // We don't need to unsubscribe this because it's inside the callback of the main subscription
+                onSnapshot(userBookingsQuery,
+                    (userSnapshot) => {
+                        const userBookingsData = userSnapshot.docs.map(doc => {
+                            const data = doc.data();
+
+                            // Consider a booking as a flight booking if it has flight-specific fields
+                            const isFlightBooking = data.type === 'flight' ||
+                                (data.departureDate && data.from && data.to);
+
+                            if (!isFlightBooking) {
+                                return null;
+                            }
+
+                            // Force status to be one of the allowed values
+                            let processedStatus = data.status ? String(data.status).toLowerCase() : 'pending';
+                            if (!['upcoming', 'pending', 'confirmed', 'completed', 'cancelled'].includes(processedStatus)) {
+                                processedStatus = 'pending';
+                            }
+
+                            const mappedStatus = mapStatusFromDb(processedStatus);
+                            const createdAtDate = parseFirestoreDate(data.createdAt) || new Date();
+                            const departureDateObj = parseFirestoreDate(data.departureDate);
+
+                            return {
+                                ...data,
+                                bookingId: doc.id,
+                                createdAt: createdAtDate.toISOString(),
+                                type: 'flight',
+                                departureDate: departureDateObj ? departureDateObj.toISOString() : data.departureDate || '',
+                                returnDate: data.returnDate || '',
+                                passengers: data.passengers || [],
+                                from: data.from || null,
+                                to: data.to || null,
+                                tripType: data.tripType || 'oneway',
+                                class: data.class || 'economy',
+                                status: mappedStatus,
+                                userId: data.userId || user.uid,
+                                bookingReference: data.bookingReference || `REF${Math.floor(Math.random() * 100000)}`,
+                                destination: data.to?.name || data.destination || 'Unknown Destination',
+                                totalPassengers: data.totalPassengers || (data.passengers?.length || 1),
+                                contactName: data.contactName || user.displayName || 'Guest',
+                                contactEmail: data.contactEmail || user.email || '',
+                                contactPhone: data.contactPhone || ''
+                            } as FlightBookingData;
+                        }).filter((booking): booking is FlightBookingData => booking !== null);
+
+                        setBookings(userBookingsData);
+                        setIsLoading(false);
+                    },
+                    (error) => {
+                        console.error('Error fetching user bookings:', error);
+                        setIsLoading(false);
+                    }
+                );
             },
             (error) => {
                 console.error('Error fetching bookings:', error);
-                setError('Failed to load bookings');
+                setError('Failed to load bookings. Please try refreshing the page.');
                 setIsLoading(false);
             }
         );
@@ -291,35 +408,51 @@ export function Bookings() {
     // Filter bookings based on selected status
     const filteredBookings = useMemo(() => {
         const now = new Date();
-        return bookings
-            .filter((booking) => {
-                let bookingDate: Date;
 
-                if ('departureDate' in booking) { // Flight booking
+        return bookings.filter((booking) => {
+            // First, ensure we're only working with flight bookings
+            if (booking.type !== 'flight') {
+                return false;
+            }
+
+            let bookingDate: Date | null = null;
+
+            // Handle different date formats and missing dates
+            if ('departureDate' in booking && booking.departureDate) {
+                try {
                     bookingDate = new Date(booking.departureDate);
-                } else if ('checkInDate' in booking) { // Hotel booking
-                    bookingDate = new Date(booking.checkInDate);
-                } else { // Car booking
-                    bookingDate = new Date(); // Car bookings don't have a specific date in the type
-                }
 
-                const dbStatus = booking.status;
-
-                switch (selectedStatus) {
-                    case 'upcoming':
-                        return bookingDate > now;
-                    case 'completed':
-                        return dbStatus === 'completed';
-                    case 'confirmed':
-                        return dbStatus === 'confirmed';
-                    case 'pending':
-                        return dbStatus === 'pending';
-                    case 'cancelled':
-                        return dbStatus === 'cancelled';
-                    default:
-                        return true;
+                    // Check if date is invalid
+                    if (isNaN(bookingDate.getTime())) {
+                        bookingDate = null;
+                    }
+                } catch (error) {
+                    bookingDate = null;
                 }
-            });
+            }
+
+            // Normalize status to string for comparison
+            const dbStatus = String(booking.status).toLowerCase();
+
+            // Match based on status
+            switch (selectedStatus) {
+                case 'upcoming':
+                    // Show bookings with future departure dates that are either confirmed or pending
+                    return bookingDate !== null &&
+                        bookingDate > now &&
+                        (dbStatus === 'confirmed' || dbStatus === 'pending');
+                case 'completed':
+                    return dbStatus === 'completed';
+                case 'confirmed':
+                    return dbStatus === 'confirmed';
+                case 'pending':
+                    return dbStatus === 'pending';
+                case 'cancelled':
+                    return dbStatus === 'cancelled';
+                default:
+                    return true;
+            }
+        });
     }, [bookings, selectedStatus]);
 
     const containerVariants = {
@@ -499,8 +632,22 @@ export function Bookings() {
                                             <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
-                                            <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                                            <p className="text-gray-600">There are no {selectedStatus} bookings to display.</p>
+                                            <h3 className="text-lg font-medium text-gray-900 mb-2">No {selectedStatus} flight bookings found</h3>
+                                            <p className="text-gray-600">
+                                                {selectedStatus === 'upcoming' && "You don't have any upcoming flight bookings scheduled."}
+                                                {selectedStatus === 'pending' && "You don't have any flight bookings waiting for confirmation."}
+                                                {selectedStatus === 'confirmed' && "You don't have any confirmed flight bookings at the moment."}
+                                                {selectedStatus === 'completed' && "You haven't completed any flight bookings yet."}
+                                                {selectedStatus === 'cancelled' && "You don't have any cancelled flight bookings."}
+                                            </p>
+                                            <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
+                                                <Link
+                                                    to="/flight-booking"
+                                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gold hover:bg-gold/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold"
+                                                >
+                                                    Book a Flight
+                                                </Link>
+                                            </div>
                                         </motion.div>
                                     )}
                                 </motion.div>
