@@ -14,7 +14,7 @@ import {
     Scale,
     CoreScaleOptions
 } from 'chart.js';
-import { BookingData, FlightBookingData } from '../types';
+import { BookingData, FlightBookingData, HotelBookingData, CarBookingData } from '../types';
 
 ChartJS.register(
     CategoryScale,
@@ -52,7 +52,15 @@ const DATE_PRESETS: DatePreset[] = [
 ];
 
 function isFlightBooking(booking: BookingData): booking is FlightBookingData {
-    return 'passengers' in booking;
+    return booking.type === 'flight';
+}
+
+function isHotelBooking(booking: BookingData): booking is HotelBookingData {
+    return booking.type === 'hotel';
+}
+
+function isCarBooking(booking: BookingData): booking is CarBookingData {
+    return booking.type === 'car';
 }
 
 export function BookingTrendsChart({ bookings }: BookingTrendsChartProps) {
@@ -97,7 +105,16 @@ export function BookingTrendsChart({ bookings }: BookingTrendsChartProps) {
             );
 
             if (dayIndex !== -1) {
-                const amount = isFlightBooking(booking) ? 40 * (booking.passengers?.length ?? 0) : 40;
+                // Calculate amount based on booking type
+                let amount = 0;
+                if (isFlightBooking(booking)) {
+                    amount = 40 * (booking.passengers?.length ?? 0);
+                } else if (isHotelBooking(booking)) {
+                    amount = booking.totalPrice?.amount || 0;
+                } else if (isCarBooking(booking)) {
+                    amount = booking.totalPrice?.amount || 0;
+                }
+
                 dailyRevenue[dayIndex] += amount;
                 dailyBookings[dayIndex] += 1;
             }

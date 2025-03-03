@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { BookingData, FlightBookingData } from '../components/admin/types';
+import { BookingData, FlightBookingData, HotelBookingData, CarBookingData } from '../components/admin/types';
 
 interface DateRanges {
     now: Date;
@@ -33,6 +33,11 @@ interface AnalyticsData {
         cancelled: number;
         pending: number;
     };
+    bookingTypes: {
+        flights: number;
+        hotels: number;
+        cars: number;
+    };
     popularDestinations: [string, number][];
     ratings: {
         average: number;
@@ -45,7 +50,15 @@ interface AnalyticsData {
 }
 
 function isFlightBooking(booking: BookingData): booking is FlightBookingData {
-    return 'passengers' in booking && booking.type === 'flight';
+    return booking.type === 'flight';
+}
+
+function isHotelBooking(booking: BookingData): booking is HotelBookingData {
+    return booking.type === 'hotel';
+}
+
+function isCarBooking(booking: BookingData): booking is CarBookingData {
+    return booking.type === 'car';
 }
 
 export function useAnalytics(bookings: BookingData[]): AnalyticsData {
@@ -101,7 +114,7 @@ export function useAnalytics(bookings: BookingData[]): AnalyticsData {
     }, []);
 
     const revenue = useMemo(() => {
-        const TICKET_PRICE = 40;
+        const FLIGHT_TICKET_PRICE = 40;
 
         const getBookingPeriods = (bookingDate: Date | null, dates: DateRanges) => {
             if (!bookingDate) return {
@@ -130,7 +143,16 @@ export function useAnalytics(bookings: BookingData[]): AnalyticsData {
             if (!bookingDate) return acc;
 
             const periods = getBookingPeriods(bookingDate, dateRanges);
-            const amount = TICKET_PRICE * (isFlightBooking(booking) ? booking.passengers?.length ?? 0 : 1);
+
+            // Calculate amount based on booking type
+            let amount = 0;
+            if (isFlightBooking(booking)) {
+                amount = FLIGHT_TICKET_PRICE * (Array.isArray(booking.passengers) ? booking.passengers.length : 0);
+            } else if (isHotelBooking(booking)) {
+                amount = booking.totalPrice?.amount || 0;
+            } else if (isCarBooking(booking)) {
+                amount = booking.totalPrice?.amount || 0;
+            }
 
             return {
                 total: acc.total + amount,
@@ -260,9 +282,19 @@ export function useAnalytics(bookings: BookingData[]): AnalyticsData {
         };
     }, [bookings]);
 
+    // Calculate bookings by type
+    const bookingTypes = useMemo(() => {
+        return {
+            flights: bookings.filter(isFlightBooking).length,
+            hotels: bookings.filter(isHotelBooking).length,
+            cars: bookings.filter(isCarBooking).length,
+        };
+    }, [bookings]);
+
     return {
         revenue,
         trends,
+        bookingTypes,
         popularDestinations,
         ratings
     };

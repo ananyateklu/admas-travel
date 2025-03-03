@@ -112,7 +112,7 @@ function LoadingState() {
 }
 
 export function AdminAnalytics({ bookings, isLoading = false }: AdminAnalyticsProps) {
-    const { revenue, trends, popularDestinations } = useAnalytics(bookings);
+    const { revenue, trends, popularDestinations, bookingTypes } = useAnalytics(bookings);
 
     // Format currency
     const formatCurrency = React.useMemo(() => (amount: number) => {
@@ -142,6 +142,48 @@ export function AdminAnalytics({ bookings, isLoading = false }: AdminAnalyticsPr
                     formatPercentage={formatPercentage}
                 />
             </ErrorBoundary>
+
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Booking Type Distribution</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-blue-50 rounded-lg p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-blue-700 font-medium">Flight Bookings</p>
+                            <p className="text-2xl font-bold text-blue-900">{bookingTypes.flights}</p>
+                            <p className="text-xs text-blue-600">{bookingTypes.flights > 0 ? `${Math.round((bookingTypes.flights / (bookingTypes.flights + bookingTypes.hotels + bookingTypes.cars)) * 100)}%` : '0%'} of total</p>
+                        </div>
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="bg-forest-50 rounded-lg p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-forest-700 font-medium">Hotel Bookings</p>
+                            <p className="text-2xl font-bold text-forest-900">{bookingTypes.hotels}</p>
+                            <p className="text-xs text-forest-600">{bookingTypes.hotels > 0 ? `${Math.round((bookingTypes.hotels / (bookingTypes.flights + bookingTypes.hotels + bookingTypes.cars)) * 100)}%` : '0%'} of total</p>
+                        </div>
+                        <div className="w-12 h-12 bg-forest-100 rounded-full flex items-center justify-center">
+                            <svg className="w-6 h-6 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="bg-gold-50 rounded-lg p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-gold-700 font-medium">Car Bookings</p>
+                            <p className="text-2xl font-bold text-gold-900">{bookingTypes.cars}</p>
+                            <p className="text-xs text-gold-600">{bookingTypes.cars > 0 ? `${Math.round((bookingTypes.cars / (bookingTypes.flights + bookingTypes.hotels + bookingTypes.cars)) * 100)}%` : '0%'} of total</p>
+                        </div>
+                        <div className="w-12 h-12 bg-gold-100 rounded-full flex items-center justify-center">
+                            <svg className="w-6 h-6 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <ErrorBoundary>

@@ -345,6 +345,33 @@ export default function Admin() {
         matchesAdvancedFilters(booking, advancedFilters)
     );
 
+    // Calculate booking counts by type and status
+    const bookingCounts = useMemo(() => {
+        const flightBookings = bookings.filter(isFlightBooking);
+        const hotelBookings = bookings.filter(isHotelBooking);
+        const carBookings = bookings.filter(isCarBooking);
+
+        return {
+            active: {
+                total: bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length,
+                flights: flightBookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length,
+                hotels: hotelBookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length,
+                cars: carBookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length
+            },
+            all: {
+                total: bookings.length,
+                flights: flightBookings.length,
+                hotels: hotelBookings.length,
+                cars: carBookings.length
+            }
+        };
+    }, [bookings]);
+
+    // Log booking counts for debugging
+    useEffect(() => {
+        console.log('Booking counts:', bookingCounts);
+    }, [bookingCounts]);
+
     // Calculate pending bookings count
     const pendingBookingsCount = useMemo(() =>
         bookings.filter(booking => booking.status === 'pending').length,
@@ -372,7 +399,7 @@ export default function Admin() {
         const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
         const twoMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 2, 1);
 
-        const TICKET_PRICE = 40; // Fixed ticket price as used in analytics
+        const FLIGHT_TICKET_PRICE = 40; // Fixed ticket price as used in analytics
 
         const calculateMonthRevenue = (startDate: Date, endDate: Date) => {
             return bookings
@@ -383,11 +410,16 @@ export default function Admin() {
                     return bookingDate >= startDate && bookingDate < endDate;
                 })
                 .reduce((total, booking) => {
+                    // Calculate amount based on booking type
+                    let amount = 0;
                     if (isFlightBooking(booking)) {
-                        const amount = TICKET_PRICE * (Array.isArray(booking.passengers) ? booking.passengers.length : 0);
-                        return total + amount;
+                        amount = FLIGHT_TICKET_PRICE * (Array.isArray(booking.passengers) ? booking.passengers.length : 0);
+                    } else if (isHotelBooking(booking)) {
+                        amount = booking.totalPrice?.amount || 0;
+                    } else if (isCarBooking(booking)) {
+                        amount = booking.totalPrice?.amount || 0;
                     }
-                    return total;
+                    return total + amount;
                 }, 0);
         };
 
@@ -785,14 +817,14 @@ export default function Admin() {
                                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
                                     {[
                                         {
-                                            value: bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length,
+                                            value: bookingCounts.active.total,
                                             label: 'Active Bookings',
                                             icon: (
                                                 <svg className="w-5 h-5 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             ),
-                                            trend: '+12% from last week',
+                                            trend: `${bookingCounts.active.flights} flights, ${bookingCounts.active.hotels} hotels, ${bookingCounts.active.cars} cars`,
                                             trendUp: true
                                         },
                                         {
