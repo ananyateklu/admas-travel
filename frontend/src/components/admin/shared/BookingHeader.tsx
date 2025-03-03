@@ -14,6 +14,10 @@ interface FlightBookingHeaderProps extends BaseBookingHeaderProps {
     rating?: {
         score: number;
     };
+    passengers?: Array<{
+        passportNumber: string;
+        fullName: string;
+    }>;
 }
 
 interface HotelBookingHeaderProps extends BaseBookingHeaderProps {
@@ -62,15 +66,40 @@ export function BookingHeader(props: BookingHeaderProps) {
 
     const getSubtitle = () => {
         switch (props.type) {
-            case 'flight':
-                return null;
+            case 'flight': {
+                const passportNumber = props.passengers && props.passengers.length > 0
+                    ? props.passengers[0].passportNumber
+                    : 'No passport info';
+
+                return (
+                    <>
+                        <span>Passport: {passportNumber}</span>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-violet-50/70 text-violet-500 border border-violet-100/50 ml-1.5">
+                            Flight Booking
+                        </span>
+                    </>
+                );
+            }
             case 'hotel':
-                return props.hotelName;
+                return (
+                    <>
+                        <span>{props.hotelName}</span>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-50/70 text-amber-600 border border-amber-100/50 ml-1.5">
+                            Hotel Booking
+                        </span>
+                    </>
+                );
             case 'car': {
                 if (!props.vehicleInfo) return null;
                 const vehicleName = props.vehicleInfo.name ?? 'Unknown Vehicle';
-                const vehicleType = props.vehicleInfo.type ?? 'Unknown Type';
-                return `${vehicleName} • ${vehicleType}`;
+                return (
+                    <>
+                        <span>{vehicleName}</span>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50/70 text-emerald-500 border border-emerald-100/50 ml-1.5">
+                            Rental Car
+                        </span>
+                    </>
+                );
             }
         }
     };
@@ -119,7 +148,7 @@ export function BookingHeader(props: BookingHeaderProps) {
 
                     {subtitle && (
                         <motion.p
-                            className="text-xs text-gray-500 truncate"
+                            className="text-xs text-gray-500 flex items-center flex-wrap gap-1"
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: 0.1 }}

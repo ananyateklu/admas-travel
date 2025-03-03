@@ -121,6 +121,7 @@ export function FlightListBookingCard({
                                 bookingReference={booking.bookingReference}
                                 createdAt={createdAt}
                                 rating={booking.rating}
+                                passengers={booking.passengers}
                             />
                             <JourneyDetails booking={booking} />
                         </div>

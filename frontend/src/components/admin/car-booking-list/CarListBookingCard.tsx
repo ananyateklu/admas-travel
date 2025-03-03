@@ -111,12 +111,43 @@ export function CarListBookingCard({
                                     name: `Vehicle ID: ${booking.vehicle_id}`
                                 }}
                             />
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-sm text-gray-600">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1">
-                                    <span className="whitespace-nowrap">Pickup: {new Date(searchKey.pickUpDateTime).toLocaleString()}</span>
-                                    <span className="hidden sm:inline text-gray-400">→</span>
+
+                            <div className="flex gap-2 mt-2 mb-3">
+                                <div className="w-[65%] bg-white/90 border border-gray-200/70 rounded-lg p-2 mb-0.5">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[8px] uppercase tracking-wider text-gray-500 font-medium mb-0.5">Pickup</span>
+                                            <div className="flex items-center gap-0.5">
+                                                <span className="text-xs font-semibold text-forest-700">{new Date(searchKey.pickUpDateTime).toLocaleDateString(undefined, { day: 'numeric' })}</span>
+                                                <span className="text-[8px] text-gray-600">{new Date(searchKey.pickUpDateTime).toLocaleDateString(undefined, { month: 'short' })}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 h-0.5 mx-3 min-w-[100px]">
+                                            <div className="relative h-0.5">
+                                                <div className="absolute w-full h-0.5 bg-gray-200 rounded-full"></div>
+                                                <div className="absolute h-0.5 bg-gradient-to-r from-forest-400 to-red-400 rounded-full" style={{ width: '100%' }}></div>
+                                                <div className="absolute -top-1 left-0 w-2.5 h-2.5 bg-forest-500 rounded-full border-2 border-white"></div>
+                                                <div className="absolute -top-1 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></div>
+                                            </div>
+                                            <div className="mt-1 text-center">
+                                                <span className="text-[8px] text-gray-500">{searchKey.rentalDurationInDays} day{searchKey.rentalDurationInDays > 1 ? 's' : ''}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[8px] uppercase tracking-wider text-gray-500 font-medium mb-0.5">Return</span>
+                                            <div className="flex items-center gap-0.5">
+                                                <span className="text-xs font-semibold text-red-700">{new Date(searchKey.dropOffDateTime).toLocaleDateString(undefined, { day: 'numeric' })}</span>
+                                                <span className="text-[8px] text-gray-600">{new Date(searchKey.dropOffDateTime).toLocaleDateString(undefined, { month: 'short' })}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span className="whitespace-nowrap">Return: {new Date(searchKey.dropOffDateTime).toLocaleString()}</span>
+                                <div className="w-[35%] flex items-center gap-1.5 bg-gradient-to-r from-forest-50 to-forest-100/60 px-3 py-2.5 rounded-lg border border-forest-200/40">
+                                    <svg className="w-4 h-4 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span className="text-xs text-forest-600 font-medium">Driver Age: {searchKey.driversAge} years</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -156,6 +187,7 @@ export function CarListBookingCard({
                                 />
                             </div>
                         )}
+
                         <div className="flex items-center w-full sm:w-auto mt-6 sm:mt-0">
                             <motion.button
                                 onClick={onToggleExpand}
@@ -222,6 +254,54 @@ export function CarListBookingCard({
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-600">Driver's Age:</span>
                                             <span className="font-medium text-gray-900 text-right">{searchKey.driversAge} years</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Pickup Date:</span>
+                                            <span className="font-medium text-gray-900 text-right">
+                                                {new Date(searchKey.pickUpDateTime).toLocaleDateString(undefined, {
+                                                    weekday: 'short',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Pickup Time:</span>
+                                            <span className="font-medium text-gray-900 text-right">
+                                                {new Date(searchKey.pickUpDateTime).toLocaleTimeString(undefined, {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Pickup Location:</span>
+                                            <span className="font-medium text-gray-900 text-right">{searchKey.pickUpLocation}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Return Date:</span>
+                                            <span className="font-medium text-gray-900 text-right">
+                                                {new Date(searchKey.dropOffDateTime).toLocaleDateString(undefined, {
+                                                    weekday: 'short',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Return Time:</span>
+                                            <span className="font-medium text-gray-900 text-right">
+                                                {new Date(searchKey.dropOffDateTime).toLocaleTimeString(undefined, {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Return Location:</span>
+                                            <span className="font-medium text-gray-900 text-right">{searchKey.dropOffLocation}</span>
                                         </div>
                                     </div>
                                 </div>

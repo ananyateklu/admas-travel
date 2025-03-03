@@ -108,11 +108,63 @@ export function HotelListBookingCard({
                                 rating={booking.rating}
                             />
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-sm text-gray-600">
-                                <span className="whitespace-nowrap">{checkInDate.toLocaleDateString()} - {checkOutDate.toLocaleDateString()}</span>
-                                <span className="hidden sm:inline text-gray-400">•</span>
-                                <span className="whitespace-nowrap">{booking.numberOfGuests} Guest{booking.numberOfGuests > 1 ? 's' : ''}</span>
-                                <span className="hidden sm:inline text-gray-400">•</span>
-                                <span className="whitespace-nowrap">{booking.numberOfRooms} Room{booking.numberOfRooms > 1 ? 's' : ''}</span>
+                                {/* ToDo: Add check-in and check-out date and time.*/}
+                                <div className="w-full bg-white/90 border border-gray-200/70 rounded-lg p-1.5 mb-0.5">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[8px] uppercase tracking-wider text-gray-500 font-medium">Check-in</span>
+                                            <div className="flex items-center gap-0.5">
+                                                <span className="text-xs font-semibold text-forest-700">{new Date(booking.checkInDate).toLocaleDateString(undefined, { day: 'numeric' })}</span>
+                                                <span className="text-[8px] text-gray-600">{new Date(booking.checkInDate).toLocaleDateString(undefined, { month: 'short' })}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 h-0.5 mx-2">
+                                            <div className="relative h-0.5">
+                                                <div className="absolute w-full h-0.5 bg-gray-200 rounded-full"></div>
+                                                <div className="absolute h-0.5 bg-gradient-to-r from-forest-400 to-red-400 rounded-full" style={{ width: '100%' }}></div>
+                                                <div className="absolute -top-1 left-0 w-2 h-2 bg-forest-500 rounded-full border-2 border-white"></div>
+                                                <div className="absolute -top-1 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></div>
+                                            </div>
+                                            <div className="mt-0.5 text-center">
+                                                <span className="text-[8px] text-gray-500">
+                                                    {Math.ceil((new Date(booking.checkOutDate).getTime() - new Date(booking.checkInDate).getTime()) / (1000 * 60 * 60 * 24))} night{Math.ceil((new Date(booking.checkOutDate).getTime() - new Date(booking.checkInDate).getTime()) / (1000 * 60 * 60 * 24)) > 1 ? 's' : ''}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[8px] uppercase tracking-wider text-gray-500 font-medium">Check-out</span>
+                                            <div className="flex items-center gap-0.5">
+                                                <span className="text-xs font-semibold text-red-700">{new Date(booking.checkOutDate).toLocaleDateString(undefined, { day: 'numeric' })}</span>
+                                                <span className="text-[8px] text-gray-600">{new Date(booking.checkOutDate).toLocaleDateString(undefined, { month: 'short' })}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <div className="w-full bg-white/90 border border-gray-200/70 rounded-lg p-1.5 mb-0.5">
+                                        <div className="flex items-center justify-center">
+                                            <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-forest-50/80 border border-forest-200/50">
+                                                <div className="flex items-center gap-1">
+                                                    <svg className="w-3.5 h-3.5 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                    <span className="text-xs font-medium text-forest-700">
+                                                        {booking.numberOfGuests} Guest{booking.numberOfGuests > 1 ? 's' : ''}
+                                                    </span>
+                                                </div>
+                                                <span className="text-forest-300">•</span>
+                                                <div className="flex items-center gap-1">
+                                                    <svg className="w-3.5 h-3.5 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                    </svg>
+                                                    <span className="text-xs font-medium text-forest-700">
+                                                        {booking.numberOfRooms} Room{booking.numberOfRooms > 1 ? 's' : ''}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -125,19 +177,6 @@ export function HotelListBookingCard({
                             </div>
                             <div className="px-2 py-1 bg-forest-50 rounded text-sm text-forest-600 border border-forest-200/60 font-medium whitespace-nowrap">
                                 {booking.totalPrice.currency} {booking.totalPrice.amount}
-                            </div>
-                        </div>
-
-                        {/* Guest Info - Mobile Only */}
-                        <div className="flex items-center gap-2 sm:hidden">
-                            <div className="relative">
-                                <div className="absolute inset-0 bg-gradient-to-br from-forest-400/10 to-forest-600/10 rounded-lg blur-[2px]" />
-                                <div className="relative px-2 py-1 bg-gradient-to-br from-forest-50/90 to-forest-100/80 rounded-lg border border-forest-200/30 flex items-center gap-1.5">
-                                    <svg className="w-3.5 h-3.5 text-forest-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    <span className="text-xs text-forest-600">{booking.numberOfGuests} Guest{booking.numberOfGuests > 1 ? 's' : ''}</span>
-                                </div>
                             </div>
                         </div>
 
@@ -166,6 +205,7 @@ export function HotelListBookingCard({
                                 />
                             </div>
                         )}
+
                         <div className="flex items-center w-full sm:w-auto mt-6 sm:mt-0">
                             <motion.button
                                 onClick={onToggleExpand}
@@ -231,6 +271,26 @@ export function HotelListBookingCard({
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-600">Room:</span>
                                             <span className="font-medium text-gray-900 text-right">{booking.room?.name || booking.roomType}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Check-in Date:</span>
+                                            <span className="font-medium text-gray-900 text-right">{checkInDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Check-out Date:</span>
+                                            <span className="font-medium text-gray-900 text-right">{checkOutDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Duration:</span>
+                                            <span className="font-medium text-gray-900 text-right">{booking.numberOfNights} night{booking.numberOfNights > 1 ? 's' : ''}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Guests:</span>
+                                            <span className="font-medium text-gray-900 text-right">{booking.numberOfGuests} guest{booking.numberOfGuests > 1 ? 's' : ''}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Rooms:</span>
+                                            <span className="font-medium text-gray-900 text-right">{booking.numberOfRooms} room{booking.numberOfRooms > 1 ? 's' : ''}</span>
                                         </div>
                                     </div>
                                 </div>
