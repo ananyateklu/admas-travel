@@ -124,8 +124,6 @@ export function HotelBookings() {
             return;
         }
 
-        console.log('Setting up real-time listener for user:', user.uid);
-
         const bookingsRef = collection(db, `users/${user.uid}/bookings`);
         const q = query(bookingsRef, orderBy('createdAt', 'desc'));
 
@@ -133,7 +131,6 @@ export function HotelBookings() {
             (snapshot) => {
                 const bookingsData = snapshot.docs.map(doc => {
                     const data = doc.data();
-                    console.log('Received booking update:', doc.id, data.status);
                     const createdAtDate = typeof data.createdAt === 'string'
                         ? new Date(data.createdAt)
                         : data.createdAt?.toDate?.() || new Date();
@@ -159,8 +156,6 @@ export function HotelBookings() {
                     }
                     return null;
                 }).filter((booking): booking is HotelBookingData => booking !== null);
-
-                console.log('Updated hotel bookings:', bookingsData);
                 setBookings(bookingsData);
                 setIsLoading(false);
             },
@@ -295,25 +290,73 @@ export function HotelBookings() {
     // Filter bookings based on selected status
     const filteredBookings = useMemo(() => {
         const now = new Date();
-        return bookings
-            .filter((booking) => {
-                const bookingDate = new Date(booking.checkInDate);
-                const dbStatus = booking.status;
+        // Set current date to midnight for fair comparison
+        now.setHours(0, 0, 0, 0);
 
+        const filtered = bookings
+            .filter((booking) => {
+                let bookingDate: Date | null = null;
+
+                // Try to handle different date formats
+                if (typeof booking.checkInDate === 'object' && booking.checkInDate && 'getTime' in booking.checkInDate) {
+                    // It's already a Date-like object
+                    bookingDate = booking.checkInDate as Date;
+                } else if (booking.checkInDate) {
+                    // Parse the date string - ensure we have a proper date format
+                    try {
+                        // If it's just a date string like "2025-03-03", make sure it parses correctly
+                        const dateStr = String(booking.checkInDate);
+
+                        // Check if it's in YYYY-MM-DD format without time
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                            // Parse it as YYYY-MM-DDT00:00:00 to ensure proper date
+                            bookingDate = new Date(`${dateStr}T00:00:00`);
+                        } else {
+                            bookingDate = new Date(dateStr);
+                        }
+
+                        // Check if date is invalid
+                        if (isNaN(bookingDate.getTime())) {
+                            bookingDate = null;
+                        } else {
+                            // Set time to midnight to ensure proper date comparison
+                            bookingDate.setHours(0, 0, 0, 0);
+                        }
+                    } catch {
+                        bookingDate = null;
+                    }
+                }
+
+                // Normalize status to string for comparison
+                const dbStatus = String(booking.status || 'pending').toLowerCase();
+
+                // Match based on status
+                let isMatch = false;
                 switch (selectedStatus) {
                     case 'upcoming':
-                        return bookingDate > now && dbStatus !== 'cancelled';
+                        // Show bookings with future check-in dates that are either confirmed or pending
+                        isMatch = bookingDate !== null &&
+                            bookingDate >= now &&
+                            (dbStatus === 'confirmed' || dbStatus === 'pending');
+                        break;
                     case 'completed':
-                        return dbStatus === 'completed';
+                        isMatch = dbStatus === 'completed';
+                        break;
                     case 'confirmed':
-                        return dbStatus === 'confirmed';
+                        isMatch = dbStatus === 'confirmed';
+                        break;
                     case 'pending':
-                        return dbStatus === 'pending';
+                        isMatch = dbStatus === 'pending';
+                        break;
                     case 'cancelled':
-                        return dbStatus === 'cancelled';
+                        isMatch = dbStatus === 'cancelled';
+                        break;
                     default:
-                        return true;
+                        isMatch = true;
+                        break;
                 }
+
+                return isMatch;
             })
             .sort((a, b) => {
                 // Sort by check-in date
@@ -321,6 +364,8 @@ export function HotelBookings() {
                 const dateB = new Date(b.checkInDate);
                 return dateA.getTime() - dateB.getTime();
             });
+
+        return filtered;
     }, [bookings, selectedStatus]);
 
     const containerVariants = {

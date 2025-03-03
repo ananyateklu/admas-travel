@@ -124,8 +124,6 @@ export default function CarBookings() {
             return;
         }
 
-        console.log('Setting up real-time listener for user:', user.uid);
-
         const bookingsRef = collection(db, `users/${user.uid}/bookings`);
         const q = query(bookingsRef, orderBy('createdAt', 'desc'));
 
@@ -133,7 +131,6 @@ export default function CarBookings() {
             (snapshot) => {
                 const bookingsData = snapshot.docs.map(doc => {
                     const data = doc.data();
-                    console.log('Received booking update:', doc.id, data);
 
                     // Only process car bookings
                     if (data.type === 'car') {
@@ -168,7 +165,6 @@ export default function CarBookings() {
                     return null;
                 }).filter((booking): booking is CarBookingData => booking !== null);
 
-                console.log('Updated car bookings:', bookingsData);
                 setBookings(bookingsData);
                 setIsLoading(false);
             },
@@ -303,33 +299,83 @@ export default function CarBookings() {
     // Filter bookings based on selected status
     const filteredBookings = useMemo(() => {
         const now = new Date();
-        return bookings
-            .filter((booking) => {
-                const pickupDate = new Date(booking.pickupDate);
-                const dbStatus = booking.status;
+        // Set current date to midnight for fair comparison
+        now.setHours(0, 0, 0, 0);
 
+        const filtered = bookings
+            .filter((booking) => {
+                let pickupDate: Date | null = null;
+
+                // Try to handle different date formats
+                if (typeof booking.pickupDate === 'object' && booking.pickupDate && 'getTime' in booking.pickupDate) {
+                    // It's already a Date-like object
+                    pickupDate = booking.pickupDate as Date;
+                    pickupDate.setHours(0, 0, 0, 0);
+                } else if (booking.pickupDate) {
+                    // Parse the date string - ensure we have a proper date format
+                    try {
+                        // If it's just a date string like "2025-03-03", make sure it parses correctly
+                        const dateStr = String(booking.pickupDate);
+
+                        // Check if it's in YYYY-MM-DD format without time
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                            // Parse it as YYYY-MM-DDT00:00:00 to ensure proper date
+                            pickupDate = new Date(`${dateStr}T00:00:00`);
+                        } else {
+                            pickupDate = new Date(dateStr);
+                        }
+
+                        // Check if date is invalid
+                        if (isNaN(pickupDate.getTime())) {
+                            pickupDate = null;
+                        } else {
+                            // Set time to midnight to ensure proper date comparison
+                            pickupDate.setHours(0, 0, 0, 0);
+                        }
+                    } catch {
+                        pickupDate = null;
+                    }
+                }
+
+                // Normalize status to string for comparison
+                const dbStatus = String(booking.status || 'pending').toLowerCase();
+
+                // Match based on status
+                let isMatch = false;
                 switch (selectedStatus) {
                     case 'upcoming':
-                        // Show bookings that are in the future and not cancelled
-                        return pickupDate >= now && dbStatus !== 'cancelled' && dbStatus !== 'completed';
+                        // Show bookings with future pickup dates that are either confirmed or pending
+                        isMatch = pickupDate !== null &&
+                            pickupDate >= now &&
+                            (dbStatus === 'confirmed' || dbStatus === 'pending');
+                        break;
                     case 'completed':
-                        return dbStatus === 'completed';
+                        isMatch = dbStatus === 'completed';
+                        break;
                     case 'confirmed':
-                        return dbStatus === 'confirmed';
+                        isMatch = dbStatus === 'confirmed';
+                        break;
                     case 'pending':
-                        return dbStatus === 'pending';
+                        isMatch = dbStatus === 'pending';
+                        break;
                     case 'cancelled':
-                        return dbStatus === 'cancelled';
+                        isMatch = dbStatus === 'cancelled';
+                        break;
                     default:
-                        return true;
+                        isMatch = true;
+                        break;
                 }
+
+                return isMatch;
             })
             .sort((a, b) => {
-                // Sort by pickup date, with upcoming dates first
+                // Sort by pickup date
                 const dateA = new Date(a.pickupDate);
                 const dateB = new Date(b.pickupDate);
                 return dateA.getTime() - dateB.getTime();
             });
+
+        return filtered;
     }, [bookings, selectedStatus]);
 
     const containerVariants = {
