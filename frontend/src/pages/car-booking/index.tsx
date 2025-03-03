@@ -10,6 +10,7 @@ import { useAuth } from '../../lib/firebase/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { Toast } from '../../components/common/Toast';
 import mountainBg from '../../assets/mountains.jpeg';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchFormData {
     pickupLocation: {
@@ -41,6 +42,7 @@ interface BookingFormData {
 export default function CarBookingPage() {
     const { user } = useAuth();
     const { toasts, showToast } = useToast();
+    const navigate = useNavigate();
     const [isSearching, setIsSearching] = useState(false);
     const [searchResults, setSearchResults] = useState<CarSearchResult[]>([]);
     const [searchError, setSearchError] = useState<string | null>(null);
@@ -188,6 +190,9 @@ export default function CarBookingPage() {
 
                 setIsBookingModalOpen(false);
                 setBookingCar(null);
+
+                // Navigate to car bookings page after successful booking
+                navigate('/bookings/cars');
             } else {
                 throw new Error(response.message || 'Failed to complete your booking');
             }

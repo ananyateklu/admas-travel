@@ -7,6 +7,7 @@ import { HotelDetailsResponse, HotelDetails } from '../../types/hotelDetails';
 import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase/firebase';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface UserProfile {
     dateOfBirth?: string;
@@ -137,6 +138,7 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
     const [error, setError] = useState<string | null>(null);
     const { user } = useAuth();
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -398,7 +400,11 @@ export function HotelBookingModal({ hotelId, searchParams, onClose, onBookingCom
                                         onSubmit={handleSubmit}
                                         showAutoFill={!!user}
                                         onClose={onClose}
-                                        onBookingComplete={onBookingComplete}
+                                        onBookingComplete={(bookingId) => {
+                                            onBookingComplete?.(bookingId);
+                                            // Navigate to hotel bookings page after completion
+                                            navigate('/bookings/hotels');
+                                        }}
                                         onAutoFillGuest={() => {
                                             if (!user || !userProfile) return null;
                                             return {
