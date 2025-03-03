@@ -79,10 +79,6 @@ export function JourneyDetails({ booking }: JourneyDetailsProps) {
 
             {/* Connection Line */}
             <div className="flex-shrink-0 w-16 sm:w-24 relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
-                    <div className="absolute w-2 h-2 rounded-full bg-gray-300" />
-                </div>
                 <motion.div
                     className="bg-white rounded-full px-2 py-0.5 shadow-sm border border-gray-100 z-10 hidden sm:block"
                     whileHover={{ y: -2, scale: 1.02 }}
@@ -92,7 +88,7 @@ export function JourneyDetails({ booking }: JourneyDetailsProps) {
                         <span className="text-[10px] font-bold text-gray-900 whitespace-nowrap capitalize">
                             {booking.class}
                         </span>
-                        <span className="h-2 w-px bg-gradient-to-b from-gray-200/50 to-transparent" />
+                        <span className="h-2 w-2 rounded-full bg-gray-300 flex-shrink-0" />
                         <span className="text-[10px] font-medium text-gray-500 whitespace-nowrap">
                             {booking.tripType === 'oneway' ? 'One Way' : 'Round Trip'}
                         </span>
