@@ -1,0 +1,36 @@
+---
+description: Rules and guidelines specific to the flight booking functionalites
+globs: **/flight-booking/**, **/FlightBook.tsx, **/FlightBookingsList.tsx, **/flightService.ts
+alwaysApply: false
+---
+
+
+## Flight Booking Feature Overview
+- The flight booking system allows users to search, select, and book flights
+- Components are split between reusable pieces and page components
+- Uses the Amadeus API for flight data
+
+## Related Files
+- Components: `frontend/src/components/flight-booking/*`
+- Pages: `frontend/src/pages/FlightBook.tsx`, `frontend/src/pages/FlightBookingsList.tsx`
+- Services: `frontend/src/services/flightService.ts`
+- Airport Input: `frontend/src/components/AirportSearchInput.tsx`
+
+## Feature-Specific Guidelines
+- Use the established API interface from `flightService.ts`
+- Ensure proper date handling with functions from `dateUtils.ts`
+- Follow the established UX flow for the booking process
+- Maintain consistent error handling throughout the feature
+- Reuse common components for UI consistency
+- Implement proper loading states for API calls
+
+## State Management
+- Use React Context for flight search parameters
+- Use local component state for UI interactions
+- Use Firebase for persisting booking data
+- Implement proper validation before submitting booking data
+
+## Testing Considerations
+- Test edge cases around flight availability
+- Ensure proper error handling for API failures
+- Verify date calculations across timezones 

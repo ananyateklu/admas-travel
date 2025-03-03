@@ -1,0 +1,34 @@
+---
+description: Rules for hotel booking feature components and pages
+globs: **/hotel-booking/**, **/hotels/**, **/HotelBookingsList.tsx
+alwaysApply: false
+---
+
+## Hotel Booking Feature Overview
+- The hotel booking system allows users to search, select, and book hotels
+- Components are organized by feature and functionality
+- Uses Firebase for data storage
+
+## Related Files
+- Components: `frontend/src/components/hotel-booking/*`
+- Pages: `frontend/src/pages/hotels/*`, `frontend/src/pages/HotelBookingsList.tsx`
+
+## Feature-Specific Guidelines
+- Follow the established patterns for hotel searches
+- Ensure consistent display of hotel information
+- Maintain proper handling of room options and pricing
+- Implement proper validation for booking dates
+- Use consistent state management patterns
+
+## UI Components
+- Use the common card layouts for hotel listings
+- Implement image galleries consistently
+- Include all required hotel information fields
+- Use the shared rating component for hotel ratings
+- Ensure mobile responsiveness for all hotel views
+
+## Data Handling
+- Cache hotel search results appropriately
+- Implement proper loading states for API calls
+- Handle errors gracefully with user feedback
+- Follow the established booking flow 

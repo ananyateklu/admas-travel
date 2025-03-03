@@ -1,0 +1,34 @@
+---
+description: Rules for car booking feature components and pages
+globs: **/car-booking/**, **/CarBookingsList.tsx
+alwaysApply: false
+---
+
+## Car Booking Feature Overview
+- The car rental system allows users to search, select, and book rental cars
+- Components are organized by feature and functionality
+- Uses Firebase for data storage
+
+## Related Files
+- Components: `frontend/src/components/car-booking/*`
+- Pages: `frontend/src/pages/car-booking/*`, `frontend/src/pages/CarBookingsList.tsx`
+
+## Feature-Specific Guidelines
+- Follow the established patterns for car rental searches
+- Ensure consistent display of vehicle information
+- Maintain proper handling of rental options and pricing
+- Implement proper validation for rental dates
+- Use consistent state management patterns
+
+## UI Components
+- Use the common card layouts for car listings
+- Display vehicle specifications consistently
+- Include all required rental information fields
+- Ensure mobile responsiveness for all car rental views
+
+## Data Handling
+- Cache car search results appropriately
+- Implement proper loading states for API calls
+- Handle errors gracefully with user feedback
+- Follow the established booking flow
+- Ensure proper calculation of rental durations and costs 

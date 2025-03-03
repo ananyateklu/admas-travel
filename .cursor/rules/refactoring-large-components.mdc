@@ -1,0 +1,37 @@
+---
+description: Guidelines for refactoring large components in the application
+globs: **/Admin.tsx, **/FlightBookingsList.tsx, **/HotelBookingsList.tsx, **/CarBookingsList.tsx, **/Account.tsx
+alwaysApply: false
+---
+
+## Large Component Refactoring Guidelines
+- These files have been identified as excessively large and complex
+- Follow these guidelines when modifying or refactoring them
+
+## Identified Large Components
+- `Admin.tsx` (1191 lines)
+- `FlightBookingsList.tsx` (661 lines)
+- `HotelBookingsList.tsx` (513 lines)
+- `CarBookingsList.tsx` (522 lines)
+- `Account.tsx` (726 lines)
+
+## Refactoring Strategies
+- Extract logical sections into separate component files
+- Move complex data processing to custom hooks
+- Separate UI rendering from data manipulation
+- Break down large functions into smaller, focused functions
+- Extract reusable UI patterns to shared components
+- Use composition to combine smaller components
+
+## Component Division Guidelines
+- Identify logical UI sections that can be extracted
+- Look for repeated patterns that could be consolidated
+- Identify stateful logic that could be moved to hooks
+- Consider using context for deeply shared state
+- Maintain consistent naming conventions for new components
+
+## Testing Considerations
+- Ensure functionality remains the same after refactoring
+- Add tests for extracted components
+- Verify all user interactions continue to work
+- Test edge cases specifically 

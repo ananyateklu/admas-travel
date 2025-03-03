@@ -1,0 +1,46 @@
+---
+description: Navigation patterns for efficient codebase navigation in Cursor
+globs: **/*
+alwaysApply: false
+---
+
+## Cursor Navigation Patterns
+
+### Feature-Based Navigation
+When working on a specific feature, use these shortcuts to navigate related files:
+
+- **Flight Booking Feature**:
+  - Components: `frontend/src/components/flight-booking/*`
+  - Pages: `frontend/src/pages/FlightBook.tsx`, `frontend/src/pages/FlightBookingsList.tsx`
+  - Services: `frontend/src/services/flightService.ts`
+
+- **Hotel Booking Feature**:
+  - Components: `frontend/src/components/hotel-booking/*`
+  - Pages: `frontend/src/pages/hotels/*`, `frontend/src/pages/HotelBookingsList.tsx`
+
+- **Car Booking Feature**:
+  - Components: `frontend/src/components/car-booking/*`
+  - Pages: `frontend/src/pages/car-booking/*`, `frontend/src/pages/CarBookingsList.tsx`
+
+### Component Type Navigation
+When looking for specific types of components:
+
+- **Layout Components**: `frontend/src/components/layout/*`, `frontend/src/components/Layout.tsx`
+- **Forms**: `frontend/src/components/forms/*`
+- **Modals**: `frontend/src/components/modals/*`
+- **Navigation Components**: `frontend/src/components/navigation/*`
+
+### Core Functionality Navigation
+When working on core functionality:
+
+- **Firebase Integration**: `frontend/src/lib/firebase/*`
+- **API Integration**: `frontend/src/lib/api/*`, `frontend/src/services/*`
+- **Utilities**: `frontend/src/utils/*`, `frontend/src/lib/utils/*`
+- **Type Definitions**: `frontend/src/types/*`, `frontend/src/types.ts`
+
+### Keyboard Shortcuts
+- **Cmd+P**: Navigate to file
+- **Cmd+Shift+F**: Global search across codebase
+- **Cmd+Shift+.**: Search for symbols in the current file
+- **Cmd+B**: Jump to definition
+- **Cmd+Shift+B**: Jump to references 

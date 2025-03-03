@@ -1,0 +1,46 @@
+---
+description: Guidelines for UI component development, styling, and accessibility
+globs: **/components/**/*.tsx, **/components/*.tsx
+alwaysApply: false
+---
+
+## UI Components Overview
+- The application uses React functional components
+- Components are organized by feature and common functionality
+- TailwindCSS is used for styling
+
+## Component Organization
+- Layout Components: `frontend/src/components/layout/*`, `frontend/src/components/Layout.tsx`
+- Common Components: `frontend/src/components/common/*`
+- Shared Components: `frontend/src/components/shared/*`
+- Feature-specific Components: Organized in feature folders (e.g., `flight-booking/`)
+
+## Component Guidelines
+- Components should be focused on a single responsibility
+- Extract complex logic into custom hooks
+- Use TypeScript interfaces for props
+- Implement proper prop validation
+- Ensure components are responsive by default
+- Extract reusable components to appropriate directories
+
+## Styling Guidelines
+- Use TailwindCSS classes directly in components
+- Follow the established design system
+- Use consistent spacing and sizing
+- Ensure proper mobile responsiveness
+- Extract common style patterns to reusable components
+- Follow the project color scheme
+
+## Accessibility Guidelines
+- Use semantic HTML elements
+- Implement proper ARIA attributes
+- Ensure keyboard navigation works
+- Maintain appropriate color contrast
+- Include alt text for images
+- Ensure forms are accessible
+
+## Component Performance
+- Memoize components when appropriate with React.memo
+- Use useCallback for event handlers passed to child components
+- Avoid unnecessary rerenders
+- Keep component state minimal and focused 

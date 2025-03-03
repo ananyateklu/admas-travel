@@ -1,0 +1,39 @@
+---
+description: General guidelines for the Admas Travel project
+globs: **/*
+alwaysApply: false
+---
+
+
+## Project Overview
+- This is a React/TypeScript travel booking application built with Vite
+- The project uses Firebase for backend services
+- The UI is built with TailwindCSS
+- The codebase follows a component-based architecture
+
+## Code Style Guidelines
+- Use TypeScript for all new files
+- Use functional components with React hooks
+- Follow ESLint and Prettier configurations
+- Include JSDoc comments for complex functions
+- Keep components focused on a single responsibility
+- Extract reusable logic into custom hooks
+
+## File Naming Conventions
+- Use PascalCase for component files (e.g., `FlightBook.tsx`)
+- Use camelCase for utility files (e.g., `dateUtils.ts`)
+- Group related files in appropriate directories
+
+## Imports Organization
+- React imports first
+- Third-party library imports second
+- Local component imports third
+- Utility/helper imports fourth
+- Style imports last
+
+## Component Structure
+- Props interface defined at the top of the file
+- Hooks and state declarations next
+- Helper functions
+- Return statement with JSX
+- Export statement at the bottom 

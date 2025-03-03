@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../lib/firebase/useAuth';
-import { collection, query, orderBy, deleteDoc, doc, onSnapshot, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, deleteDoc, doc, onSnapshot, setDoc, updateDoc, serverTimestamp, FirestoreError } from 'firebase/firestore';
 import { db } from '../lib/firebase/firebase';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -108,7 +108,7 @@ const STATUS_OPTIONS: StatusOption[] = [
 ];
 
 // Helper to parse Firestore date fields
-const parseFirestoreDate = (date: any): Date | null => {
+const parseFirestoreDate = (date: Date | { toDate: () => Date } | string | null | undefined): Date | null => {
     if (!date) return null;
 
     try {
@@ -116,15 +116,14 @@ const parseFirestoreDate = (date: any): Date | null => {
         if (date instanceof Date) return date;
 
         // If it's a Firestore timestamp with toDate method
-        if (date.toDate && typeof date.toDate === 'function') {
+        if (typeof date === 'object' && 'toDate' in date && typeof date.toDate === 'function') {
             return date.toDate();
         }
 
         // If it's an ISO string or other date string
-        const parsedDate = new Date(date);
+        const parsedDate = new Date(date as string);
         return isNaN(parsedDate.getTime()) ? null : parsedDate;
-    } catch (error) {
-        console.error('Error parsing date:', error);
+    } catch {
         return null;
     }
 };
@@ -146,136 +145,79 @@ export function Bookings() {
         setIsLoading(true);
         setError(null);
 
-        // First, try to get bookings from the root 'bookings' collection
-        const bookingsRef = collection(db, 'bookings');
+        // Get bookings from the user's subcollection
+        const userBookingsRef = collection(db, `users/${user.uid}/bookings`);
         const q = query(
-            bookingsRef,
+            userBookingsRef,
             orderBy('createdAt', 'desc')
         );
 
         const unsubscribe = onSnapshot(q,
-            (snapshot) => {
-                // Consider a booking as a flight booking if it has flight-specific fields
-                // even if the type field is not explicitly set to 'flight'
-                const bookingsData = snapshot.docs.map(doc => {
-                    const data = doc.data();
+            async (snapshot) => {
+                try {
+                    const userBookingsData = snapshot.docs.map(doc => {
+                        const data = doc.data();
 
-                    // Consider a booking as a flight booking if it has flight-specific fields
-                    const isFlightBooking = data.type === 'flight' ||
-                        (data.departureDate && data.from && data.to);
+                        // Consider a booking as a flight booking if it has flight-specific fields
+                        const isFlightBooking = data.type === 'flight' ||
+                            (data.departureDate && data.from && data.to);
 
-                    if (!isFlightBooking) {
-                        return null;
-                    }
+                        if (!isFlightBooking) {
+                            return null;
+                        }
 
-                    // Skip if belongs to a different user
-                    if (data.userId && data.userId !== user.uid) {
-                        return null;
-                    }
+                        // Force status to be one of the allowed values
+                        let processedStatus = data.status ? String(data.status).toLowerCase() : 'pending';
+                        if (!['upcoming', 'pending', 'confirmed', 'completed', 'cancelled'].includes(processedStatus)) {
+                            processedStatus = 'pending';
+                        }
 
-                    // Force status to be one of the allowed values
-                    let processedStatus = data.status ? String(data.status).toLowerCase() : 'pending';
-                    if (!['upcoming', 'pending', 'confirmed', 'completed', 'cancelled'].includes(processedStatus)) {
-                        processedStatus = 'pending';
-                    }
+                        const mappedStatus = mapStatusFromDb(processedStatus);
+                        const createdAtDate = parseFirestoreDate(data.createdAt) || new Date();
+                        const departureDateObj = parseFirestoreDate(data.departureDate);
 
-                    const mappedStatus = mapStatusFromDb(processedStatus);
-                    const createdAtDate = parseFirestoreDate(data.createdAt) || new Date();
-                    const departureDateObj = parseFirestoreDate(data.departureDate);
+                        return {
+                            ...data,
+                            bookingId: doc.id,
+                            createdAt: createdAtDate.toISOString(),
+                            type: 'flight',
+                            departureDate: departureDateObj ? departureDateObj.toISOString() : data.departureDate || '',
+                            returnDate: data.returnDate || '',
+                            passengers: data.passengers || [],
+                            from: data.from || null,
+                            to: data.to || null,
+                            tripType: data.tripType || 'oneway',
+                            class: data.class || 'economy',
+                            status: mappedStatus,
+                            userId: data.userId || user.uid,
+                            bookingReference: data.bookingReference || `REF${Math.floor(Math.random() * 100000)}`,
+                            destination: data.to?.name || data.destination || 'Unknown Destination',
+                            totalPassengers: data.totalPassengers || (data.passengers?.length || 1),
+                            contactName: data.contactName || user.displayName || 'Guest',
+                            contactEmail: data.contactEmail || user.email || '',
+                            contactPhone: data.contactPhone || ''
+                        } as FlightBookingData;
+                    }).filter((booking): booking is FlightBookingData => booking !== null);
 
-                    return {
-                        ...data,
-                        bookingId: doc.id,
-                        createdAt: createdAtDate.toISOString(),
-                        type: 'flight',
-                        departureDate: departureDateObj ? departureDateObj.toISOString() : data.departureDate || '',
-                        returnDate: data.returnDate || '',
-                        passengers: data.passengers || [],
-                        from: data.from || null,
-                        to: data.to || null,
-                        tripType: data.tripType || 'oneway',
-                        class: data.class || 'economy',
-                        status: mappedStatus,
-                        userId: data.userId || user.uid,
-                        bookingReference: data.bookingReference || `REF${Math.floor(Math.random() * 100000)}`,
-                        destination: data.to?.name || data.destination || 'Unknown Destination',
-                        totalPassengers: data.totalPassengers || (data.passengers?.length || 1),
-                        contactName: data.contactName || user.displayName || 'Guest',
-                        contactEmail: data.contactEmail || user.email || '',
-                        contactPhone: data.contactPhone || ''
-                    } as FlightBookingData;
-                }).filter((booking): booking is FlightBookingData => booking !== null);
-
-                // If we found bookings in the main collection, use those
-                if (bookingsData.length > 0) {
-                    setBookings(bookingsData);
+                    setBookings(userBookingsData);
                     setIsLoading(false);
-                    return;
-                }
-
-                // If no bookings found in main collection, try the user's subcollection
-                const userBookingsRef = collection(db, `users/${user.uid}/bookings`);
-                const userBookingsQuery = query(userBookingsRef, orderBy('createdAt', 'desc'));
-
-                // We don't need to unsubscribe this because it's inside the callback of the main subscription
-                onSnapshot(userBookingsQuery,
-                    (userSnapshot) => {
-                        const userBookingsData = userSnapshot.docs.map(doc => {
-                            const data = doc.data();
-
-                            // Consider a booking as a flight booking if it has flight-specific fields
-                            const isFlightBooking = data.type === 'flight' ||
-                                (data.departureDate && data.from && data.to);
-
-                            if (!isFlightBooking) {
-                                return null;
-                            }
-
-                            // Force status to be one of the allowed values
-                            let processedStatus = data.status ? String(data.status).toLowerCase() : 'pending';
-                            if (!['upcoming', 'pending', 'confirmed', 'completed', 'cancelled'].includes(processedStatus)) {
-                                processedStatus = 'pending';
-                            }
-
-                            const mappedStatus = mapStatusFromDb(processedStatus);
-                            const createdAtDate = parseFirestoreDate(data.createdAt) || new Date();
-                            const departureDateObj = parseFirestoreDate(data.departureDate);
-
-                            return {
-                                ...data,
-                                bookingId: doc.id,
-                                createdAt: createdAtDate.toISOString(),
-                                type: 'flight',
-                                departureDate: departureDateObj ? departureDateObj.toISOString() : data.departureDate || '',
-                                returnDate: data.returnDate || '',
-                                passengers: data.passengers || [],
-                                from: data.from || null,
-                                to: data.to || null,
-                                tripType: data.tripType || 'oneway',
-                                class: data.class || 'economy',
-                                status: mappedStatus,
-                                userId: data.userId || user.uid,
-                                bookingReference: data.bookingReference || `REF${Math.floor(Math.random() * 100000)}`,
-                                destination: data.to?.name || data.destination || 'Unknown Destination',
-                                totalPassengers: data.totalPassengers || (data.passengers?.length || 1),
-                                contactName: data.contactName || user.displayName || 'Guest',
-                                contactEmail: data.contactEmail || user.email || '',
-                                contactPhone: data.contactPhone || ''
-                            } as FlightBookingData;
-                        }).filter((booking): booking is FlightBookingData => booking !== null);
-
-                        setBookings(userBookingsData);
-                        setIsLoading(false);
-                    },
-                    (error) => {
-                        console.error('Error fetching user bookings:', error);
-                        setIsLoading(false);
+                } catch (error: FirestoreError | unknown) {
+                    console.error('Error processing bookings:', error);
+                    if (error instanceof FirestoreError && error.code === 'permission-denied') {
+                        setError('Access denied. Please make sure you are logged in to view your bookings.');
+                    } else {
+                        setError('Failed to load your bookings. Please try refreshing the page.');
                     }
-                );
+                    setIsLoading(false);
+                }
             },
-            (error) => {
+            (error: FirestoreError) => {
                 console.error('Error fetching bookings:', error);
-                setError('Failed to load bookings. Please try refreshing the page.');
+                if (error.code === 'permission-denied') {
+                    setError('Access denied. Please make sure you are logged in to view your bookings.');
+                } else {
+                    setError('Failed to load your bookings. Please try refreshing the page.');
+                }
                 setIsLoading(false);
             }
         );
@@ -426,7 +368,7 @@ export function Bookings() {
                     if (isNaN(bookingDate.getTime())) {
                         bookingDate = null;
                     }
-                } catch (error) {
+                } catch {
                     bookingDate = null;
                 }
             }

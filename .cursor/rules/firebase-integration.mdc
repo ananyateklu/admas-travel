@@ -1,0 +1,41 @@
+---
+description: Guidelines for Firebase integration within the application
+globs: **/firebase/**, **/*.firebaserc, **/firebase.json, **/firestore.*.json
+alwaysApply: false
+---
+
+## Firebase Integration Overview
+- The application uses Firebase for authentication, database, and hosting
+- Firebase configuration is in the lib/firebase directory
+- Firebase rules are defined in firestore.rules
+
+## Related Files
+- Firebase Config: `frontend/src/lib/firebase/*`
+- Firebase Rules: `frontend/firestore.rules`
+- Firebase Configuration: `firebase.json`, `.firebaserc`, `firestore.indexes.json`
+
+## Authentication Guidelines
+- Use Firebase Authentication for user login/signup
+- Implement proper auth state listeners
+- Follow the established pattern for protecting routes
+- Store minimal user profile information
+
+## Firestore Database Guidelines
+- Follow the established data schema
+- Use batch operations for related updates
+- Implement proper error handling for database operations
+- Use security rules to protect data access
+- Keep document sizes small
+- Avoid deeply nested collections
+
+## Firebase Functions Guidelines
+- Keep functions focused on single responsibilities
+- Implement proper error handling
+- Follow the established patterns for API endpoints
+- Include proper logging
+
+## Security Best Practices
+- Never expose Firebase API keys in client code
+- Use security rules to validate data
+- Implement proper user role checks
+- Follow the principle of least privilege 

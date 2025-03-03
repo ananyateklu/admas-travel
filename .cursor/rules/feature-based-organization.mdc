@@ -1,0 +1,66 @@
+---
+description: Guidelines for feature-based code organization (future refactoring goals)
+globs: **/*
+alwaysApply: false
+---
+
+
+## Feature-Based Organization Vision
+- The long-term goal is to reorganize the codebase into feature-based modules
+- This will improve maintainability and reduce fragmentation
+- This document provides guidelines for this future organization
+
+## Proposed Structure
+```
+src/
+  features/
+    flight-booking/
+      components/
+      pages/
+      services/
+      utils/
+      types.ts
+    hotel-booking/
+      components/
+      pages/ 
+      services/
+      utils/
+      types.ts
+    car-booking/
+      components/
+      pages/
+      services/
+      utils/
+      types.ts
+  shared/
+    components/
+    hooks/
+    utils/
+    types/
+  core/
+    firebase/
+    api/
+    auth/
+```
+
+## Feature Module Guidelines
+- Each feature module should be self-contained
+- Include all components, pages, and services related to the feature
+- Feature-specific utilities and types should be in the feature directory
+- Shared functionality should be in the shared directory
+- Core infrastructure should be in the core directory
+
+## Migration Path
+- Identify all related files for a feature
+- Create the feature directory structure
+- Move components, pages, and services
+- Update imports
+- Test thoroughly
+- Proceed feature by feature
+
+## Shared Component Guidelines
+- Components used across multiple features belong in shared/components
+- Create appropriate subdirectories by purpose
+- Ensure shared components are well-documented and typed
+- Common utilities go in shared/utils
+- Common hooks go in shared/hooks 
