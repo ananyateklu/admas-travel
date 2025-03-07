@@ -17,7 +17,7 @@ export function CarSearchResults({
     className = ''
 }: CarSearchResultsProps) {
     if (isLoading) {
-        return <CarLoadingState count={3} />;
+        return <CarLoadingState count={4} />;
     }
 
     if (!results.length) {
