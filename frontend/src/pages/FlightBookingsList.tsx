@@ -584,7 +584,7 @@ export function Bookings() {
                                             </p>
                                             <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
                                                 <Link
-                                                    to="/flight-booking"
+                                                    to="/book"
                                                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gold hover:bg-gold/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold"
                                                 >
                                                     Book a Flight

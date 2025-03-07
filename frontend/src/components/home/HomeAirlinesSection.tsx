@@ -39,7 +39,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
 
     // Handle auto-playing slideshow and progress
     useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
+        const timeoutId: NodeJS.Timeout | null = null;
 
         const startNextTransition = () => {
             const nextIndex = (currentAirlineIndex + 1) % airlines.length;
@@ -61,7 +61,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             return () => {
                 controls.stop();
                 setAnimationControls(null);
-                clearTimeout(timeoutId);
+                if (timeoutId) clearTimeout(timeoutId);
             };
         }
     }, [isAutoPlaying, isTransitioning, currentAirlineIndex, airlines.length, progress, loadedImages, airlines]);
@@ -197,7 +197,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             variants={containerVariants}
-            className="relative h-[90vh] md:h-[80vh] bg-black overflow-hidden will-change-transform"
+            className="relative h-screen bg-black overflow-hidden will-change-transform"
             style={{
                 transform: 'translate3d(0,0,0)',
                 backfaceVisibility: 'hidden'
@@ -210,7 +210,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             {/* Title Section - Positioned below the floating navbar */}
             <motion.div
                 variants={contentVariants}
-                className="absolute top-40 md:top-36 left-0 right-0 z-10"
+                className="absolute top-[15vh] md:top-[15vh] left-0 right-0 z-10"
             >
                 <div className="max-w-5xl mx-auto px-4 md:px-8 lg:px-16">
                     <motion.h2
@@ -279,7 +279,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                             initial="enter"
                             animate="center"
                             exit="exit"
-                            className="absolute top-[300px] md:top-[360px] left-0 right-0 px-4 md:px-8 lg:px-16 text-white transform -translate-y-1/3"
+                            className="absolute top-1/3 left-0 right-0 px-4 md:px-8 lg:px-16 text-white"
                         >
                             <div className="max-w-4xl mx-auto">
                                 <motion.h2
@@ -402,7 +402,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             </motion.button>
 
             {/* Progress Bar */}
-            <div className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 w-12 md:w-16 h-0.5 bg-white/20 rounded-full overflow-hidden z-20">
+            <div className="absolute bottom-32 md:bottom-36 left-1/2 -translate-x-1/2 w-12 md:w-16 h-0.5 bg-white/20 rounded-full overflow-hidden z-20">
                 <motion.div
                     className="h-full bg-primary-400 rounded-full origin-left"
                     style={{
@@ -413,7 +413,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             </div>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex justify-center gap-1.5 z-20">
+            <div className="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 flex justify-center gap-1.5 z-20">
                 {airlines.map((airline, index) => (
                     <motion.button
                         key={airline.id}
@@ -430,6 +430,58 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                     />
                 ))}
             </div>
+
+            {/* Scroll Down Indicator */}
+            <motion.div
+                className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center backdrop-blur-sm p-2 rounded-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.5, duration: 0.8 }}
+                whileHover={{ scale: 1.1 }}
+            >
+                {/* Mouse scroll wheel indicator */}
+                <motion.div
+                    className="w-5 h-9 md:w-6 md:h-10 border-2 border-gold/80 rounded-full flex justify-center py-1"
+                    whileHover={{ borderColor: "rgba(255, 215, 0, 1)" }}
+                >
+                    <motion.div
+                        className="w-1 h-2 bg-white/90 rounded-full"
+                        animate={{
+                            y: [0, 8, 0],
+                            opacity: [0.6, 1, 0.6]
+                        }}
+                        transition={{
+                            duration: 1.8,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                    />
+                </motion.div>
+                <motion.div
+                    className="mt-1"
+                    animate={{ y: [0, 2, 0] }}
+                    transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.5
+                    }}
+                >
+                    <svg
+                        className="w-3 h-3 md:w-4 md:h-4 text-gold/90"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2.5}
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                        />
+                    </svg>
+                </motion.div>
+            </motion.div>
         </motion.section>
     );
 } 
