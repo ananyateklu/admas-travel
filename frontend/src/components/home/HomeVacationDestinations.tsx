@@ -31,7 +31,7 @@ interface VacationDestinationsProps {
 }
 
 export function VacationDestinations({ regions, ethiopianRegions }: VacationDestinationsProps) {
-    const [selectedRegion, setSelectedRegion] = useState('africa');
+    const [selectedRegion, setSelectedRegion] = useState('');
     const [selectedEthiopianRegion, setSelectedEthiopianRegion] = useState('north');
     const { ref: sectionRef, isInView } = useScrollAnimation({
         threshold: 0.2

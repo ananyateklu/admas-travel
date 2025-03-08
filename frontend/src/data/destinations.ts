@@ -3,9 +3,9 @@ import mexicoImage from '../assets/destination/mexico.jpg';
 import europeImage from '../assets/destination/europe.jpg';
 import hawaiiImage from '../assets/destination/hawaii.jpg';
 import israelImage from '../assets/destination/israel.jpg';
-import africaSafarisImage from '../assets/destination/africa-safaris.jpg';
 import usaImage from '../assets/destination/usa.jpg';
 import australiaImage from '../assets/destination/australia.jpg';
+import ethiopiaVolcanoImage from '../assets/ethiopia-volcano.jpg';
 import lalibelaImage from '../assets/lalibela-two.jpg';
 import axumImage from '../assets/axum.jpeg';
 import gonderImage from '../assets/gonder.jpg';
@@ -39,53 +39,53 @@ export interface EthiopianRegions {
 
 export const vacationRegions: Region[] = [
     {
+        id: 'ethiopia',
+        name: 'Ethiopia',
+        places: '01 Places',
+        image: ethiopiaVolcanoImage,
+        description: 'Volcanic wonders and ancient landscapes'
+    },
+    {
         id: 'caribbean',
         name: 'The Caribbean',
-        places: '01 Places',
+        places: '02 Places',
         image: caribbeanImage,
         description: 'Pristine beaches and crystal-clear waters await'
     },
     {
         id: 'mexico',
         name: 'Mexico',
-        places: '02 Places',
+        places: '03 Places',
         image: mexicoImage,
         description: 'Ancient ruins and vibrant culture'
     },
     {
         id: 'europe',
         name: 'Europe',
-        places: '03 Places',
+        places: '04 Places',
         image: europeImage,
         description: 'Historic cities and timeless charm'
     },
     {
         id: 'hawaii',
         name: 'Hawaii',
-        places: '04 Places',
+        places: '05 Places',
         image: hawaiiImage,
         description: 'Paradise islands and tropical adventures'
     },
     {
         id: 'israel',
         name: 'Israel',
-        places: '05 Places',
+        places: '06 Places',
         image: israelImage,
         description: 'Sacred sites and rich history'
     },
     {
         id: 'usa',
         name: 'USA',
-        places: '06 Places',
+        places: '07 Places',
         image: usaImage,
         description: 'Diverse landscapes and vibrant cities'
-    },
-    {
-        id: 'ethiopia',
-        name: 'Ethiopia',
-        places: '07 Places',
-        image: africaSafarisImage,
-        description: 'Ancient culture and stunning landscapes'
     },
     {
         id: 'australia',
