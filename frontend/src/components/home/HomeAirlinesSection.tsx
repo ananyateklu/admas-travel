@@ -212,19 +212,19 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                 variants={contentVariants}
                 className="absolute top-[12vh] md:top-[15vh] left-0 right-0 z-10"
             >
-                <div className="max-w-5xl mx-auto px-4 md:px-8 lg:px-16 text-center md:text-left">
+                <div className="max-w-5xl mx-auto px-4 md:px-8 lg:px-16 text-center">
                     <motion.h2
                         variants={contentVariants}
-                        className="text-gold text-2xl md:text-3xl lg:text-4xl font-serif drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] mb-1 md:mb-2 text-opacity-90"
+                        className="text-2xl md:text-3xl lg:text-4xl font-serif mb-1 md:mb-2 text-gold"
                         style={{
-                            textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                            textShadow: '0 2px 5px rgba(0,0,0,0.7)'
                         }}
                     >
                         Travel the World with Leading Airlines
                     </motion.h2>
                     <motion.p
                         variants={contentVariants}
-                        className="text-white/90 max-w-2xl text-xs md:text-sm lg:text-base drop-shadow-md mx-auto md:mx-0"
+                        className="text-white/90 max-w-2xl text-xs md:text-sm lg:text-base mx-auto"
                     >
                         Experience exceptional service and worldwide connectivity with Admas Travel
                     </motion.p>
