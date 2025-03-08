@@ -210,12 +210,12 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             {/* Title Section - Positioned below the floating navbar */}
             <motion.div
                 variants={contentVariants}
-                className="absolute top-[15vh] md:top-[15vh] left-0 right-0 z-10"
+                className="absolute top-[12vh] md:top-[15vh] left-0 right-0 z-10"
             >
-                <div className="max-w-5xl mx-auto px-4 md:px-8 lg:px-16">
+                <div className="max-w-5xl mx-auto px-4 md:px-8 lg:px-16 text-center md:text-left">
                     <motion.h2
                         variants={contentVariants}
-                        className="text-gold text-2xl md:text-3xl font-serif drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] mb-2 text-opacity-90"
+                        className="text-gold text-2xl md:text-3xl lg:text-4xl font-serif drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] mb-1 md:mb-2 text-opacity-90"
                         style={{
                             textShadow: '0 2px 4px rgba(0,0,0,0.5)'
                         }}
@@ -224,7 +224,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                     </motion.h2>
                     <motion.p
                         variants={contentVariants}
-                        className="text-white/90 max-w-2xl text-xs md:text-sm drop-shadow-md"
+                        className="text-white/90 max-w-2xl text-xs md:text-sm lg:text-base drop-shadow-md mx-auto md:mx-0"
                     >
                         Experience exceptional service and worldwide connectivity with Admas Travel
                     </motion.p>
@@ -299,7 +299,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                                     {airlines[currentAirlineIndex].description}
                                 </motion.p>
                                 <motion.div
-                                    className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 bg-black/30 backdrop-blur-sm rounded-2xl p-3 md:p-4"
+                                    className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 bg-black/30 backdrop-blur-sm rounded-2xl p-2.5 md:p-4 max-w-[85%] md:max-w-none mx-auto"
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 }}
