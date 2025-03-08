@@ -299,16 +299,16 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                                     {airlines[currentAirlineIndex].description}
                                 </motion.p>
                                 <motion.div
-                                    className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 bg-black/30 backdrop-blur-sm rounded-2xl p-2.5 md:p-4 max-w-[85%] md:max-w-none mx-auto"
+                                    className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 bg-black/30 backdrop-blur-sm rounded-2xl p-3 sm:p-3.5 md:p-4 max-w-[85%] md:max-w-none mx-auto"
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 }}
                                 >
-                                    <div>
-                                        <h3 className="text-xs font-semibold uppercase tracking-wider text-gold mb-2">
+                                    <div className="px-2">
+                                        <h3 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-gold mb-1 sm:mb-2">
                                             Key Features
                                         </h3>
-                                        <ul className="space-y-1.5">
+                                        <ul className="space-y-1 sm:space-y-1.5">
                                             {airlines[currentAirlineIndex].features.map((feature, i) => (
                                                 <motion.li
                                                     key={feature}
@@ -339,10 +339,10 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                                             ))}
                                         </ul>
                                     </div>
-                                    <div>
-                                        <h3 className="text-xs font-semibold uppercase tracking-wider text-gold mb-2">Main Hub</h3>
+                                    <div className="px-2">
+                                        <h3 className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-gold mb-1 sm:mb-2">Main Hub</h3>
                                         <motion.p
-                                            className="text-white/90 flex items-center text-xs md:text-sm mb-3"
+                                            className="text-white/90 flex items-center text-[10px] sm:text-xs md:text-sm mb-1.5 sm:mb-3"
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.5 }}
@@ -359,7 +359,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 transition={{ delay: 0.6 }}
                                             >
-                                                <span className="inline-flex items-center px-2 py-1 md:px-3 md:py-1.5 rounded-full text-xs font-medium bg-gold text-black">
+                                                <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 md:px-3 md:py-1.5 rounded-full text-[9px] sm:text-xs font-medium bg-gold text-black">
                                                     Main Partner
                                                 </span>
                                             </motion.div>
@@ -402,7 +402,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             </motion.button>
 
             {/* Progress Bar */}
-            <div className="absolute bottom-32 md:bottom-36 left-1/2 -translate-x-1/2 w-12 md:w-16 h-0.5 bg-white/20 rounded-full overflow-hidden z-20">
+            <div className="absolute bottom-48 sm:bottom-40 md:bottom-36 left-1/2 -translate-x-1/2 w-12 md:w-16 h-0.5 bg-white/20 rounded-full overflow-hidden z-20">
                 <motion.div
                     className="h-full bg-primary-400 rounded-full origin-left"
                     style={{
@@ -413,7 +413,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
             </div>
 
             {/* Navigation Dots */}
-            <div className="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 flex justify-center gap-1.5 z-20">
+            <div className="absolute bottom-40 sm:bottom-32 md:bottom-28 left-1/2 -translate-x-1/2 flex justify-center gap-1.5 z-20">
                 {airlines.map((airline, index) => (
                     <motion.button
                         key={airline.id}
@@ -433,7 +433,7 @@ export function AirlinesSection({ airlines }: AirlinesSectionProps) {
 
             {/* Scroll Down Indicator */}
             <motion.div
-                className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center backdrop-blur-sm p-2 rounded-full"
+                className="absolute bottom-20 sm:bottom-14 md:bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center backdrop-blur-sm p-2 rounded-full"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.5, duration: 0.8 }}
