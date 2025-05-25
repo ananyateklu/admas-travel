@@ -27,10 +27,12 @@ const cardVariants = {
         }
     },
     hover: {
-        y: -2,
+        y: -4,
+        scale: 1.01,
+        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
         transition: {
-            duration: 0.2,
-            ease: "easeOut"
+            duration: 0.3,
+            ease: [0.23, 1, 0.32, 1]
         }
     }
 };
@@ -41,6 +43,20 @@ const contentVariants = {
         opacity: 1,
         transition: {
             duration: 0.2,
+            ease: "easeOut",
+            staggerChildren: 0.1,
+            delayChildren: 0.1
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.3,
             ease: "easeOut"
         }
     }
@@ -99,21 +115,30 @@ export function FlightListBookingCard({
             whileInView="visible"
             viewport={{ once: true, margin: "-20%" }}
             whileHover="hover"
-            className="bg-white/95 rounded-xl shadow-sm border border-gray-200/60 backdrop-blur-sm backdrop-saturate-150 relative will-change-transform"
+            className="bg-white/95 rounded-xl shadow-sm border border-gray-200/60 backdrop-blur-sm backdrop-saturate-150 relative will-change-transform group"
         >
+            {/* Glow effect on hover */}
             <motion.div
-                className="px-1.5 sm:px-2.5 py-2 lg:px-3 lg:py-2"
+                className="absolute inset-0 bg-gradient-to-r from-forest-400/5 via-gold/5 to-forest-400/5 opacity-0 group-hover:opacity-100 rounded-xl blur-xl"
+                transition={{ duration: 0.4 }}
+            />
+
+            <motion.div
+                className="px-1.5 sm:px-2.5 py-2 lg:px-3 lg:py-2 relative z-10"
                 variants={contentVariants}
             >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     {/* Left Section: Date and Main Info */}
-                    <div className="flex items-start gap-2 w-full md:w-auto">
+                    <motion.div
+                        className="flex items-start gap-2 w-full md:flex-1 md:max-w-[60%] lg:max-w-[65%]"
+                        variants={itemVariants}
+                    >
                         {booking.departureDate && (
-                            <div className="hidden sm:block">
+                            <div className="hidden sm:block flex-shrink-0">
                                 <BookingDateBadge date={new Date(booking.departureDate)} />
                             </div>
                         )}
-                        <div className="space-y-1.5 w-full md:w-auto">
+                        <div className="space-y-1.5 w-full min-w-0">
                             <BookingHeader
                                 type="flight"
                                 contactName={booking.contactName}
@@ -125,10 +150,13 @@ export function FlightListBookingCard({
                             />
                             <JourneyDetails booking={booking} />
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Right Section: Status and Actions */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto">
+                    <motion.div
+                        className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full md:w-auto md:flex-shrink-0"
+                        variants={itemVariants}
+                    >
                         <div className="relative z-10 order-2 sm:order-1 mt-2 sm:mt-0">
                             {booking.passengers && booking.passengers.length > 0 && (
                                 <PassengerAvatars passengers={booking.passengers as { fullName: string; type: 'adult' | 'child'; nationality: string; passportNumber: string; }[]} />
@@ -169,7 +197,7 @@ export function FlightListBookingCard({
                                 {isExpanded ? 'Show Less' : 'Show More'}
                             </motion.button>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </motion.div>
 

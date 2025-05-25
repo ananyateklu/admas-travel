@@ -119,17 +119,19 @@ export default function Admin() {
         return () => clearTimeout(timer);
     }, []);
 
-    const handleStatusChange = async (bookingId: string, newStatus: string, userId: string) => {
-        console.log('Admin - Updating status:', { bookingId, newStatus, userId });
+    const handleStatusChange = async (bookingId: string, newStatus: string, userId: string, previousStatus?: string) => {
+        console.log('Admin - Updating status:', { bookingId, newStatus, userId, previousStatus });
         setUpdateLoading(bookingId);
         try {
-            // Get the current booking to store its status as previousStatus
+            // Find the current booking to update
             const currentBooking = bookings.find(b => b.bookingId === bookingId);
             if (!currentBooking) return;
 
+            // Store the previous status for audit trail and UI state management
+            // This is especially important for cancelled bookings to show which step they were cancelled from
             const updateData = {
                 status: newStatus,
-                previousStatus: currentBooking.status
+                previousStatus: previousStatus || currentBooking.status
             };
 
             await updateDoc(doc(db, 'bookings', bookingId), updateData);
@@ -507,6 +509,7 @@ export default function Admin() {
                                     )}
                                     onStatusChange={handleStatusChange}
                                     updateLoading={updateLoading}
+                                    currentUserId={user?.email ?? undefined}
                                 />
                             ))}
 

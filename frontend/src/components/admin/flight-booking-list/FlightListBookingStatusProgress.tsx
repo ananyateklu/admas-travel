@@ -1,5 +1,6 @@
 import { STATUS_OPTIONS } from "../constants";
 import { BookingStatus } from '../types';
+import { motion } from 'framer-motion';
 
 interface BookingStatusProgressProps {
     currentStatus: BookingStatus;
@@ -28,7 +29,12 @@ export function BookingStatusProgress({
                     const currentStepIndex = STATUS_OPTIONS.findIndex(opt => opt.value === currentStatus);
                     const isPassed = currentStepIndex > index;
                     const isUpcoming = currentStepIndex < index;
-                    const canChangeStatus = isAdmin || (!isAdmin && currentStatus === 'pending' && option.value === 'cancelled');
+
+                    // Permission logic for status changes:
+                    // - Admins (identified by ADMIN_EMAILS) can change any booking to any status
+                    // - Regular customers can only cancel their own pending bookings
+                    // - This prevents customers from confirming/completing their own bookings while allowing cancellations
+                    const canChangeStatus = isAdmin || (currentStatus === 'pending' && option.value === 'cancelled');
 
                     // Get the button style based on status
                     const getButtonStyle = () => {
@@ -110,12 +116,48 @@ export function BookingStatusProgress({
                                 ${isActive ? 'ring-2 ring-current ring-opacity-20' : ''}
                                 group-hover/button:shadow-md`}
                             >
+                                {/* Pulse animation for active status */}
+                                {isActive && (
+                                    <motion.div
+                                        className="absolute inset-0 rounded-full border-2 border-current"
+                                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+                                        transition={{ duration: 2, repeat: Infinity }}
+                                    />
+                                )}
+
                                 <div className={`w-3.5 h-3.5 flex items-center justify-center 
                                     ${isUpcoming ? 'text-gray-400' : 'text-current'}
                                     transition-all duration-300 ease-in-out
                                     group-hover/button:scale-110 group-hover/button:rotate-3`}
                                 >
-                                    {option.icon}
+                                    <motion.div
+                                        animate={(() => {
+                                            if (currentStatus === 'pending' && isActive) {
+                                                return { rotate: [0, 360] };
+                                            }
+                                            if (currentStatus === 'confirmed' && isActive) {
+                                                return { scale: [1, 1.1, 1] };
+                                            }
+                                            if (currentStatus === 'completed' && isActive) {
+                                                return { y: [0, -2, 0] };
+                                            }
+                                            return {};
+                                        })()}
+                                        transition={(() => {
+                                            if (currentStatus === 'pending' && isActive) {
+                                                return { duration: 2, repeat: Infinity, ease: "linear" };
+                                            }
+                                            if (currentStatus === 'confirmed' && isActive) {
+                                                return { duration: 1, repeat: Infinity };
+                                            }
+                                            if (currentStatus === 'completed' && isActive) {
+                                                return { duration: 1.5, repeat: Infinity };
+                                            }
+                                            return {};
+                                        })()}
+                                    >
+                                        {option.icon}
+                                    </motion.div>
                                 </div>
 
                                 {/* Completed Indicator */}
