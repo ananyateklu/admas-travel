@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../lib/firebase/useAuth';
 import { collection, query, orderBy, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -21,7 +21,6 @@ import { BookingData, FlightBookingData, HotelBookingData } from '../components/
 import { CarBookingData } from '../components/admin/types';
 
 import { useAdminStatus } from '../hooks/useAdminStatus';
-import { initializeAdminCollection } from '../lib/firebase/adminUtils';
 
 // Add type guard for Airport
 const isAirport = (value: unknown): value is Airport => {
@@ -48,17 +47,31 @@ interface AdminTabConfig {
 export default function Admin() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { isAdmin, isLoading: isAdminLoading } = useAdminStatus();
-    const [hasInitialized, setHasInitialized] = useState(false);
 
     const [activeTab, setActiveTab] = useState<AdminTab>(() => {
+        // Check URL params first, then localStorage
+        const tabFromUrl = searchParams.get('tab') as AdminTab;
+        if (tabFromUrl && ['bookings', 'flights', 'analytics', 'settings'].includes(tabFromUrl)) {
+            return tabFromUrl;
+        }
         const savedTab = localStorage.getItem('adminActiveTab');
         return (savedTab as AdminTab) ?? 'bookings';
     });
 
     useEffect(() => {
         localStorage.setItem('adminActiveTab', activeTab);
-    }, [activeTab]);
+        // Update URL without causing a page reload
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (activeTab !== 'bookings') {
+            newSearchParams.set('tab', activeTab);
+        } else {
+            newSearchParams.delete('tab');
+        }
+        const newUrl = newSearchParams.toString() ? `?${newSearchParams.toString()}` : '';
+        window.history.replaceState({}, '', `/admin${newUrl}`);
+    }, [activeTab, searchParams]);
 
     const [bookings, setBookings] = useState<BookingData[]>([]);
     const [isBookingsLoading, setIsBookingsLoading] = useState(false);
@@ -72,29 +85,7 @@ export default function Admin() {
 
     const { ratings } = useAnalytics(bookings);
 
-    // Initialize admin collection on first load (migration helper)
-    useEffect(() => {
-        const initializeAdmins = async () => {
-            if (!user?.email || hasInitialized) return;
 
-            try {
-                // Check if this is one of the original admin emails
-                const originalAdmins = [
-                    import.meta.env.VITE_ADMIN_EMAIL_1,
-                    import.meta.env.VITE_ADMIN_EMAIL_2
-                ].filter(Boolean);
-
-                if (originalAdmins.includes(user.email)) {
-                    await initializeAdminCollection(user.email);
-                    setHasInitialized(true);
-                }
-            } catch (error) {
-                console.error('Error initializing admin collection:', error);
-            }
-        };
-
-        initializeAdmins();
-    }, [user?.email, hasInitialized]);
 
     // Check admin access
     useEffect(() => {

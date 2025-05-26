@@ -1,9 +1,9 @@
-import { doc, getDoc, setDoc, deleteDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc, collection, getDocs, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db } from './firebase';
 
 export interface AdminUser {
     email: string;
-    addedAt: Date;
+    addedAt: Date | Timestamp;
     addedBy: string;
     role: 'admin' | 'super-admin';
     isActive: boolean;
@@ -31,9 +31,9 @@ export async function addAdmin(
     role: 'admin' | 'super-admin' = 'admin'
 ): Promise<void> {
     try {
-        const adminData: AdminUser = {
+        const adminData = {
             email,
-            addedAt: new Date(),
+            addedAt: serverTimestamp(),
             addedBy,
             role,
             isActive: true
@@ -66,7 +66,13 @@ export async function removeAdmin(email: string): Promise<void> {
 export async function getAllAdmins(): Promise<AdminUser[]> {
     try {
         const adminsSnapshot = await getDocs(collection(db, 'admins'));
-        return adminsSnapshot.docs.map(doc => doc.data() as AdminUser);
+        return adminsSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                ...data,
+                addedAt: data.addedAt instanceof Timestamp ? data.addedAt.toDate() : data.addedAt
+            } as AdminUser;
+        });
     } catch (error) {
         console.error('Error fetching admins:', error);
         throw new Error('Failed to fetch admin users');
@@ -87,7 +93,6 @@ export async function initializeAdminCollection(currentUserEmail: string): Promi
         for (const email of initialAdmins) {
             await addAdmin(email, currentUserEmail, 'super-admin');
         }
-        console.log('Admin collection initialized with:', initialAdmins);
     } catch (error) {
         console.error('Error initializing admin collection:', error);
         throw new Error('Failed to initialize admin collection');

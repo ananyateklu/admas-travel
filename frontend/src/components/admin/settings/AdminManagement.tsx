@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { getAllAdmins, addAdmin, removeAdmin, AdminUser } from '../../../lib/firebase/adminUtils';
 import { useAuth } from '../../../lib/firebase/useAuth';
 import { toast } from 'react-hot-toast';
+import { Timestamp } from 'firebase/firestore';
 
 export function AdminManagement() {
     const { user } = useAuth();
@@ -131,7 +132,11 @@ export function AdminManagement() {
                                         </span>
                                     </div>
                                     <div className="text-xs text-gray-500 mt-1">
-                                        Added by {admin.addedBy} on {new Date(admin.addedAt).toLocaleDateString()}
+                                        Added by {admin.addedBy} on {admin.addedAt instanceof Date
+                                            ? admin.addedAt.toLocaleDateString()
+                                            : admin.addedAt instanceof Timestamp
+                                                ? admin.addedAt.toDate().toLocaleDateString()
+                                                : new Date(admin.addedAt).toLocaleDateString()}
                                     </div>
                                 </div>
                                 {admin.email !== user?.email && (

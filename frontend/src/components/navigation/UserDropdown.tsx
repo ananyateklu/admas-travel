@@ -135,30 +135,58 @@ export function UserDropdown({ isOpen, onClose, onSignOut }: UserDropdownProps) 
                                 </motion.div>
 
                                 {isAdmin && (
-                                    <motion.div variants={itemVariants}>
-                                        <Link
-                                            to="/admin"
-                                            onClick={onClose}
-                                            className="flex items-center gap-2 w-full p-1.5 text-left text-gray-700 rounded-lg hover:bg-gray-50/80 transition-all duration-200 group relative overflow-hidden"
-                                        >
-                                            <motion.div
-                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-                                            />
-                                            <motion.span
-                                                className="p-1.5 rounded-lg bg-primary-50 text-primary group-hover:bg-primary-100 group-hover:text-primary transition-all duration-200 relative"
-                                                whileHover={{ rotate: -15, scale: 1.1 }}
-                                                whileTap={{ scale: 0.9 }}
+                                    <>
+                                        <motion.div variants={itemVariants}>
+                                            <Link
+                                                to="/admin"
+                                                onClick={onClose}
+                                                className="flex items-center gap-2 w-full p-1.5 text-left text-gray-700 rounded-lg hover:bg-gray-50/80 transition-all duration-200 group relative overflow-hidden"
                                             >
-                                                <svg className="w-3 h-3 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                                </svg>
-                                            </motion.span>
-                                            <div className="relative">
-                                                <span className="block text-xs font-medium group-hover:text-gray-900 transition-colors duration-200">Admin Dashboard</span>
-                                                <span className="text-[9px] text-gray-500 group-hover:text-gray-600 transition-colors duration-200">Manage your site</span>
-                                            </div>
-                                        </Link>
-                                    </motion.div>
+                                                <motion.div
+                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
+                                                />
+                                                <motion.span
+                                                    className="p-1.5 rounded-lg bg-primary-50 text-primary group-hover:bg-primary-100 group-hover:text-primary transition-all duration-200 relative"
+                                                    whileHover={{ rotate: -15, scale: 1.1 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                >
+                                                    <svg className="w-3 h-3 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                                    </svg>
+                                                </motion.span>
+                                                <div className="relative">
+                                                    <span className="block text-xs font-medium group-hover:text-gray-900 transition-colors duration-200">Admin Dashboard</span>
+                                                    <span className="text-[9px] text-gray-500 group-hover:text-gray-600 transition-colors duration-200">Manage your site</span>
+                                                </div>
+                                            </Link>
+                                        </motion.div>
+
+                                        <motion.div variants={itemVariants}>
+                                            <Link
+                                                to="/admin?tab=settings"
+                                                onClick={onClose}
+                                                className="flex items-center gap-2 w-full p-1.5 text-left text-gray-700 rounded-lg hover:bg-gray-50/80 transition-all duration-200 group relative overflow-hidden"
+                                            >
+                                                <motion.div
+                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
+                                                />
+                                                <motion.span
+                                                    className="p-1.5 rounded-lg bg-forest-50 text-forest-600 group-hover:bg-forest-100 group-hover:text-forest-700 transition-all duration-200 relative"
+                                                    whileHover={{ rotate: 15, scale: 1.1 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                >
+                                                    <svg className="w-3 h-3 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                </motion.span>
+                                                <div className="relative">
+                                                    <span className="block text-xs font-medium group-hover:text-gray-900 transition-colors duration-200">Admin Settings</span>
+                                                    <span className="text-[9px] text-gray-500 group-hover:text-gray-600 transition-colors duration-200">Manage admins & settings</span>
+                                                </div>
+                                            </Link>
+                                        </motion.div>
+                                    </>
                                 )}
 
                                 <motion.div variants={itemVariants}>
