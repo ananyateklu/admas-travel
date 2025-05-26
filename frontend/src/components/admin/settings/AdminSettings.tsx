@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import { useAuth } from '../../../lib/firebase/useAuth';
+import { AdminManagement } from './AdminManagement';
 
 interface AdminSettings {
     notifications: {
@@ -475,6 +476,11 @@ export function AdminSettings({ isEditable = false }: AdminSettingsProps) {
                                 'Enable currency conversion'
                             )}
                         </div>
+                    </section>
+
+                    {/* Admin User Management */}
+                    <section>
+                        <AdminManagement />
                     </section>
 
                     {/* Save Button */}

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { User } from 'firebase/auth';
-import { ADMIN_EMAILS } from '../admin/types';
+import { useAdminStatus } from '../../hooks/useAdminStatus';
 
 interface UserDropdownProps {
     isOpen: boolean;
@@ -57,7 +57,9 @@ const itemVariants = {
     }
 };
 
-export function UserDropdown({ isOpen, onClose, user, onSignOut }: UserDropdownProps) {
+export function UserDropdown({ isOpen, onClose, onSignOut }: UserDropdownProps) {
+    const { isAdmin } = useAdminStatus();
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -132,7 +134,7 @@ export function UserDropdown({ isOpen, onClose, user, onSignOut }: UserDropdownP
                                     </Link>
                                 </motion.div>
 
-                                {user.email && ADMIN_EMAILS.includes(user.email) && (
+                                {isAdmin && (
                                     <motion.div variants={itemVariants}>
                                         <Link
                                             to="/admin"

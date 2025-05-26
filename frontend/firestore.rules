@@ -3,7 +3,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
-      return request.auth != null && request.auth.token.email in ['ananya.meseret@gmail.com', 'admastravel@gmail.com'];
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
+    }
+
+    // Admin collection - only admins can manage
+    match /admins/{email} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
     }
 
     // Allow users to read and write their own data

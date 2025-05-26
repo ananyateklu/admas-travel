@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookingHeader } from '../shared/BookingHeader';
 import { BookingDateBadge } from '../flight-booking-list/FlightListBookingDateBadge';
-import { CarBookingData, BookingStatus, ADMIN_EMAILS } from '../types';
+import { CarBookingData, BookingStatus } from '../types';
+import { useAdminStatus } from '../../../hooks/useAdminStatus';
 import { BookingStatusProgress } from '../flight-booking-list/FlightListBookingStatusProgress';
 
 interface CarSearchKey {
@@ -55,8 +56,9 @@ export function CarListBookingCard({
     onEdit,
     onRatingSubmit
 }: CarListBookingCardProps) {
+    const { isAdmin } = useAdminStatus();
     const canEdit = !isReadOnly && (
-        ADMIN_EMAILS.includes(currentUserId ?? '') ||
+        isAdmin ||
         (booking.status === 'pending' && currentUserId === booking.userId)
     );
     const canDelete = currentUserId === booking.userId;
@@ -171,7 +173,7 @@ export function CarListBookingCard({
                                     userId={booking.userId}
                                     onStatusChange={handleStatusChange}
                                     isLoading={updateLoading === booking.bookingId}
-                                    isAdmin={ADMIN_EMAILS.includes(currentUserId ?? '')}
+                                    isAdmin={isAdmin}
                                 />
                             </div>
                         ) : (
@@ -183,7 +185,7 @@ export function CarListBookingCard({
                                     userId={booking.userId}
                                     onStatusChange={handleStatusChange}
                                     isLoading={false}
-                                    isAdmin={ADMIN_EMAILS.includes(currentUserId ?? '')}
+                                    isAdmin={isAdmin}
                                 />
                             </div>
                         )}

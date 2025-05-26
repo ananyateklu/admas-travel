@@ -20,7 +20,8 @@ import { useAnalytics } from '../hooks/useAnalytics';
 import { BookingData, FlightBookingData, HotelBookingData } from '../components/admin/types';
 import { CarBookingData } from '../components/admin/types';
 
-import { ADMIN_EMAILS } from '../components/admin/types';
+import { useAdminStatus } from '../hooks/useAdminStatus';
+import { initializeAdminCollection } from '../lib/firebase/adminUtils';
 
 // Add type guard for Airport
 const isAirport = (value: unknown): value is Airport => {
@@ -47,6 +48,9 @@ interface AdminTabConfig {
 export default function Admin() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const { isAdmin, isLoading: isAdminLoading } = useAdminStatus();
+    const [hasInitialized, setHasInitialized] = useState(false);
+
     const [activeTab, setActiveTab] = useState<AdminTab>(() => {
         const savedTab = localStorage.getItem('adminActiveTab');
         return (savedTab as AdminTab) ?? 'bookings';
@@ -68,12 +72,36 @@ export default function Admin() {
 
     const { ratings } = useAnalytics(bookings);
 
+    // Initialize admin collection on first load (migration helper)
+    useEffect(() => {
+        const initializeAdmins = async () => {
+            if (!user?.email || hasInitialized) return;
+
+            try {
+                // Check if this is one of the original admin emails
+                const originalAdmins = [
+                    import.meta.env.VITE_ADMIN_EMAIL_1,
+                    import.meta.env.VITE_ADMIN_EMAIL_2
+                ].filter(Boolean);
+
+                if (originalAdmins.includes(user.email)) {
+                    await initializeAdminCollection(user.email);
+                    setHasInitialized(true);
+                }
+            } catch (error) {
+                console.error('Error initializing admin collection:', error);
+            }
+        };
+
+        initializeAdmins();
+    }, [user?.email, hasInitialized]);
+
     // Check admin access
     useEffect(() => {
-        if (!user || !ADMIN_EMAILS.includes(user.email ?? '')) {
+        if (!isAdminLoading && (!user || !isAdmin)) {
             navigate('/');
         }
-    }, [user, navigate]);
+    }, [user, isAdmin, isAdminLoading, navigate]);
 
     // Handle bookings data fetching - now independent of activeTab
     useEffect(() => {

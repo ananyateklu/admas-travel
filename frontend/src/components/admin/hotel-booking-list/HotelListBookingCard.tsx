@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookingHeader } from '../shared/BookingHeader';
 import { BookingDateBadge } from '../flight-booking-list/FlightListBookingDateBadge';
-import { HotelBookingData, BookingStatus, ADMIN_EMAILS } from '../types';
+import { HotelBookingData, BookingStatus } from '../types';
+import { useAdminStatus } from '../../../hooks/useAdminStatus';
 import { BookingStatusProgress } from '../flight-booking-list/FlightListBookingStatusProgress';
 
 interface HotelLocation {
@@ -49,8 +50,9 @@ export function HotelListBookingCard({
     onEdit,
     onRatingSubmit
 }: HotelListBookingCardProps) {
+    const { isAdmin } = useAdminStatus();
     const canEdit = !isReadOnly && (
-        ADMIN_EMAILS.includes(currentUserId ?? '') ||
+        isAdmin ||
         (booking.status === 'pending' && currentUserId === booking.userId)
     );
     const canDelete = currentUserId === booking.userId;
@@ -189,7 +191,7 @@ export function HotelListBookingCard({
                                     userId={booking.userId}
                                     onStatusChange={handleStatusChange}
                                     isLoading={updateLoading === booking.bookingId}
-                                    isAdmin={ADMIN_EMAILS.includes(currentUserId ?? '')}
+                                    isAdmin={isAdmin}
                                 />
                             </div>
                         ) : (
@@ -201,7 +203,7 @@ export function HotelListBookingCard({
                                     userId={booking.userId}
                                     onStatusChange={handleStatusChange}
                                     isLoading={false}
-                                    isAdmin={ADMIN_EMAILS.includes(currentUserId ?? '')}
+                                    isAdmin={isAdmin}
                                 />
                             </div>
                         )}

@@ -31,7 +31,7 @@ export function BookingStatusProgress({
                     const isUpcoming = currentStepIndex < index;
 
                     // Permission logic for status changes:
-                    // - Admins (identified by ADMIN_EMAILS) can change any booking to any status
+                    // - Admins can change any booking to any status
                     // - Regular customers can only cancel their own pending bookings
                     // - This prevents customers from confirming/completing their own bookings while allowing cancellations
                     const canChangeStatus = isAdmin || (currentStatus === 'pending' && option.value === 'cancelled');

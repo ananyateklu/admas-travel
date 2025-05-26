@@ -120,11 +120,6 @@ export interface CarBookingData extends BaseBookingData {
 
 export type BookingData = FlightBookingData | HotelBookingData | CarBookingData;
 
-export const ADMIN_EMAILS = [
-    import.meta.env.VITE_ADMIN_EMAIL_1,
-    import.meta.env.VITE_ADMIN_EMAIL_2
-].filter(Boolean);
-
 export const BOOKING_STATUSES = ['pending', 'confirmed', 'completed', 'cancelled'] as const;
 export type BookingStatus = typeof BOOKING_STATUSES[number];
 

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { FlightBookingData, BookingStatus, ADMIN_EMAILS } from '../types';
+import { FlightBookingData, BookingStatus } from '../types';
+import { useAdminStatus } from '../../../hooks/useAdminStatus';
 import { BookingStatusProgress } from './FlightListBookingStatusProgress';
 import { BookingDateBadge } from './FlightListBookingDateBadge';
 import { BookingHeader } from '../shared/BookingHeader';
@@ -91,8 +92,9 @@ export function FlightListBookingCard({
     onRatingSubmit,
     isSubmittingRating
 }: FlightListBookingCardProps) {
+    const { isAdmin } = useAdminStatus();
     const canEdit = !isReadOnly && (
-        ADMIN_EMAILS.includes(currentUserId ?? '') ||
+        isAdmin ||
         (booking.status === 'pending' && currentUserId === booking.userId)
     );
     const canDelete = currentUserId === booking.userId;
@@ -171,7 +173,7 @@ export function FlightListBookingCard({
                                     userId={booking.userId}
                                     onStatusChange={handleStatusChange}
                                     isLoading={updateLoading === booking.bookingId}
-                                    isAdmin={ADMIN_EMAILS.includes(currentUserId ?? '')}
+                                    isAdmin={isAdmin}
                                 />
                             </div>
                         ) : (
@@ -183,7 +185,7 @@ export function FlightListBookingCard({
                                     userId={booking.userId}
                                     onStatusChange={handleStatusChange}
                                     isLoading={false}
-                                    isAdmin={ADMIN_EMAILS.includes(currentUserId ?? '')}
+                                    isAdmin={isAdmin}
                                 />
                             </div>
                         )}
