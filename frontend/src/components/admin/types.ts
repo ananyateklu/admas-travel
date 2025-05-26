@@ -61,9 +61,11 @@ export interface HotelBookingData extends BaseBookingData {
         numberOfNights: number;
     };
     guests: Array<{
-        type: string;
         fullName: string;
         dateOfBirth?: string;
+        nationality?: string;
+        idNumber?: string;
+        idExpiry?: string;
     }>;
     numberOfGuests: number;
     numberOfRooms: number;

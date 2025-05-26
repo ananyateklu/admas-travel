@@ -81,6 +81,7 @@ export default function Admin() {
     const [searchTerm, setSearchTerm] = useState('');
     const [updateLoading, setUpdateLoading] = useState<string | null>(null);
     const [advancedFilters, setAdvancedFilters] = useState<Partial<AdvancedFilters>>({});
+    const [bookingTypeFilter, setBookingTypeFilter] = useState<string>('all');
     const [isLoading, setIsLoading] = useState(true);
 
     const { ratings } = useAnalytics(bookings);
@@ -117,7 +118,7 @@ export default function Admin() {
                 setIsBookingsLoading(false);
             },
             (error) => {
-                console.error('Admin - Error fetching bookings:', error);
+                console.error('Admin - Error fetching bookings:', { error });
                 setError('Failed to load bookings');
                 setIsBookingsLoading(false);
             }
@@ -178,6 +179,7 @@ export default function Admin() {
         setStatusFilter('all');
         setSearchTerm('');
         setAdvancedFilters({});
+        setBookingTypeFilter('all');
 
         // If we have a specific booking reference, use that
         if (bookingRef) {
@@ -267,9 +269,20 @@ export default function Admin() {
         return booking.status === filter;
     };
 
-    const isFlightBooking = (booking: BookingData): booking is FlightBookingData => booking.type === 'flight';
-    const isHotelBooking = (booking: BookingData): booking is HotelBookingData => booking.type === 'hotel';
-    const isCarBooking = (booking: BookingData): booking is CarBookingData => booking.type === 'car';
+    const isFlightBooking = (booking: BookingData): booking is FlightBookingData => {
+        // Check for flight-specific fields since type field might not exist
+        return 'bookingReference' in booking && 'from' in booking && 'to' in booking && 'passengers' in booking;
+    };
+
+    const isHotelBooking = (booking: BookingData): booking is HotelBookingData => {
+        // Check for hotel-specific fields since type field might not exist
+        return 'hotelId' in booking && 'hotelName' in booking && 'checkInDate' in booking && 'checkOutDate' in booking;
+    };
+
+    const isCarBooking = (booking: BookingData): booking is CarBookingData => {
+        // Check for car-specific fields since type field might not exist
+        return 'vehicle_id' in booking && 'search_key' in booking && 'firstName' in booking && 'lastName' in booking;
+    };
 
     const matchesSearchTerm = (booking: BookingData, term: string) => {
         if (!term) return true;
@@ -287,11 +300,18 @@ export default function Admin() {
                     : `${booking.location.city}, ${booking.location.country}`;
                 return hotelLocation.toLowerCase().includes(searchLower);
             } else if (isCarBooking(booking)) {
-                const searchKey = JSON.parse(atob(booking.search_key));
-                return (
-                    searchKey.pickUpLocation.toLowerCase().includes(searchLower) ||
-                    searchKey.dropOffLocation.toLowerCase().includes(searchLower)
-                );
+                try {
+                    const searchKey = JSON.parse(atob(booking.search_key));
+                    return (
+                        searchKey.pickUpLocation?.toLowerCase().includes(searchLower) ||
+                        searchKey.dropOffLocation?.toLowerCase().includes(searchLower) ||
+                        searchKey.pickUpDateTime?.toLowerCase().includes(searchLower) ||
+                        searchKey.dropOffDateTime?.toLowerCase().includes(searchLower)
+                    );
+                } catch (error) {
+                    console.error('Error parsing car search key for location search:', { error, bookingId: booking.bookingId });
+                    return false;
+                }
             }
             return false;
         })();
@@ -313,7 +333,15 @@ export default function Admin() {
                 searchableFields.push(booking.hotelName.toLowerCase());
             } else if (isCarBooking(booking)) {
                 searchableFields.push(`${booking.firstName} ${booking.lastName}`.toLowerCase());
-                searchableFields.push(booking.vehicle_id.toLowerCase());
+                if (booking.vehicle_id) {
+                    searchableFields.push(booking.vehicle_id.toLowerCase());
+                }
+                if (booking.email) {
+                    searchableFields.push(booking.email.toLowerCase());
+                }
+                if (booking.phone) {
+                    searchableFields.push(booking.phone.toLowerCase());
+                }
             }
 
             return searchableFields.some(field => field.includes(searchLower));
@@ -322,37 +350,108 @@ export default function Admin() {
         return locationMatch || detailsMatch;
     };
 
+    const matchesBookingTypeFilter = (booking: BookingData, typeFilter: string) => {
+        if (typeFilter === 'all') return true;
+
+        switch (typeFilter) {
+            case 'flight':
+                return isFlightBooking(booking);
+            case 'hotel':
+                return isHotelBooking(booking);
+            case 'car':
+                return isCarBooking(booking);
+            default:
+                return false;
+        }
+    };
+
     const matchesAdvancedFilters = (booking: BookingData, filters: Partial<AdvancedFilters>) => {
         if (Object.keys(filters).length === 0) return true;
 
+
+
         // Date range filter applies to all booking types
-        if (filters.dateRange) {
+        if (filters.dateRange && (filters.dateRange.start || filters.dateRange.end)) {
             const bookingDate = getBookingDate(booking);
-            const startDate = new Date(filters.dateRange.start);
-            const endDate = new Date(filters.dateRange.end);
-            if (bookingDate < startDate || bookingDate > endDate) return false;
+            if (filters.dateRange.start) {
+                const startDate = new Date(filters.dateRange.start);
+                if (bookingDate < startDate) return false;
+            }
+            if (filters.dateRange.end) {
+                const endDate = new Date(filters.dateRange.end);
+                endDate.setHours(23, 59, 59, 999); // Include the entire end date
+                if (bookingDate > endDate) return false;
+            }
+        }
+
+        // Status filter (for advanced filters that specify status array)
+        if (filters.status && filters.status.length > 0) {
+            if (!filters.status.includes(booking.status)) return false;
+        }
+
+        // Nationality filter
+        if (filters.nationality) {
+            const nationalityLower = filters.nationality.toLowerCase();
+            let hasMatchingNationality = false;
+
+            if (isFlightBooking(booking)) {
+                hasMatchingNationality = booking.passengers.some(passenger =>
+                    passenger.nationality?.toLowerCase().includes(nationalityLower)
+                );
+            } else if (isHotelBooking(booking)) {
+                // For hotel bookings, check guests nationality if available
+                hasMatchingNationality = booking.guests.some(guest =>
+                    guest.nationality?.toLowerCase().includes(nationalityLower)
+                );
+            } else if (isCarBooking(booking)) {
+                // For car bookings, we might not have nationality data
+                // Could check user profile or skip this filter for cars
+                hasMatchingNationality = true; // Skip nationality filter for cars for now
+            }
+
+            if (!hasMatchingNationality) return false;
         }
 
         // Type-specific filters
         if (isFlightBooking(booking)) {
+            // Class filter for flights
             if (filters.class && booking.class !== filters.class) return false;
+
+            // Trip type filter for flights
             if (filters.tripType && booking.tripType !== filters.tripType) return false;
+
+            // Passenger count filter for flights
             if (filters.passengerCount) {
-                const count = booking.totalPassengers;
-                if (count < filters.passengerCount.min || count > filters.passengerCount.max) return false;
+                const count = booking.totalPassengers || booking.passengers?.length || 0;
+                if (filters.passengerCount.min > 0 && count < filters.passengerCount.min) return false;
+                if (filters.passengerCount.max > 0 && count > filters.passengerCount.max) return false;
             }
         } else if (isHotelBooking(booking)) {
-            if (filters.class && booking.roomType !== filters.class) return false;
+            // For hotels, class could map to room type or be skipped
+            // Room types are usually specific IDs, not economy/business/first
+            // So we'll skip class filter for hotels unless we want to map it differently
+
+            // Passenger count filter for hotels (number of guests)
             if (filters.passengerCount) {
-                const count = booking.numberOfGuests;
-                if (count < filters.passengerCount.min || count > filters.passengerCount.max) return false;
+                const count = booking.numberOfGuests || 0;
+                if (filters.passengerCount.min > 0 && count < filters.passengerCount.min) return false;
+                if (filters.passengerCount.max > 0 && count > filters.passengerCount.max) return false;
             }
         } else if (isCarBooking(booking)) {
-            const searchKey = JSON.parse(atob(booking.search_key));
-            if (filters.passengerCount) {
-                // For cars, we might want to filter by vehicle capacity instead
-                const capacity = searchKey.vehicleCapacity ?? 4; // default to 4 if not specified
-                if (capacity < filters.passengerCount.min || capacity > filters.passengerCount.max) return false;
+            // For cars, we can try to extract passenger info from search_key
+            try {
+                const searchKey = JSON.parse(atob(booking.search_key));
+
+                // Passenger count filter for cars
+                if (filters.passengerCount) {
+                    // Try to get passenger count from search key
+                    const count = searchKey.passengers || searchKey.passengerCount || 1; // default to 1
+                    if (filters.passengerCount.min > 0 && count < filters.passengerCount.min) return false;
+                    if (filters.passengerCount.max > 0 && count > filters.passengerCount.max) return false;
+                }
+            } catch (error) {
+                console.error('Error parsing car search key:', { error, bookingId: booking.bookingId });
+                // If we can't parse the search key, skip passenger count filter for this booking
             }
         }
 
@@ -363,7 +462,8 @@ export default function Admin() {
     const filteredBookings = bookings.filter(booking =>
         matchesStatusFilter(booking, statusFilter) &&
         matchesSearchTerm(booking, searchTerm) &&
-        matchesAdvancedFilters(booking, advancedFilters)
+        matchesAdvancedFilters(booking, advancedFilters) &&
+        matchesBookingTypeFilter(booking, bookingTypeFilter)
     );
 
     // Calculate booking counts by type and status
@@ -391,7 +491,19 @@ export default function Admin() {
     // Log booking counts for debugging
     useEffect(() => {
         console.log('Booking counts:', bookingCounts);
-    }, [bookingCounts]);
+
+        // Debug: Check booking types
+        const detectedTypes = bookings.map(booking => ({
+            id: booking.bookingId,
+            isFlightBooking: isFlightBooking(booking),
+            isHotelBooking: isHotelBooking(booking),
+            isCarBooking: isCarBooking(booking),
+            hasType: 'type' in booking,
+            actualType: (booking as { type?: string }).type,
+            keys: Object.keys(booking)
+        }));
+        console.log('Detected booking types:', detectedTypes);
+    }, [bookingCounts, bookings]);
 
     // Calculate pending bookings count
     const pendingBookingsCount = useMemo(() =>
@@ -516,6 +628,8 @@ export default function Admin() {
                             statusFilter={statusFilter}
                             onStatusFilterChange={setStatusFilter}
                             onAdvancedFiltersChange={setAdvancedFilters}
+                            bookingTypeFilter={bookingTypeFilter}
+                            onBookingTypeFilterChange={setBookingTypeFilter}
                         />
                         <div className="space-y-4">
                             {filteredBookings.map(booking => (
